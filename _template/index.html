@@ -2,7 +2,7 @@
 {
   "name": "{{CLIENT_NAME}} Coverage Tracker",
   "schemaVersion": 1,
-  "description": "{{CLIENT_NAME}} coverage tracker. Earned Media, Company Website, and Competitor Coverage tabs. Terms: {{TRACKING_TERMS_PLAIN}}. Alerts: negative sentiment + national-tier placements. Updated by Claude scheduled task.",
+  "description": "{{CLIENT_NAME}} coverage tracker with Earned Media, Company Website, and Competitor Coverage tabs. Tracks {{TRACKING_TERMS_PLAIN}}. Refreshed 3x daily by Claude scheduled task via WebSearch. Alerts on negative sentiment and national-tier placements.",
   "mcpTools": [],
   "mcpServerNames": []
 }
@@ -18,11 +18,6 @@
   {{TRACKING_TERMS_PLAIN}}  Comma-separated terms     e.g. "Acme Corp, Jane Doe"
   {{DOMAIN}}                Primary domain            e.g. "acme.com"
   {{LAST_UPDATED}}          ISO 8601 timestamp        e.g. "2026-05-01T18:00:00Z"
-
-  COMPETITOR TAB (optional):
-  — Keep as-is if the client wants competitor monitoring.
-  — Remove the <button data-tab="competitor"> tab and the
-    competitorMedia key from the JSON block if not needed.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -->
 <html lang="en">
@@ -181,7 +176,6 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 <div class="tabs">
   <button class="tab active" data-tab="earned">Earned Media <span class="ct" id="ct-earned">0</span></button>
   <button class="tab" data-tab="owned">Company Website <span class="ct" id="ct-owned">0</span></button>
-  <!-- COMPETITOR TAB: remove this line if not needed -->
   <button class="tab" data-tab="competitor">Competitor Coverage <span class="ct" id="ct-competitor">0</span></button>
 </div>
 
@@ -210,7 +204,6 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
   Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>.
   Updated 3&times; daily by a Claude scheduled task running WebSearch for <code>{{TRACKING_TERMS_PLAIN}}</code>.
   UVMs can be populated from Cision / Muck Rack / Meltwater.
-  <!-- COMPETITOR TAB: remove the sentence below if not needed -->
   The <strong>Competitor Coverage</strong> tab surfaces content published by or about key competitors referencing {{CLIENT_NAME}}.
 </footer>
 
