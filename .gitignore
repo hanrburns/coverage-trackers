@@ -1,0 +1,14 @@
+# Deploy credentials — never commit
+.deploy-token
+.deploy-token.txt
+*.token
+
+# Local working files
+versions/
+thumbnail.*
+*.tmp
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
