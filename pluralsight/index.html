@@ -1,5 +1,5 @@
-<!doctype html>
-<script type="application/json" id="cowork-artifact-meta">
+
+<!doctype html><script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Pluralsight Coverage Tracker",
   "schemaVersion": 1,
@@ -16,7 +16,7 @@
 :root { color-scheme: light; }
 * { box-sizing: border-box; }
 body { margin: 0; font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f8; color: #1a1a1a; }
-.wrap { max-width: 1280px; margin: 0 auto; padding: 20px; }
+.wrap { max-width: 1360px; margin: 0 auto; padding: 20px; }
 
 /* Header */
 header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -30,7 +30,7 @@ button.primary { background: #0a4ea1; color: white; border-color: #0a4ea1; }
 button.primary:hover { background: #073d80; }
 
 /* Snapshot */
-.snapshot { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.snapshot { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 14px; }
 .stat { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; }
 .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; margin-bottom: 6px; }
 .stat-val { font-size: 22px; font-weight: 600; line-height: 1.1; }
@@ -64,21 +64,29 @@ table.coverage { width: 100%; border-collapse: separate; border-spacing: 0; back
 table.coverage thead th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: #555; border-bottom: 1px solid #e6e6e6; white-space: nowrap; cursor: pointer; user-select: none; }
 table.coverage thead th:hover { background: #f0f0f0; }
 table.coverage thead th .sortarrow { color: #999; font-size: 9px; margin-left: 3px; }
-table.coverage tbody td { padding: 11px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; font-size: 12.5px; }
+table.coverage thead th.nosort { cursor: default; }
+table.coverage thead th.nosort:hover { background: #fafafa; }
+table.coverage tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; font-size: 12.5px; }
 table.coverage tbody tr:last-child td { border-bottom: 0; }
-table.coverage tbody tr.synd td { background: #fafbfc; padding-left: 30px; font-size: 12px; color: #555; }
-table.coverage tbody tr.synd td:first-child { padding-left: 30px; position: relative; }
-table.coverage tbody tr.synd td:first-child::before { content: "↳"; position: absolute; left: 14px; color: #aaa; font-size: 11px; }
+table.coverage tbody tr.synd td { background: #fafbfc; font-size: 12px; color: #555; }
+table.coverage tbody tr.synd td:first-child { padding-left: 28px; position: relative; }
+table.coverage tbody tr.synd td:first-child::before { content: "↳"; position: absolute; left: 12px; color: #aaa; font-size: 11px; }
 table.coverage tbody tr.notable td:first-child { box-shadow: inset 3px 0 0 #f5a623; }
 table.coverage tbody tr.alert td:first-child { box-shadow: inset 3px 0 0 #d93025; }
 .expand-btn { background: none; border: 0; color: #888; cursor: pointer; padding: 0 4px; font-size: 11px; }
 .expand-btn:hover { color: #333; background: transparent; }
-.headline-cell { max-width: 360px; }
+.headline-cell { max-width: 320px; }
 .headline-cell a { color: #0a4ea1; text-decoration: none; font-weight: 500; }
 .headline-cell a:hover { text-decoration: underline; }
-.url-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.url-cell { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .url-cell a { color: #888; font-size: 11px; }
-.notes-cell { max-width: 200px; color: #555; font-size: 11.5px; }
+.notes-cell { max-width: 190px; color: #555; font-size: 11.5px; }
+.da-cell { text-align: right; font-variant-numeric: tabular-nums; }
+.da-val { font-weight: 600; }
+.da-high { color: #0a6647; }
+.da-mid  { color: #855300; }
+.da-low  { color: #555; }
+.date-added-cell { white-space: nowrap; color: #777; font-size: 11.5px; }
 
 /* Badges */
 .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
@@ -96,12 +104,12 @@ table.coverage tbody tr.alert td:first-child { box-shadow: inset 3px 0 0 #d93025
 .b-sent-mixed { background: #fff4d4; color: #8a5a00; }
 .b-notable { background: #fff4d4; color: #8a5a00; }
 .b-alert { background: #fde0de; color: #8a1c1c; }
-.b-new { background: #fff4d4; color: #8a5a00; }
+.b-new { background: #d8e9ff; color: #0a3d80; }
 
 .empty { text-align: center; padding: 50px 20px; color: #888; background: white; border: 1px dashed #d0d0d0; border-radius: 8px; }
 .empty-title { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 4px; }
 
-footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e6e6e6; color: #888; font-size: 11px; line-height: 1.6; }
+footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e6e6e6; color: #888; font-size: 11px; line-height: 1.7; }
 footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #555; }
 .dim { color: #aaa; }
 </style>
@@ -112,7 +120,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 <header class="top">
   <div>
     <h1 id="title">Pluralsight Coverage Tracker</h1>
-    <div class="sub">Web monitoring &middot; refreshed by Claude on a schedule &middot; tracking: <span id="terms-display"></span></div>
+    <div class="sub">Media hits only &middot; refreshed 3&times; daily &middot; new items filtered to articles published after last refresh &middot; tracking: <span id="terms-display"></span></div>
   </div>
   <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
     <span class="lastupdate"><span class="dot"></span><span id="last-updated">—</span></span>
@@ -124,7 +132,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 
 <div class="filters">
   <div class="filter-row">
-    <span class="filter-label">Period</span>
+    <span class="filter-label">Published</span>
     <div class="daterange">
       <input type="date" id="date-from" />
       <span style="color:#888">→</span>
@@ -156,7 +164,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       <span class="chip active" data-key="all">All</span>
       <span class="chip" data-key="notable">Notable only</span>
     </div>
-    <input class="searchbox" id="search-input" type="search" placeholder="Search headlines, notes…" />
+    <input class="searchbox" id="search-input" type="search" placeholder="Search headlines, domains, notes…" />
     <div class="filter-actions">
       <button id="reset-filters">Reset</button>
     </div>
@@ -165,31 +173,38 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 
 <div class="tabs">
   <button class="tab active" data-tab="earned">Earned Media <span class="ct" id="ct-earned">0</span></button>
-  <button class="tab" data-tab="owned">Company Website <span class="ct" id="ct-owned">0</span></button>
+  <button class="tab" data-tab="owned">Owned Media <span class="ct" id="ct-owned">0</span></button>
 </div>
 
 <div id="empty" class="empty" style="display:none">
   <div class="empty-title">No coverage matches the current filters</div>
-  <div>Try widening the period or clearing filters.</div>
+  <div>Try widening the date range or clearing filters.</div>
 </div>
 
 <table class="coverage" id="table">
   <thead>
     <tr>
-      <th data-sort="publishedAt" style="width:110px">Date <span class="sortarrow">▼</span></th>
+      <th data-sort="publishedAt" style="width:105px">Published <span class="sortarrow">▼</span></th>
       <th data-sort="headline">Headline</th>
-      <th data-sort="domain" style="width:160px">URL</th>
-      <th data-sort="tier" style="width:90px">Tier</th>
-      <th data-sort="uvm" style="width:90px">UVM</th>
-      <th data-sort="sentiment" style="width:100px">Sentiment</th>
-      <th style="width:200px">Notes</th>
+      <th data-sort="domain" style="width:150px">Domain</th>
+      <th data-sort="tier" style="width:82px">Tier</th>
+      <th data-sort="da" style="width:56px;text-align:right">DA <span class="sortarrow"></span></th>
+      <th data-sort="sentiment" style="width:96px">Sentiment</th>
+      <th class="nosort" style="width:180px">Notes</th>
+      <th data-sort="firstSeen" style="width:90px">Date Added <span class="sortarrow"></span></th>
     </tr>
   </thead>
   <tbody id="tbody"></tbody>
 </table>
 
 <footer>
-<strong>Template notes.</strong> Updated 3&times; daily by a Claude scheduled task that runs WebSearch for the terms above and rewrites the embedded data block (<code>#coverage-data</code>). Items with <span class="badge b-notable">Notable</span> or <span class="badge b-alert">Alert</span> trigger team notifications during the scheduled run (negative sentiment OR national-tier features). UVMs are blank by default — populate from your media monitoring tool (Cision/Muck Rack/Meltwater) or wire that tool's API into the scheduled task. To clone for another client: change <code>data-client</code>, the terms array, and the scheduled task's prompt.
+  <strong>Columns:</strong> <em>DA</em> = Moz Domain Authority (approximate; verify with Moz, Ahrefs, or SEMrush — pre-filled values are estimates for well-known domains).
+  &ensp;|&ensp; <em>Date Added</em> = date this item first appeared in the tracker.
+  &ensp;|&ensp; <em>Published</em> = article publish date extracted from URL slug when available; <code>—</code> means date could not be determined.
+  <br>
+  <strong>Search logic:</strong> Each scheduled refresh runs WebSearch for the terms above and adds only items whose <em>published date</em> is after the previous <code>lastUpdated</code> timestamp. Non-media pages (social profiles, Wikipedia, directories, navigational landing pages) are excluded automatically.
+  <br>
+  <strong>UVM:</strong> Not tracked — populate from Cision, Muck Rack, or Meltwater if needed.
 </footer>
 
 </div>
@@ -197,10 +212,8 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 <script id="coverage-data" type="application/json" data-client="Pluralsight">
 {
   "client": "Pluralsight",
-  "terms": [
-    "Pluralsight"
-  ],
-  "lastUpdated": "2026-05-01T17:00:00Z",
+  "terms": ["Pluralsight"],
+  "lastUpdated": "2026-05-01T21:00:00Z",
   "earnedMedia": [
     {
       "id": "tech-forecast-2026",
@@ -209,9 +222,9 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://finance.yahoo.com/news/pluralsight-unveils-2026-tech-forecast-140000057.html",
       "domain": "finance.yahoo.com",
       "tier": "national",
-      "uvm": null,
+      "da": 94,
       "sentiment": "positive",
-      "notes": "Wire pickup of Pluralsight 2026 Tech Forecast announcement. National financial-news distribution.",
+      "notes": "Wire pickup of Pluralsight 2026 Tech Forecast. National financial-news distribution.",
       "isNotable": true,
       "firstSeen": "2026-05-01T15:00:00Z",
       "syndications": [
@@ -221,10 +234,21 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
           "url": "https://hrtechedge.com/news/pluralsight-2026-tech-forecast-highlights-ai-maturity-and-workforce-shifts/",
           "domain": "hrtechedge.com",
           "tier": "trade",
-          "uvm": null,
+          "da": 26,
           "sentiment": "positive",
           "notes": "HR-tech trade pickup. Reframes forecast around AI maturity & workforce shifts.",
           "firstSeen": "2026-05-01T15:00:00Z"
+        },
+        {
+          "publishedAt": null,
+          "headline": "Pluralsight Unveils 2026 Tech Forecast: AI Hype Deflates, Skills Gaps Deepen, and Upskilling Becomes Essential",
+          "url": "https://www.prnewswire.com/news-releases/pluralsight-unveils-2026-tech-forecast-ai-hype-deflates-skills-gaps-deepen-and-upskilling-becomes-essential-302612412.html",
+          "domain": "prnewswire.com",
+          "tier": "other",
+          "da": 91,
+          "sentiment": "positive",
+          "notes": "PR Newswire wire distribution of the 2026 Tech Forecast announcement.",
+          "firstSeen": "2026-05-01T21:00:00Z"
         }
       ]
     },
@@ -235,11 +259,25 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://learningnews.com/news/pluralsight/2026/pluralsight-launches-new-ai-sandbox,-guided-learning,-and-enterprise-integrations-to-help-teams-build-job-ready-tech-skills",
       "domain": "learningnews.com",
       "tier": "trade",
-      "uvm": null,
+      "da": 44,
       "sentiment": "positive",
-      "notes": "Product launch coverage. Mentions ChatGPT 5-mini, Claude, Cohere Command R, Nova, Llama 3.3, Mistral Large 3 in the sandbox. Workday/Cornerstone/SuccessFactors/Edcast integrations.",
+      "notes": "Product launch coverage. AI Prompt Sandbox with ChatGPT 5-mini, Claude, Cohere, Nova. Workday/Cornerstone/SuccessFactors integrations.",
       "isNotable": false,
       "firstSeen": "2026-05-01T15:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "secureready-launch-learningnews",
+      "publishedAt": null,
+      "headline": "Pluralsight launches SecureReady to help build job-ready cybersecurity teams",
+      "url": "https://learningnews.com/news/learning-news/2026/pluralsight-launches-secureready-to-help-build-job-ready-cybersecurity-teams",
+      "domain": "learningnews.com",
+      "tier": "trade",
+      "da": 44,
+      "sentiment": "positive",
+      "notes": "Trade coverage of SecureReady launch for role-specific cybersecurity training.",
+      "isNotable": false,
+      "firstSeen": "2026-05-01T21:00:00Z",
       "syndications": []
     },
     {
@@ -249,9 +287,9 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://aiu.ac/2026/04/12/pluralsight-review-2026/",
       "domain": "aiu.ac",
       "tier": "other",
-      "uvm": null,
+      "da": null,
       "sentiment": "neutral",
-      "notes": "Standalone review. Sentiment marked neutral — needs content review to confirm positive/mixed/negative tone.",
+      "notes": "Standalone review. Needs content check to confirm tone.",
       "isNotable": false,
       "firstSeen": "2026-05-01T15:00:00Z",
       "syndications": []
@@ -263,51 +301,9 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://www.prnewswire.com/news-releases/pluralsight-launches-new-ai-sandbox-guided-learning-and-enterprise-integrations-to-help-teams-build-job-ready-tech-skills-302742378.html",
       "domain": "prnewswire.com",
       "tier": "other",
-      "uvm": null,
+      "da": 91,
       "sentiment": "positive",
       "notes": "PR Newswire wire distribution of the AI Sandbox launch announcement.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T17:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "pluralsight-wikipedia",
-      "publishedAt": null,
-      "headline": "Pluralsight - Wikipedia",
-      "url": "https://en.wikipedia.org/wiki/Pluralsight",
-      "domain": "en.wikipedia.org",
-      "tier": "other",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Wikipedia entry for Pluralsight.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T17:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "pluralsight-x-account",
-      "publishedAt": null,
-      "headline": "Pluralsight (@pluralsight) · X",
-      "url": "https://twitter.com/pluralsight",
-      "domain": "twitter.com",
-      "tier": "other",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Pluralsight's official X (Twitter) account profile.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T17:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "pluralsight-crunchbase",
-      "publishedAt": null,
-      "headline": "Pluralsight - Recent News & Activity",
-      "url": "https://www.crunchbase.com/organization/pluralsight/company_overview/overview_timeline",
-      "domain": "crunchbase.com",
-      "tier": "other",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Crunchbase company profile and activity timeline.",
       "isNotable": false,
       "firstSeen": "2026-05-01T17:00:00Z",
       "syndications": []
@@ -321,109 +317,11 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://www.pluralsight.com/newsroom/press-releases/pluralsight-unveils-2026-tech-forecast--ai-hype-deflates--skills",
       "domain": "pluralsight.com",
       "tier": "owned",
-      "uvm": null,
+      "da": 72,
       "sentiment": "positive",
       "notes": "Original press release on Pluralsight newsroom.",
       "isNotable": false,
       "firstSeen": "2026-05-01T15:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-tech-forecast-resource",
-      "publishedAt": "2026-04-15",
-      "headline": "2026 Tech Forecast (gated resource)",
-      "url": "https://www.pluralsight.com/resource-center/reports/tech-forecast-2026-gated",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "positive",
-      "notes": "Gated report tied to the Tech Forecast announcement. Lead-gen asset.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T15:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-newsroom",
-      "publishedAt": null,
-      "headline": "Newsroom (landing)",
-      "url": "https://www.pluralsight.com/newsroom",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Newsroom landing page. Navigational; surfaces in search but not a discrete hit.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T15:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-in-the-news",
-      "publishedAt": null,
-      "headline": "In the News (landing)",
-      "url": "https://www.pluralsight.com/newsroom/in-the-news",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Owned earned-media roundup page.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T15:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-press-releases",
-      "publishedAt": null,
-      "headline": "Company Announcements (landing)",
-      "url": "https://www.pluralsight.com/newsroom/press-releases",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Press release index page.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T15:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-pluralsight-now",
-      "publishedAt": null,
-      "headline": "Pluralsight Now (events)",
-      "url": "https://www.pluralsight.com/events/pluralsightnow",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Event landing page.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T15:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-acg-acquisition-blog",
-      "publishedAt": null,
-      "headline": "Pluralsight Completes Acquisition of A Cloud Guru to Accelerate its Push to Solve the Growing Cloud Skills Gap",
-      "url": "https://www.pluralsight.com/resources/blog/news/pluralsight-completes-acquisition-of-a-cloud-guru-to-accelerate-its-push-to-solve-the-growing-cloud-skills-gap",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "positive",
-      "notes": "Pluralsight blog post announcing completion of A Cloud Guru acquisition.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T17:00:00Z",
-      "syndications": []
-    },
-    {
-      "id": "owned-homepage",
-      "publishedAt": null,
-      "headline": "Build team skills in AI, data, cloud, and security",
-      "url": "https://www.pluralsight.com/",
-      "domain": "pluralsight.com",
-      "tier": "owned",
-      "uvm": null,
-      "sentiment": "neutral",
-      "notes": "Pluralsight corporate homepage.",
-      "isNotable": false,
-      "firstSeen": "2026-05-01T17:00:00Z",
       "syndications": []
     },
     {
@@ -433,11 +331,53 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://www.pluralsight.com/newsroom/press-releases/-pluralsight-launches-new-ai-sandbox--guided-learning--and-enter",
       "domain": "pluralsight.com",
       "tier": "owned",
-      "uvm": null,
+      "da": 72,
       "sentiment": "positive",
       "notes": "Press release on Pluralsight newsroom for AI Sandbox / Guided Learning launch.",
       "isNotable": false,
       "firstSeen": "2026-05-01T17:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "owned-new-features-blog-2026",
+      "publishedAt": null,
+      "headline": "New Pluralsight features: Integrations, hands-on AI, and instructor-led training",
+      "url": "https://www.pluralsight.com/resources/blog/news/2026-new-features-integrations-ilt",
+      "domain": "pluralsight.com",
+      "tier": "owned",
+      "da": 72,
+      "sentiment": "positive",
+      "notes": "Blog post: new integrations, AI hands-on features, and ILT.",
+      "isNotable": false,
+      "firstSeen": "2026-05-01T21:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "owned-acg-acquisition-blog",
+      "publishedAt": null,
+      "headline": "Pluralsight Completes Acquisition of A Cloud Guru to Accelerate its Push to Solve the Growing Cloud Skills Gap",
+      "url": "https://www.pluralsight.com/resources/blog/news/pluralsight-completes-acquisition-of-a-cloud-guru-to-accelerate-its-push-to-solve-the-growing-cloud-skills-gap",
+      "domain": "pluralsight.com",
+      "tier": "owned",
+      "da": 72,
+      "sentiment": "positive",
+      "notes": "Blog post announcing completion of A Cloud Guru acquisition.",
+      "isNotable": false,
+      "firstSeen": "2026-05-01T17:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "owned-tech-forecast-resource",
+      "publishedAt": "2026-04-15",
+      "headline": "2026 Tech Forecast Report",
+      "url": "https://www.pluralsight.com/resource-center/reports/tech-forecast-2026-gated",
+      "domain": "pluralsight.com",
+      "tier": "owned",
+      "da": 72,
+      "sentiment": "positive",
+      "notes": "Gated report tied to the Tech Forecast announcement. Lead-gen asset.",
+      "isNotable": false,
+      "firstSeen": "2026-05-01T15:00:00Z",
       "syndications": []
     }
   ]
@@ -445,39 +385,41 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 </script>
 
 <script>
-(function() {
-  // --- Load data ---
-  const dataNode = document.getElementById("coverage-data");
+(function () {
+  // ── Load data ──────────────────────────────────────────────────────────
   let payload;
-  try { payload = JSON.parse(dataNode.textContent); }
+  try { payload = JSON.parse(document.getElementById("coverage-data").textContent); }
   catch (e) { payload = { client: "?", terms: [], earnedMedia: [], ownedMedia: [], lastUpdated: null }; }
 
   const client = payload.client || "Coverage";
   document.getElementById("title").textContent = client + " Coverage Tracker";
   document.title = client + " Coverage Tracker";
-  document.getElementById("terms-display").innerHTML = (payload.terms || []).map(t => `<code>${escapeHtml(t)}</code>`).join(" ");
+  document.getElementById("terms-display").innerHTML =
+    (payload.terms || []).map(t => `<code>${esc(t)}</code>`).join(" ");
 
   if (payload.lastUpdated) {
     const d = new Date(payload.lastUpdated);
-    document.getElementById("last-updated").textContent = "Updated " + formatRelative(d);
-    document.getElementById("last-updated").title = d.toLocaleString();
+    const el = document.getElementById("last-updated");
+    el.textContent = "Updated " + relTime(d);
+    el.title = d.toLocaleString();
   } else {
     document.getElementById("last-updated").textContent = "Not yet updated";
   }
 
-  // --- Per-browser "seen" tracking ---
-  const ackKey = "coverage-tracker:" + client.toLowerCase().replace(/\s+/g, "-") + ":ackAt";
+  // ── Per-browser "new since last visit" ────────────────────────────────
+  const ackKey = "cov-tracker:" + client.toLowerCase().replace(/\s+/g, "-") + ":ackAt";
   let ackAt = parseInt(localStorage.getItem(ackKey) || "0", 10);
 
-  // --- Build flat row list for both sections ---
+  // ── Flatten stories → rows ────────────────────────────────────────────
   function flatten(stories) {
     const rows = [];
     for (const s of stories || []) {
-      const primaryRow = { ...s, _type: "primary", _parentId: null, _hasSyndications: (s.syndications || []).length > 0 };
-      delete primaryRow.syndications;
-      rows.push(primaryRow);
+      const pr = { ...s, _type: "primary", _parentId: null, _hasSynd: (s.syndications || []).length > 0 };
+      delete pr.syndications;
+      rows.push(pr);
       for (const syn of s.syndications || []) {
-        rows.push({ ...syn, _type: "pickup", _parentId: s.id, id: (s.id + "-syn-" + (syn.url || syn.headline || Math.random())) });
+        rows.push({ ...syn, _type: "pickup", _parentId: s.id,
+          id: s.id + "-syn-" + encodeURIComponent(syn.url || syn.headline || Math.random()) });
       }
     }
     return rows;
@@ -487,81 +429,80 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     earned: flatten(payload.earnedMedia || []),
     owned:  flatten(payload.ownedMedia  || [])
   };
-  // Mark "new since last visit"
-  for (const key of Object.keys(sections)) {
-    sections[key].forEach(r => {
+
+  for (const rows of Object.values(sections)) {
+    rows.forEach(r => {
       const fs = r.firstSeen ? new Date(r.firstSeen).getTime() : 0;
       r._isNew = fs > ackAt;
     });
   }
 
-  // --- Tier list (computed from data + canonical) ---
+  // ── Constants ─────────────────────────────────────────────────────────
   const TIER_ORDER = ["national","trade","regional","blog","owned","other"];
-  function tiersIn(rows) {
-    const set = new Set();
-    rows.forEach(r => set.add(r.tier || "other"));
-    return TIER_ORDER.filter(t => set.has(t));
-  }
   const SENTIMENTS = ["positive","neutral","mixed","negative"];
 
-  // --- State ---
-  const state = {
-    tab: "earned",
-    type: "all",                       // all | primary | pickup
-    tier: "all",                       // all | <tier>
-    sentiment: "all",                  // all | <sent>
-    notable: "all",                    // all | notable
-    search: "",
-    dateFrom: null,
-    dateTo: null,
-    sortKey: "publishedAt",
-    sortDir: "desc",
-    expanded: new Set()                // story ids whose syndications are open
-  };
-  // Default: expand all primaries with syndications
-  for (const key of ["earned","owned"]) {
-    sections[key].forEach(r => { if (r._type === "primary" && r._hasSyndications) state.expanded.add(r.id); });
+  function tiersIn(rows) {
+    const s = new Set(rows.map(r => r.tier || "other"));
+    return TIER_ORDER.filter(t => s.has(t));
   }
 
-  // --- Render filters ---
+  // ── State ─────────────────────────────────────────────────────────────
+  const state = {
+    tab: "earned", type: "all", tier: "all", sentiment: "all", notable: "all",
+    search: "", dateFrom: null, dateTo: null,
+    sortKey: "publishedAt", sortDir: "desc",
+    expanded: new Set()
+  };
+  for (const rows of Object.values(sections)) {
+    rows.forEach(r => { if (r._type === "primary" && r._hasSynd) state.expanded.add(r.id); });
+  }
+
+  // ── Filter chips ──────────────────────────────────────────────────────
   function renderFilterChips() {
-    const allRows = [...sections.earned, ...sections.owned];
-    // Tier chips
+    const all = [...sections.earned, ...sections.owned];
+
     const tierEl = document.getElementById("tier-filter");
-    const tierSet = tiersIn(allRows);
-    tierEl.innerHTML = `<span class="chip ${state.tier==="all"?"active":""}" data-key="all">All</span>` +
-      tierSet.map(t => `<span class="chip ${state.tier===t?"active":""}" data-key="${t}">${capitalize(t)}</span>`).join("");
-    tierEl.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { state.tier = el.dataset.key; render(); }));
+    tierEl.innerHTML = chipHtml("all", state.tier) +
+      tiersIn(all).map(t => chipHtml(t, state.tier, cap(t))).join("");
+    tierEl.querySelectorAll(".chip").forEach(el =>
+      el.addEventListener("click", () => { state.tier = el.dataset.key; render(); }));
 
-    // Sentiment chips
     const sentEl = document.getElementById("sent-filter");
-    sentEl.innerHTML = `<span class="chip ${state.sentiment==="all"?"active":""}" data-key="all">All</span>` +
-      SENTIMENTS.map(s => `<span class="chip ${state.sentiment===s?"active":""}" data-key="${s}">${capitalize(s)}</span>`).join("");
-    sentEl.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { state.sentiment = el.dataset.key; render(); }));
+    sentEl.innerHTML = chipHtml("all", state.sentiment) +
+      SENTIMENTS.map(s => chipHtml(s, state.sentiment, cap(s))).join("");
+    sentEl.querySelectorAll(".chip").forEach(el =>
+      el.addEventListener("click", () => { state.sentiment = el.dataset.key; render(); }));
 
-    // Type chips (already in HTML, just wire listeners once)
-    document.querySelectorAll("#type-filter .chip").forEach(el => el.addEventListener("click", () => {
-      state.type = el.dataset.key;
-      document.querySelectorAll("#type-filter .chip").forEach(c => c.classList.toggle("active", c.dataset.key === state.type));
-      render();
-    }));
-    document.querySelectorAll("#notable-filter .chip").forEach(el => el.addEventListener("click", () => {
-      state.notable = el.dataset.key;
-      document.querySelectorAll("#notable-filter .chip").forEach(c => c.classList.toggle("active", c.dataset.key === state.notable));
-      render();
-    }));
-    document.querySelectorAll("#period-presets .chip").forEach(el => el.addEventListener("click", () => applyPreset(el.dataset.preset)));
+    document.querySelectorAll("#type-filter .chip").forEach(el =>
+      el.addEventListener("click", () => {
+        state.type = el.dataset.key;
+        document.querySelectorAll("#type-filter .chip").forEach(c =>
+          c.classList.toggle("active", c.dataset.key === state.type));
+        render();
+      }));
+    document.querySelectorAll("#notable-filter .chip").forEach(el =>
+      el.addEventListener("click", () => {
+        state.notable = el.dataset.key;
+        document.querySelectorAll("#notable-filter .chip").forEach(c =>
+          c.classList.toggle("active", c.dataset.key === state.notable));
+        render();
+      }));
+    document.querySelectorAll("#period-presets .chip").forEach(el =>
+      el.addEventListener("click", () => applyPreset(el.dataset.preset)));
+  }
+
+  function chipHtml(key, activeKey, label) {
+    const l = label || cap(key);
+    return `<span class="chip ${key === activeKey ? "active" : ""}" data-key="${esc(key)}">${esc(l)}</span>`;
   }
 
   function applyPreset(p) {
-    const today = new Date();
-    today.setHours(23,59,59,999);
+    const today = new Date(); today.setHours(23,59,59,999);
     let from = null;
-    if (p === "all") { from = null; }
-    else if (p === "ytd") { from = new Date(today.getFullYear(), 0, 1); }
-    else { const days = parseInt(p, 10); from = new Date(today); from.setDate(from.getDate() - days); from.setHours(0,0,0,0); }
-    state.dateFrom = from ? toISODate(from) : null;
-    state.dateTo = toISODate(today);
+    if (p === "ytd") from = new Date(today.getFullYear(), 0, 1);
+    else if (p !== "all") { from = new Date(today); from.setDate(from.getDate() - parseInt(p, 10)); from.setHours(0,0,0,0); }
+    state.dateFrom = from ? isoDate(from) : null;
+    state.dateTo = isoDate(today);
     document.getElementById("date-from").value = state.dateFrom || "";
     document.getElementById("date-to").value = state.dateTo || "";
     render();
@@ -571,12 +512,12 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
   document.getElementById("date-to").addEventListener("change", e => { state.dateTo = e.target.value || null; render(); });
   document.getElementById("search-input").addEventListener("input", e => { state.search = e.target.value.toLowerCase(); render(); });
   document.getElementById("reset-filters").addEventListener("click", () => {
-    state.type = "all"; state.tier = "all"; state.sentiment = "all"; state.notable = "all"; state.search = ""; state.dateFrom = null; state.dateTo = null;
+    state.type = "all"; state.tier = "all"; state.sentiment = "all";
+    state.notable = "all"; state.search = ""; state.dateFrom = null; state.dateTo = null;
     document.getElementById("date-from").value = "";
     document.getElementById("date-to").value = "";
     document.getElementById("search-input").value = "";
-    renderFilterChips();
-    render();
+    renderFilterChips(); render();
   });
   document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
     state.tab = t.dataset.tab;
@@ -591,30 +532,23 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
   });
 
   // Sortable headers
-  document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
+  document.querySelectorAll("#table thead th[data-sort]").forEach(th =>
     th.addEventListener("click", () => {
       const k = th.dataset.sort;
       if (state.sortKey === k) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
-      else { state.sortKey = k; state.sortDir = (k === "publishedAt" || k === "uvm") ? "desc" : "asc"; }
+      else { state.sortKey = k; state.sortDir = (k === "publishedAt" || k === "da" || k === "firstSeen") ? "desc" : "asc"; }
       render();
-    });
-  });
+    }));
 
-  // --- Filtering ---
-  function rowMatches(r) {
+  // ── Row matching ──────────────────────────────────────────────────────
+  function matches(r) {
     if (state.type === "primary" && r._type !== "primary") return false;
     if (state.type === "pickup"  && r._type !== "pickup")  return false;
     if (state.tier !== "all" && (r.tier || "other") !== state.tier) return false;
     if (state.sentiment !== "all" && (r.sentiment || "neutral") !== state.sentiment) return false;
     if (state.notable === "notable" && !(r.isNotable || r.sentiment === "negative")) return false;
-    if (state.dateFrom) {
-      if (!r.publishedAt) return false;
-      if (r.publishedAt < state.dateFrom) return false;
-    }
-    if (state.dateTo) {
-      if (!r.publishedAt) return false;
-      if (r.publishedAt > state.dateTo) return false;
-    }
+    if (state.dateFrom && (!r.publishedAt || r.publishedAt < state.dateFrom)) return false;
+    if (state.dateTo   && (!r.publishedAt || r.publishedAt > state.dateTo))   return false;
     if (state.search) {
       const hay = ((r.headline || "") + " " + (r.notes || "") + " " + (r.domain || "")).toLowerCase();
       if (!hay.includes(state.search)) return false;
@@ -624,78 +558,61 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 
   function visibleRows() {
     const flat = sections[state.tab];
-    let primaries = flat.filter(r => r._type === "primary" && rowMatches(r));
-    let pickups   = flat.filter(r => r._type === "pickup"  && rowMatches(r));
+    const primaries = flat.filter(r => r._type === "primary" && matches(r));
+    const pickups   = flat.filter(r => r._type === "pickup"  && matches(r));
 
-    if (state.type === "pickup") {
-      // Flat list of syndications only — sort independently
-      const list = pickups.slice();
-      sortInPlace(list);
-      return { displayMode: "flat", rows: list };
-    }
-    if (state.type === "primary") {
-      const list = primaries.slice();
-      sortInPlace(list);
-      return { displayMode: "flat", rows: list };
-    }
-    // type === "all": show primaries; nest matched pickups underneath if expanded
-    sortInPlace(primaries);
+    if (state.type === "pickup")  { const l = pickups.slice();   sortArr(l); return { mode:"flat", rows:l }; }
+    if (state.type === "primary") { const l = primaries.slice(); sortArr(l); return { mode:"flat", rows:l }; }
+
+    sortArr(primaries);
     const out = [];
     for (const p of primaries) {
       out.push(p);
-      const kids = pickups.filter(k => k._parentId === p.id);
       if (state.expanded.has(p.id)) {
-        sortInPlace(kids);
+        const kids = pickups.filter(k => k._parentId === p.id);
+        sortArr(kids);
         out.push(...kids);
       }
     }
-    // Plus orphan pickups whose parent didn't match (still show them at top level)
-    const matchedParentIds = new Set(primaries.map(p => p.id));
-    const orphans = pickups.filter(k => !matchedParentIds.has(k._parentId));
-    sortInPlace(orphans);
+    const matchedIds = new Set(primaries.map(p => p.id));
+    const orphans = pickups.filter(k => !matchedIds.has(k._parentId));
+    sortArr(orphans);
     out.push(...orphans);
-    return { displayMode: "tree", rows: out };
+    return { mode:"tree", rows:out };
   }
 
-  function sortInPlace(arr) {
+  function sortArr(arr) {
     const k = state.sortKey, dir = state.sortDir === "asc" ? 1 : -1;
     arr.sort((a, b) => {
       let av, bv;
       if (k === "publishedAt") { av = a.publishedAt || ""; bv = b.publishedAt || ""; }
-      else if (k === "uvm") { av = a.uvm == null ? -1 : a.uvm; bv = b.uvm == null ? -1 : b.uvm; }
-      else if (k === "tier") { av = TIER_ORDER.indexOf(a.tier || "other"); bv = TIER_ORDER.indexOf(b.tier || "other"); }
-      else if (k === "sentiment") { av = SENTIMENTS.indexOf(a.sentiment || "neutral"); bv = SENTIMENTS.indexOf(b.sentiment || "neutral"); }
-      else { av = (a[k] || "").toString().toLowerCase(); bv = (b[k] || "").toString().toLowerCase(); }
-      if (av < bv) return -1*dir;
-      if (av > bv) return  1*dir;
-      return 0;
+      else if (k === "firstSeen") { av = a.firstSeen || ""; bv = b.firstSeen || ""; }
+      else if (k === "da")  { av = a.da  == null ? -1 : a.da;  bv = b.da  == null ? -1 : b.da; }
+      else if (k === "tier")     { av = TIER_ORDER.indexOf(a.tier||"other"); bv = TIER_ORDER.indexOf(b.tier||"other"); }
+      else if (k === "sentiment"){ av = SENTIMENTS.indexOf(a.sentiment||"neutral"); bv = SENTIMENTS.indexOf(b.sentiment||"neutral"); }
+      else { av = String(a[k]||"").toLowerCase(); bv = String(b[k]||"").toLowerCase(); }
+      return av < bv ? -dir : av > bv ? dir : 0;
     });
   }
 
-  // --- Render ---
+  // ── Render ────────────────────────────────────────────────────────────
   function render() {
-    // Tab counters: count using just rowMatches (ignoring tab) per section, against current filters
-    const earnedMatched = sections.earned.filter(rowMatches).length;
-    const ownedMatched  = sections.owned.filter(rowMatches).length;
-    document.getElementById("ct-earned").textContent = earnedMatched;
-    document.getElementById("ct-owned").textContent = ownedMatched;
+    document.getElementById("ct-earned").textContent = sections.earned.filter(matches).length;
+    document.getElementById("ct-owned").textContent  = sections.owned.filter(matches).length;
+    renderSnapshot(sections[state.tab].filter(matches));
 
-    // Snapshot — based on current tab + filters
-    renderSnapshot(sections[state.tab].filter(rowMatches));
-
-    // Sort arrows
     document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
       const arrow = th.querySelector(".sortarrow");
       if (!arrow) return;
-      if (th.dataset.sort === state.sortKey) arrow.textContent = state.sortDir === "asc" ? "▲" : "▼";
-      else arrow.textContent = "";
+      arrow.textContent = th.dataset.sort === state.sortKey ? (state.sortDir === "asc" ? "▲" : "▼") : "";
     });
 
-    const { displayMode, rows } = visibleRows();
+    const { mode, rows } = visibleRows();
     const tbody = document.getElementById("tbody");
     const empty = document.getElementById("empty");
     const table = document.getElementById("table");
-    if (rows.length === 0) {
+
+    if (!rows.length) {
       tbody.innerHTML = "";
       empty.style.display = "block";
       table.style.display = "none";
@@ -705,136 +622,135 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     table.style.display = "";
 
     tbody.innerHTML = rows.map(r => {
-      const synClass = r._type === "pickup" ? "synd" : "";
-      const noteClass = (r.sentiment === "negative") ? "alert" : (r.isNotable ? "notable" : "");
-      const expandBtn = (r._type === "primary" && r._hasSyndications && displayMode === "tree")
-        ? `<button class="expand-btn" data-toggle="${escapeHtml(r.id)}">${state.expanded.has(r.id) ? "▼" : "▶"}</button>`
-        : `<span style="display:inline-block; width:16px"></span>`;
-      const typeBadge = r._type === "primary"
-        ? `<span class="badge b-primary">Primary</span>`
-        : `<span class="badge b-pickup">Pickup</span>`;
-      const newBadge = r._isNew ? ` <span class="badge b-new">New</span>` : "";
+      const isPickup = r._type === "pickup";
+      const noteClass = r.sentiment === "negative" ? "alert" : (r.isNotable ? "notable" : "");
+      const expandBtn = (r._type === "primary" && r._hasSynd && mode === "tree")
+        ? `<button class="expand-btn" data-toggle="${esc(r.id)}">${state.expanded.has(r.id) ? "▼" : "▶"}</button>`
+        : `<span style="display:inline-block;width:18px"></span>`;
+      const typeBadge = isPickup
+        ? `<span class="badge b-pickup">Pickup</span>`
+        : `<span class="badge b-primary">Primary</span>`;
+      const newBadge  = r._isNew ? ` <span class="badge b-new">New</span>` : "";
       const noteBadge = noteClass === "alert"
         ? ` <span class="badge b-alert">Alert</span>`
-        : (noteClass === "notable" ? ` <span class="badge b-notable">Notable</span>` : "");
-      return `
-        <tr class="${synClass} ${noteClass}">
-          <td>${expandBtn} ${formatDate(r.publishedAt)}</td>
-          <td class="headline-cell">
-            <a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.headline || "(untitled)")}</a>
-            <div style="margin-top:4px">${typeBadge}${noteBadge}${newBadge}</div>
-          </td>
-          <td class="url-cell"><a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(r.url || "")}">${escapeHtml(r.domain || "")}</a></td>
-          <td><span class="badge b-tier-${escapeHtml(r.tier || "other")}">${escapeHtml(capitalize(r.tier || "other"))}</span></td>
-          <td>${formatUvm(r.uvm)}</td>
-          <td><span class="badge b-sent-${escapeHtml(r.sentiment || "neutral")}">${escapeHtml(capitalize(r.sentiment || "neutral"))}</span></td>
-          <td class="notes-cell">${escapeHtml(r.notes || "")}</td>
-        </tr>
-      `;
+        : noteClass === "notable" ? ` <span class="badge b-notable">Notable</span>` : "";
+
+      const daHtml = r.da != null
+        ? `<span class="da-val ${r.da >= 70 ? "da-high" : r.da >= 40 ? "da-mid" : "da-low"}">${r.da}</span><span style="color:#bbb;font-size:10px">~</span>`
+        : `<span class="dim">—</span>`;
+
+      const dateAddedHtml = r.firstSeen
+        ? `<span title="${esc(new Date(r.firstSeen).toLocaleString())}">${fmtShortDate(r.firstSeen)}</span>`
+        : `<span class="dim">—</span>`;
+
+      return `<tr class="${isPickup ? "synd" : ""} ${noteClass}">
+        <td style="white-space:nowrap">${expandBtn} ${fmtDate(r.publishedAt)}</td>
+        <td class="headline-cell">
+          <a href="${esc(r.url||"#")}" target="_blank" rel="noopener noreferrer">${esc(r.headline||"(untitled)")}</a>
+          <div style="margin-top:4px">${typeBadge}${noteBadge}${newBadge}</div>
+        </td>
+        <td class="url-cell"><a href="${esc(r.url||"#")}" target="_blank" rel="noopener noreferrer" title="${esc(r.url||"")}">${esc(r.domain||"")}</a></td>
+        <td><span class="badge b-tier-${esc(r.tier||"other")}">${esc(cap(r.tier||"other"))}</span></td>
+        <td class="da-cell">${daHtml}</td>
+        <td><span class="badge b-sent-${esc(r.sentiment||"neutral")}">${esc(cap(r.sentiment||"neutral"))}</span></td>
+        <td class="notes-cell">${esc(r.notes||"")}</td>
+        <td class="date-added-cell">${dateAddedHtml}</td>
+      </tr>`;
     }).join("");
 
-    // Wire expand toggles
-    tbody.querySelectorAll(".expand-btn").forEach(btn => {
+    tbody.querySelectorAll(".expand-btn").forEach(btn =>
       btn.addEventListener("click", () => {
         const id = btn.dataset.toggle;
-        if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id);
+        state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
         render();
-      });
-    });
+      }));
   }
 
   function renderSnapshot(rows) {
     const total = rows.length;
-    const sentCounts = { positive:0, neutral:0, mixed:0, negative:0 };
-    const tierCounts = {};
-    let uvmSum = 0; let uvmHave = 0;
-    let notableCount = 0;
-    let pickupCount = 0;
+    const sent = {positive:0,neutral:0,mixed:0,negative:0};
+    const tiers = {};
+    let notable = 0, pickups = 0, daSum = 0, daHave = 0;
     rows.forEach(r => {
-      const s = r.sentiment || "neutral"; if (sentCounts[s] !== undefined) sentCounts[s]++;
-      const t = r.tier || "other"; tierCounts[t] = (tierCounts[t] || 0) + 1;
-      if (typeof r.uvm === "number") { uvmSum += r.uvm; uvmHave++; }
-      if (r.isNotable || r.sentiment === "negative") notableCount++;
-      if (r._type === "pickup") pickupCount++;
+      const s = r.sentiment||"neutral"; if (s in sent) sent[s]++;
+      const t = r.tier||"other"; tiers[t] = (tiers[t]||0)+1;
+      if (r.isNotable||r.sentiment==="negative") notable++;
+      if (r._type==="pickup") pickups++;
+      if (r.da != null) { daSum += r.da; daHave++; }
     });
-    const positivePct = total ? Math.round((sentCounts.positive/total)*100) : 0;
-    const negativePct = total ? Math.round((sentCounts.negative/total)*100) : 0;
+    const posPct = total ? Math.round((sent.positive/total)*100) : 0;
+    const negPct = total ? Math.round((sent.negative/total)*100) : 0;
+    const avgDa  = daHave ? Math.round(daSum/daHave) : null;
 
     const sentBars = total ? `
       <div class="bars">
-        <span style="width:${(sentCounts.positive/total)*100}%; background:#4caf50"></span>
-        <span style="width:${(sentCounts.neutral/total)*100}%; background:#bdbdbd"></span>
-        <span style="width:${(sentCounts.mixed/total)*100}%; background:#f5a623"></span>
-        <span style="width:${(sentCounts.negative/total)*100}%; background:#d93025"></span>
+        <span style="width:${(sent.positive/total)*100}%;background:#4caf50"></span>
+        <span style="width:${(sent.neutral/total)*100}%;background:#bdbdbd"></span>
+        <span style="width:${(sent.mixed/total)*100}%;background:#f5a623"></span>
+        <span style="width:${(sent.negative/total)*100}%;background:#d93025"></span>
       </div>
       <div class="legend">
-        <span><i style="background:#4caf50"></i>Positive ${sentCounts.positive}</span>
-        <span><i style="background:#bdbdbd"></i>Neutral ${sentCounts.neutral}</span>
-        <span><i style="background:#f5a623"></i>Mixed ${sentCounts.mixed}</span>
-        <span><i style="background:#d93025"></i>Negative ${sentCounts.negative}</span>
-      </div>` : `<div class="dim" style="font-size:11px; margin-top:4px">No data</div>`;
+        <span><i style="background:#4caf50"></i>Pos ${sent.positive}</span>
+        <span><i style="background:#bdbdbd"></i>Neu ${sent.neutral}</span>
+        <span><i style="background:#f5a623"></i>Mix ${sent.mixed}</span>
+        <span><i style="background:#d93025"></i>Neg ${sent.negative}</span>
+      </div>` : `<div class="dim" style="font-size:11px;margin-top:4px">No data</div>`;
 
-    const topTiers = Object.entries(tierCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
-    const tierLines = topTiers.length
-      ? topTiers.map(([t,n])=>`<span style="display:inline-block; margin-right:8px"><span class="badge b-tier-${t}">${capitalize(t)}</span> <span style="color:#555">${n}</span></span>`).join("")
-      : `<span class="dim">No data</span>`;
+    const topTiers = Object.entries(tiers).sort((a,b)=>b[1]-a[1]).slice(0,4)
+      .map(([t,n]) => `<span style="display:inline-block;margin-right:8px"><span class="badge b-tier-${t}">${cap(t)}</span> <span style="color:#555">${n}</span></span>`).join("");
 
     document.getElementById("snapshot").innerHTML = `
       <div class="stat">
-        <div class="stat-label">Total mentions</div>
+        <div class="stat-label">Total hits</div>
         <div class="stat-val">${total}</div>
-        <div class="stat-sub">${pickupCount} pickup${pickupCount===1?"":"s"} included</div>
+        <div class="stat-sub">${pickups} pickup${pickups===1?"":"s"} included</div>
       </div>
       <div class="stat">
         <div class="stat-label">Sentiment</div>
-        <div class="stat-val" style="font-size:18px">${positivePct}% pos &middot; ${negativePct}% neg</div>
+        <div class="stat-val" style="font-size:18px">${posPct}% pos &middot; ${negPct}% neg</div>
         ${sentBars}
       </div>
       <div class="stat">
-        <div class="stat-label">UVM reach</div>
-        <div class="stat-val">${uvmHave ? formatUvm(uvmSum) : "—"}</div>
-        <div class="stat-sub">${uvmHave}/${total} items have UVM recorded</div>
+        <div class="stat-label">Avg DA (${daHave} outlets)</div>
+        <div class="stat-val ${avgDa==null?"":(avgDa>=70?"da-high":avgDa>=40?"da-mid":"da-low")}">${avgDa != null ? avgDa + "<span style='font-size:13px;color:#aaa'>~</span>" : "—"}</div>
+        <div class="stat-sub">${daHave} of ${total} items have DA</div>
       </div>
       <div class="stat">
         <div class="stat-label">Tier breakdown</div>
-        <div style="margin-top:6px">${tierLines}</div>
+        <div style="margin-top:6px">${topTiers||'<span class="dim">No data</span>'}</div>
       </div>
-      <div class="stat" style="border-color:${notableCount?'#f5a623':'#e6e6e6'}">
+      <div class="stat" style="border-color:${notable?"#f5a623":"#e6e6e6"}">
         <div class="stat-label">Notable / alerts</div>
-        <div class="stat-val" style="color:${notableCount?'#8a5a00':'#1a1a1a'}">${notableCount}</div>
+        <div class="stat-val" style="color:${notable?"#8a5a00":"#1a1a1a"}">${notable}</div>
         <div class="stat-sub">National features &amp; negative pieces</div>
-      </div>
-    `;
+      </div>`;
   }
 
-  // --- Helpers ---
-  function escapeHtml(s) {
-    return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  // ── Helpers ───────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
-  function capitalize(s) { s = String(s ?? ""); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
-  function formatRelative(d) {
-    const s = Math.round((Date.now() - d.getTime()) / 1000);
-    if (s < 60) return "just now";
-    if (s < 3600) return Math.floor(s/60) + "m ago";
-    if (s < 86400) return Math.floor(s/3600) + "h ago";
-    return Math.floor(s/86400) + "d ago";
+  function cap(s) { s=String(s??''); return s?s[0].toUpperCase()+s.slice(1):s; }
+  function relTime(d) {
+    const s = Math.round((Date.now()-d)/1000);
+    if (s<60) return "just now";
+    if (s<3600) return Math.floor(s/60)+"m ago";
+    if (s<86400) return Math.floor(s/3600)+"h ago";
+    return Math.floor(s/86400)+"d ago";
   }
-  function formatDate(iso) {
+  function fmtDate(iso) {
     if (!iso) return `<span class="dim">—</span>`;
-    const d = new Date(iso + "T00:00:00");
-    if (isNaN(d.getTime())) return escapeHtml(iso);
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    const d = new Date(iso+"T00:00:00");
+    return isNaN(d)?esc(iso):d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
   }
-  function formatUvm(n) {
-    if (n == null || isNaN(n)) return `<span class="dim">—</span>`;
-    if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,"") + "B";
-    if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,"") + "M";
-    if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,"") + "K";
-    return String(n);
+  function fmtShortDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return isNaN(d)?iso.slice(0,10):d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
   }
-  function toISODate(d) { const m = String(d.getMonth()+1).padStart(2,"0"); const day = String(d.getDate()).padStart(2,"0"); return d.getFullYear()+"-"+m+"-"+day; }
+  function isoDate(d) { return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 
-  // --- Boot ---
+  // ── Boot ──────────────────────────────────────────────────────────────
   renderFilterChips();
   render();
 })();
