@@ -1482,7 +1482,6 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
   // ── Auto-scan RSS engine ──────────────────────────────────────────────────
   const _SCAN_MS = 30 * 60 * 1000;
   const _AGE_MS  = 90 * 24 * 60 * 60 * 1000;
-  const _PROXY   = "https://api.allorigins.win/get?url=";
   const _sBase   = "ct:" + (client||"").toLowerCase().replace(/\s+/g,"-");
   let scanMeta = (()=>{try{return JSON.parse(localStorage.getItem(_sBase+":meta")||"{}");}catch{return{};}})();
   scanMeta = { lastScan: scanMeta.lastScan||null, cycleCount: scanMeta.cycleCount||0 };
@@ -1509,8 +1508,24 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     return s;
   }
 
+  async function _fetchXml(url) {
+    const proxies = [
+      async u => { const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, {signal:AbortSignal.timeout(15000)}); if (!r.ok) throw 0; const j = await r.json(); if (!j.contents || j.contents.length < 100) throw 0; return j.contents; },
+      async u => { const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(u)}`, {signal:AbortSignal.timeout(15000)}); if (!r.ok) throw 0; const t = await r.text(); if (!t || t.length < 100) throw 0; return t; },
+      async u => { const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, {signal:AbortSignal.timeout(15000)}); if (!r.ok) throw 0; const t = await r.text(); if (!t || t.length < 100) throw 0; return t; }
+    ];
+    for (const proxy of proxies) {
+      try { return await proxy(url); } catch {}
+    }
+    throw new Error("All proxies failed");
+  }
+
   function _parseFeed(xml) {
+    if (!xml || xml.length < 100) return [];
+    const s = xml.trimStart();
+    if (s.startsWith("<html") || s.startsWith("<!") || s.startsWith("{\"error")) return [];
     const doc = new DOMParser().parseFromString(xml, "text/xml");
+    if (doc.querySelector("parsererror")) return [];
     const items = Array.from(doc.querySelectorAll("item"));
     if (items.length) return items.map(el => {
       const lEl = el.querySelector("link");
@@ -1555,9 +1570,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
   }
 
   async function _scanFeed(feed, knownUrls) {
-    const res = await fetch(_PROXY+encodeURIComponent(feed.url), {signal:AbortSignal.timeout(12000)});
-    if (!res.ok) throw new Error("HTTP "+res.status);
-    const xml = (await res.json()).contents || "";
+    const xml = await _fetchXml(feed.url);
     const fi = _parseFeed(xml);
     const now = Date.now(), cutoff = now-_AGE_MS;
     const out = [];
