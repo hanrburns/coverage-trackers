@@ -1,0 +1,1010 @@
+
+<!doctype html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Sensormatic Solutions Coverage Tracker",
+  "schemaVersion": 1,
+  "description": "Sensormatic Solutions coverage tracker. Earned Media, Company Website, and Competitor Coverage tabs. Terms: Sensormatic Solutions, Sensormatic, TrueVUE, ShopperTrak. RSS-feed-driven with WebSearch fallback. Updated by Claude scheduled task.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sensormatic Solutions Coverage Tracker</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f8; color: #1a1a1a; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 20px; }
+
+header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+h1 { margin: 0 0 2px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.sub { color: #666; font-size: 12px; }
+.lastupdate { font-size: 12px; color: #555; }
+.lastupdate .dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; display: inline-block; margin-right: 6px; vertical-align: middle; }
+button { background: white; color: #333; border: 1px solid #d0d0d0; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; }
+button:hover { background: #f0f0f0; }
+button.primary { background: #0057B8; color: white; border-color: #0057B8; }
+button.primary:hover { background: #00489a; }
+
+.snapshot { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.stat { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; margin-bottom: 6px; }
+.stat-val { font-size: 22px; font-weight: 600; line-height: 1.1; }
+.stat-sub { font-size: 11px; color: #666; margin-top: 4px; }
+.stat .bars { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 8px; background: #f0f0f0; }
+.stat .bars span { display: block; }
+.stat .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: #666; margin-top: 6px; }
+.stat .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+.feeds-bar { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.feeds-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; white-space: nowrap; }
+.feeds-list { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.feed-pill { display: inline-flex; align-items: center; gap: 5px; background: #f4f4f5; border: 1px solid #e0e0e0; border-radius: 999px; padding: 3px 10px; font-size: 11px; color: #444; }
+.feed-pill .feed-dot { width: 5px; height: 5px; border-radius: 50%; background: #bdbdbd; display: inline-block; flex-shrink: 0; }
+.feed-pill.cat-earned .feed-dot { background: #0057B8; }
+.feed-pill.cat-owned .feed-dot { background: #7b3fc4; }
+.feed-pill.cat-competitor .feed-dot { background: #e8640a; }
+.feeds-bar-toggle { font-size: 11px; color: #888; cursor: pointer; white-space: nowrap; border: 0; background: none; padding: 0; }
+.feeds-bar-toggle:hover { color: #333; background: none; }
+.feeds-detail { display: none; width: 100%; }
+.feeds-detail.open { display: block; }
+.feeds-detail table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.feeds-detail table th { text-align: left; padding: 5px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #888; font-weight: 600; border-bottom: 1px solid #eee; }
+.feeds-detail table td { padding: 5px 8px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+.feeds-detail table tr:last-child td { border-bottom: 0; }
+.feeds-detail table td a { color: #888; font-size: 11px; word-break: break-all; }
+
+.filters { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr; gap: 10px; }
+.filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; min-width: 60px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { background: white; border: 1px solid #d0d0d0; border-radius: 999px; padding: 4px 11px; font-size: 11px; cursor: pointer; user-select: none; transition: all 0.1s; }
+.chip:hover { border-color: #999; }
+.chip.active { background: #0057B8; color: white; border-color: #0057B8; }
+.daterange { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.daterange input[type=date] { font: inherit; padding: 4px 6px; border: 1px solid #d0d0d0; border-radius: 5px; background: white; }
+.searchbox { padding: 5px 10px; font: inherit; border: 1px solid #d0d0d0; border-radius: 6px; min-width: 200px; }
+.filter-actions { margin-left: auto; display: flex; gap: 8px; }
+
+.tabs { display: flex; gap: 2px; border-bottom: 2px solid #e6e6e6; margin-bottom: 12px; }
+.tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 16px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; margin-bottom: -2px; font-family: inherit; }
+.tab.active { color: #0057B8; border-bottom-color: #0057B8; }
+.tab .ct { background: #e0eeff; color: #0057B8; padding: 1px 7px; border-radius: 999px; margin-left: 6px; font-size: 11px; font-weight: 600; }
+.tab[data-tab="competitor"] .ct { background: #ffeee8; color: #b84a00; }
+.tab[data-tab="competitor"].active { color: #b84a00; border-bottom-color: #b84a00; }
+
+table.coverage { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; }
+table.coverage thead th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: #555; border-bottom: 1px solid #e6e6e6; white-space: nowrap; cursor: pointer; user-select: none; }
+table.coverage thead th:hover { background: #f0f0f0; }
+table.coverage thead th .sortarrow { color: #999; font-size: 9px; margin-left: 3px; }
+table.coverage tbody td { padding: 11px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; font-size: 12.5px; }
+table.coverage tbody tr:last-child td { border-bottom: 0; }
+table.coverage tbody tr.synd td { background: #fafbfc; padding-left: 30px; font-size: 12px; color: #555; }
+table.coverage tbody tr.synd td:first-child { padding-left: 30px; position: relative; }
+table.coverage tbody tr.synd td:first-child::before { content: "↳"; position: absolute; left: 14px; color: #aaa; font-size: 11px; }
+table.coverage tbody tr.notable td:first-child { box-shadow: inset 3px 0 0 #f5a623; }
+table.coverage tbody tr.alert td:first-child { box-shadow: inset 3px 0 0 #d93025; }
+table.coverage tbody tr.competitor-row td:first-child { box-shadow: inset 3px 0 0 #e8640a; }
+.expand-btn { background: none; border: 0; color: #888; cursor: pointer; padding: 0 4px; font-size: 11px; }
+.expand-btn:hover { color: #333; background: transparent; }
+.headline-cell { max-width: 360px; }
+.headline-cell a { color: #0057B8; text-decoration: none; font-weight: 500; }
+.headline-cell a:hover { text-decoration: underline; }
+.url-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.url-cell a { color: #888; font-size: 11px; }
+.notes-cell { max-width: 200px; color: #555; font-size: 11.5px; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+.b-primary { background: #e0eeff; color: #0057B8; }
+.b-pickup { background: #f0f0f0; color: #666; }
+.b-tier-national { background: #d8e9ff; color: #0a3d80; }
+.b-tier-trade { background: #d4f1e8; color: #0a6647; }
+.b-tier-regional { background: #ffe8c2; color: #855300; }
+.b-tier-blog { background: #ece3ff; color: #5a3c9a; }
+.b-tier-owned { background: #e9e1f5; color: #4a2d80; }
+.b-tier-competitor { background: #ffeee8; color: #b84a00; }
+.b-tier-other { background: #efefef; color: #555; }
+.b-sent-positive { background: #d4f1e8; color: #0a6647; }
+.b-sent-neutral { background: #efefef; color: #555; }
+.b-sent-negative { background: #fde0de; color: #8a1c1c; }
+.b-sent-mixed { background: #fff4d4; color: #8a5a00; }
+.b-notable { background: #fff4d4; color: #8a5a00; }
+.b-alert { background: #fde0de; color: #8a1c1c; }
+.b-new { background: #fff4d4; color: #8a5a00; }
+.b-competitor { background: #ffeee8; color: #b84a00; }
+.b-via-rss { background: #e8f5e9; color: #1b5e20; }
+
+.empty { text-align: center; padding: 50px 20px; color: #888; background: white; border: 1px dashed #d0d0d0; border-radius: 8px; }
+.empty-title { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 4px; }
+footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e6e6e6; color: #888; font-size: 11px; line-height: 1.6; }
+footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #555; }
+.dim { color: #aaa; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 id="title">Sensormatic Solutions Coverage Tracker</h1>
+    <div class="sub">RSS-feed monitoring &middot; refreshed by Claude on a schedule &middot; tracking: <span id="terms-display"></span></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    <span class="lastupdate"><span class="dot"></span><span id="last-updated">—</span></span>
+    <button id="mark-seen">Mark all seen</button>
+  </div>
+</header>
+
+<div class="snapshot" id="snapshot"></div>
+
+<div class="feeds-bar" id="feeds-bar" style="display:none">
+  <span class="feeds-bar-label">RSS Feeds</span>
+  <div class="feeds-list" id="feeds-pills"></div>
+  <button class="feeds-bar-toggle" id="feeds-toggle">Show details ▾</button>
+  <div class="feeds-detail" id="feeds-detail">
+    <table>
+      <thead><tr><th>Feed name</th><th>URL</th><th>Category</th><th>Last item seen</th></tr></thead>
+      <tbody id="feeds-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Period</span>
+    <div class="daterange">
+      <input type="date" id="date-from" />
+      <span style="color:#888">→</span>
+      <input type="date" id="date-to" />
+      <div class="chips" id="period-presets">
+        <span class="chip" data-preset="7">Last 7d</span>
+        <span class="chip" data-preset="30">Last 30d</span>
+        <span class="chip" data-preset="90">Last 90d</span>
+        <span class="chip" data-preset="ytd">YTD</span>
+        <span class="chip" data-preset="all">All time</span>
+      </div>
+    </div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Type</span>
+    <div class="chips" id="type-filter">
+      <span class="chip active" data-key="all">All</span>
+      <span class="chip" data-key="primary">Primary only</span>
+      <span class="chip" data-key="pickup">Syndications only</span>
+    </div>
+    <span class="filter-label" style="margin-left:8px">Tier</span>
+    <div class="chips" id="tier-filter"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Sentiment</span>
+    <div class="chips" id="sent-filter"></div>
+    <span class="filter-label" style="margin-left:8px">Notable</span>
+    <div class="chips" id="notable-filter">
+      <span class="chip active" data-key="all">All</span>
+      <span class="chip" data-key="notable">Notable only</span>
+    </div>
+    <input class="searchbox" id="search-input" type="search" placeholder="Search headlines, notes…" />
+    <div class="filter-actions">
+      <button id="reset-filters">Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="earned">Earned Media <span class="ct" id="ct-earned">0</span></button>
+  <button class="tab" data-tab="owned">Company Website <span class="ct" id="ct-owned">0</span></button>
+  <button class="tab" data-tab="competitor">Competitor Coverage <span class="ct" id="ct-competitor">0</span></button>
+</div>
+
+<div id="empty" class="empty" style="display:none">
+  <div class="empty-title">No coverage matches the current filters</div>
+  <div>Try widening the period or clearing filters.</div>
+</div>
+
+<table class="coverage" id="table">
+  <thead>
+    <tr>
+      <th data-sort="publishedAt" style="width:110px">Date <span class="sortarrow">▼</span></th>
+      <th data-sort="headline">Headline</th>
+      <th data-sort="domain" style="width:160px">URL</th>
+      <th data-sort="tier" style="width:90px">Tier</th>
+      <th data-sort="uvm" style="width:90px">UVM</th>
+      <th data-sort="sentiment" style="width:100px">Sentiment</th>
+      <th style="width:200px">Notes</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<footer>
+  <strong>Sensormatic Solutions Coverage Tracker.</strong> Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>. Updated by a Claude scheduled task that polls the configured <strong>RSS feeds</strong> (Retail Dive, NRF, Chain Store Age, Retail TouchPoints, VentureBeat AI, TechCrunch, Diginomica, and more) and merges new items by URL deduplication. Terms monitored via WebSearch fallback: <code>Sensormatic Solutions</code>, <code>Sensormatic</code>, <code>TrueVUE</code>, <code>ShopperTrak</code>. UVMs can be populated from Cision / Muck Rack / Meltwater. The <strong>Competitor Coverage</strong> tab tracks Checkpoint Systems, RetailNext, Auror, and other retail loss prevention / analytics players.
+</footer>
+
+</div>
+
+<script id="coverage-data" type="application/json" data-client="Sensormatic Solutions">
+{
+  "client": "Sensormatic Solutions",
+  "terms": ["Sensormatic Solutions", "Sensormatic", "TrueVUE", "ShopperTrak"],
+  "domain": "sensormatic.com",
+  "lastUpdated": "2026-05-05T20:00:00Z",
+  "feeds": [
+    { "name": "Retail Dive", "url": "https://www.retaildive.com/feeds/news/", "category": "earned", "lastSeenGuid": null },
+    { "name": "National Retail Federation", "url": "https://nrf.com/rss.xml", "category": "earned", "lastSeenGuid": null },
+    { "name": "Chain Store Age", "url": "https://chainstoreage.com/rss.xml", "category": "earned", "lastSeenGuid": null },
+    { "name": "Retail TouchPoints", "url": "https://retailtouchpoints.com/feed/", "category": "earned", "lastSeenGuid": null },
+    { "name": "Retail Technology Review", "url": "https://www.retailtechnologyreview.com/rss/news.rss", "category": "earned", "lastSeenGuid": null },
+    { "name": "Retail Customer Experience", "url": "https://retailcustomerexperience.com/rss/", "category": "earned", "lastSeenGuid": null },
+    { "name": "Progressive Grocer", "url": "https://progressivegrocer.com/rss.xml", "category": "earned", "lastSeenGuid": null },
+    { "name": "PYMNTS.com", "url": "https://www.pymnts.com/feed/", "category": "earned", "lastSeenGuid": null },
+    { "name": "Supply Chain Dive", "url": "https://www.supplychaindive.com/feeds/news/", "category": "earned", "lastSeenGuid": null },
+    { "name": "VentureBeat (AI)", "url": "https://venturebeat.com/category/ai/feed/", "category": "earned", "lastSeenGuid": null },
+    { "name": "MIT Technology Review (AI)", "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed/", "category": "earned", "lastSeenGuid": null },
+    { "name": "WIRED (AI)", "url": "https://www.wired.com/feed/tag/artificial-intelligence/rss", "category": "earned", "lastSeenGuid": null },
+    { "name": "AI Business", "url": "https://aibusiness.com/feed/", "category": "earned", "lastSeenGuid": null },
+    { "name": "TechCrunch", "url": "https://techcrunch.com/feed/", "category": "earned", "lastSeenGuid": null },
+    { "name": "The Verge", "url": "https://www.theverge.com/rss/index.xml", "category": "earned", "lastSeenGuid": null },
+    { "name": "ZDNet", "url": "https://www.zdnet.com/news/rss.xml", "category": "earned", "lastSeenGuid": null },
+    { "name": "Diginomica", "url": "https://diginomica.com/feed", "category": "earned", "lastSeenGuid": null },
+    { "name": "CMSWire", "url": "https://www.cmswire.com/rss/all/", "category": "earned", "lastSeenGuid": null },
+    { "name": "TechTarget", "url": "https://www.techtarget.com/rss/All-TechTarget-News.xml", "category": "earned", "lastSeenGuid": null },
+    { "name": "CNBC Business", "url": "https://www.cnbc.com/id/10001147/device/rss/rss.html", "category": "earned", "lastSeenGuid": null },
+    { "name": "Financial Times", "url": "https://www.ft.com/rss/home/international", "category": "earned", "lastSeenGuid": null }
+  ],
+  "earnedMedia": [
+    {
+      "id": "60th-anniversary-bw",
+      "publishedAt": "2026-04-21",
+      "headline": "Sensormatic Solutions Celebrates 60 Years of Retail Firsts, Proven Leadership, and Measurable Impact",
+      "url": "https://www.businesswire.com/news/home/20260421868867/en/Sensormatic-Solutions-Celebrates-60-Years-of-Retail-Firsts-Proven-Leadership-and-Measurable-Impact",
+      "domain": "businesswire.com",
+      "tier": "other",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Wire marking 60 years of retail innovation, from theft deterrence origins to today's AI-driven portfolio. Highlights 1,700+ retail patents. Strong milestone placement.",
+      "isNotable": true,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": [
+        {
+          "publishedAt": "2026-04-21",
+          "headline": "Sensormatic Solutions Celebrates 60 Years of Retail Firsts, Proven Leadership, and Measurable Impact",
+          "url": "https://finance.yahoo.com/sectors/technology/articles/sensormatic-solutions-celebrates-60-years-130000008.html",
+          "domain": "finance.yahoo.com",
+          "tier": "national",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "Yahoo Finance national pickup of 60th anniversary wire.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        },
+        {
+          "publishedAt": "2026-04-21",
+          "headline": "Sensormatic Solutions Celebrates 60 Years of Retail Firsts, Proven Leadership, and Measurable Impact",
+          "url": "https://losspreventionmedia.com/sensormatic-solutions-celebrates-60-years-of-retail-firsts-proven-leadership-and-measurable-impact/",
+          "domain": "losspreventionmedia.com",
+          "tier": "trade",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "Loss Prevention Media trade pickup of 60th anniversary announcement.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        },
+        {
+          "publishedAt": "2026-04-21",
+          "headline": "Sensormatic Solutions marks 60 years, 1,700 patents",
+          "url": "https://www.stocktitan.net/news/JCI/sensormatic-solutions-celebrates-60-years-of-retail-firsts-proven-4oifjhx0kg34.html",
+          "domain": "stocktitan.net",
+          "tier": "other",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "StockTitan (JCI stock news) pickup of anniversary wire.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "rts-2026-innovations",
+      "publishedAt": "2026-04-22",
+      "headline": "Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact At Retail Technology Show 2026",
+      "url": "https://365retail.co.uk/sensormatic-solutions-unveils-innovations-that-help-retailers-turn-insights-into-impact-at-retail-technology-show-2026/",
+      "domain": "365retail.co.uk",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "365 Retail covers Sensormatic at RTS 2026 (April 22–23, London). Showcased Storefront Engagement Platform combining visual merchandising, retail media network, and loss prevention; also RFID Seam Tag for apparel inventory and brand authentication.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "nrf-2026-bw",
+      "publishedAt": "2026-01-07",
+      "headline": "Storefronts Reimagined: Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact at 2026 NRF Big Show",
+      "url": "https://www.businesswire.com/news/home/20260107698515/en/Storefronts-Reimagined-Sensormatic-Solutions-Unveils-Innovations-That-Help-Retailers-Turn-Insights-Into-Impact-at-2026-NRF-Big-Show",
+      "domain": "businesswire.com",
+      "tier": "other",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "NRF Big Show wire. Unveiled FLEX storefront platform, RFID Seam Tag, Shrink Analyzer ML updates, and Store Guest Behaviors analytics. Full portfolio showcase at NRF 2026.",
+      "isNotable": true,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": [
+        {
+          "publishedAt": "2026-01-07",
+          "headline": "Storefronts Reimagined: Sensormatic Solutions Unveiled Retail Innovations at 2026 NRF Big Show",
+          "url": "https://losspreventionmedia.com/storefronts-reimagined-sensormatic-solutions-unveiled-retail-innovations-at-2026-nrf-big-show/",
+          "domain": "losspreventionmedia.com",
+          "tier": "trade",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "Loss Prevention Media trade coverage of NRF 2026 debut.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        },
+        {
+          "publishedAt": "2026-01-07",
+          "headline": "Storefronts Reimagined: Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact at 2026 NRF Big Show",
+          "url": "https://www.morningstar.com/news/business-wire/20260107698515/storefronts-reimagined-sensormatic-solutions-unveils-innovations-that-help-retailers-turn-insights-into-impact-at-2026-nrf-big-show",
+          "domain": "morningstar.com",
+          "tier": "trade",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "Morningstar financial/trade pickup of NRF Big Show wire.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        },
+        {
+          "publishedAt": "2026-01-07",
+          "headline": "Sensormatic Solutions to debut new retail tech at 2026 NRF Big Show",
+          "url": "https://www.stocktitan.net/news/JCI/storefronts-reimagined-sensormatic-solutions-unveils-innovations-6w9c52ad0die.html",
+          "domain": "stocktitan.net",
+          "tier": "other",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "StockTitan (JCI) pickup of NRF 2026 announcement.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "shrink-analyzer-ml",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions Expands Shrink Analyzer, Unveils New ML Tools for Retail Loss",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-expands-shrink-analyzer-unveils-new-ml-tools-for-retail-loss/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Loss Prevention Media covers new Shrink Analyzer ML features: Track and Trace (stolen merchandise tracing), At-Risk Merchandise Forecast, ORC Activity Predictions, and an AI Chat Bot for data interaction.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": [
+        {
+          "publishedAt": null,
+          "headline": "AI tools help retailers trace stolen goods and predict when theft may hit",
+          "url": "https://www.stocktitan.net/news/JCI/sensormatic-solutions-expands-shrink-analyzer-introduces-new-ml-pfip88upy696.html",
+          "domain": "stocktitan.net",
+          "tier": "other",
+          "uvm": null,
+          "sentiment": "positive",
+          "notes": "StockTitan pickup framing Shrink Analyzer ML update around theft prediction.",
+          "firstSeen": "2026-05-05T20:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "store-guest-behaviors",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions AI-Enabled Sensor and Video Technologies Power Store Guest Behaviors Analytics",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-ai-enabled-sensor-and-video-technologies-power-store-guest-behaviors-analytics/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "LPM covers Sensormatic's Store Guest Behaviors product: Re-ID technology within Orbit AI overhead counters and Video AI cameras feeding ShopperTrak Analytics for in-store shopper journey insights.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "flex-storefront",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions Enhances Storefront Design and Delivers Shrink Insights With FLEX",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-enhances-storefront-design-and-delivers-shrink-insights-with-flex/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "LPM covers FLEX, Sensormatic's customizable EAS platform combining loss prevention with digital merchandising and retail media capabilities. Redefines storefront function.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "category-shrink-eas",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions Introduces EAS-Based, Category-Level Shrink Intelligence",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-introduces-eas-based-category-level-shrink-intelligence/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Category-Level Shrink Insights powered by Acousto-Magnetic (AM) technology. Extends EAS investments to surface shrink data by top theft category, adding analytics on top of existing infrastructure.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "truevue-paas",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions Adds PaaS to TrueVUE Cloud",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-adds-paas-to-truevue-cloud/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "TrueVUE Cloud PaaS launch lets retailers integrate RFID-based inventory insights into their own cloud platforms, opening the data layer to broader enterprise ecosystems.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "retail-dive-smarter-stores",
+      "publishedAt": null,
+      "headline": "Smarter stores start behind the scenes",
+      "url": "https://www.retaildive.com/spons/smarter-stores-start-behind-the-scenes/817600/",
+      "domain": "retaildive.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Retail Dive sponsored content by Sensormatic. Connected systems framing — positions back-of-house intelligence (inventory, traffic, loss prevention) as the foundation of the modern store.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "source-to-store",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions Offers All-Inclusive Services that Connect Source to Store, Simplifying Retail and Enhancing Shopper Experiences",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-offers-all-inclusive-services-that-connect-source-to-store-simplifying-retail-and-enhancing-shopper-experiences/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Source-to-store connected services announcement. Positions Sensormatic as an end-to-end partner across inventory, loss prevention, and shopper experience from supply chain to shelf.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "eas-rf-solutions",
+      "publishedAt": null,
+      "headline": "Sensormatic Solutions Provides Retailers a One-Stop Destination for EAS Technology with Addition of RF-based Solutions",
+      "url": "https://losspreventionmedia.com/sensormatic-solutions-provides-retailers-a-one-stop-destination-for-eas-technology-with-addition-of-rf-based-solutions/",
+      "domain": "losspreventionmedia.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Sensormatic expands EAS portfolio with RF (radio frequency) solutions alongside its existing AM (Acousto-Magnetic) line, becoming a single-vendor EAS source for retailers.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    }
+  ],
+  "ownedMedia": [
+    {
+      "id": "owned-60th-landing",
+      "publishedAt": "2026-04-21",
+      "headline": "60 Years of Retail Firsts — Sensormatic Solutions Anniversary Hub",
+      "url": "https://www.sensormatic.com/landing/60-Anniversary-Landing-Page",
+      "domain": "sensormatic.com",
+      "tier": "owned",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Dedicated 60th anniversary landing page. Central hub for milestone content and timeline of retail innovation from EAS origins to AI platform.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "owned-rts-2026-pr",
+      "publishedAt": "2026-04-22",
+      "headline": "Press Release: Retail Technology Show 2026 Innovations — Sensormatic",
+      "url": "https://www.sensormatic.com/en_uk/resources/pr/2026/rts-2026-innovations-press-release",
+      "domain": "sensormatic.com",
+      "tier": "owned",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "Owned UK press release for RTS 2026 (April 22–23, London). Announces Storefront Engagement Platform and RFID Seam Tag innovations.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "owned-euroshop-2026",
+      "publishedAt": null,
+      "headline": "EuroShop 2026 — Sensormatic Partner Ecosystem Press Release",
+      "url": "https://www.sensormatic.com/en_my/resources/pr/2026/euroshop-2026-partners-press-release",
+      "domain": "sensormatic.com",
+      "tier": "owned",
+      "uvm": null,
+      "sentiment": "positive",
+      "notes": "EuroShop 2026 partner ecosystem announcement. Showcases integrations with Keonn, Indyme, and Solink across inventory intelligence, loss prevention, store operations, and video analytics.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "owned-homepage",
+      "publishedAt": null,
+      "headline": "Retail Technology Solutions — Sensormatic",
+      "url": "https://www.sensormatic.com",
+      "domain": "sensormatic.com",
+      "tier": "owned",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "Primary product and solutions landing page.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    }
+  ],
+  "competitorMedia": [
+    {
+      "id": "comp-checkpoint-ort",
+      "publishedAt": null,
+      "headline": "Checkpoint Systems Introduces New ORT Solutions Suite To Help Retailers Fight Organized Retail Theft",
+      "url": "https://www.retailitinsights.com/doc/loss-prevention-checkpoint-systems-introduces-0002",
+      "domain": "retailitinsights.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "Checkpoint Systems (direct EAS/RFID competitor) launches ORT solutions suite targeting organized retail crime. Directly competes with Sensormatic's Shrink Analyzer ML and ORC Activity Predictions.",
+      "isNotable": true,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "comp-retailnext-asset-protection",
+      "publishedAt": null,
+      "headline": "Asset Protection | Aurora — AI-Powered Retail Loss Prevention",
+      "url": "https://retailnext.net/solution/asset-protection",
+      "domain": "retailnext.net",
+      "tier": "competitor",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "RetailNext's Aurora product uses patented 3D imagery + deep learning fusion for asset protection analytics. Direct competitor in video AI and in-store analytics — overlaps with Sensormatic's Store Guest Behaviors and ShopperTrak.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "comp-auror-crime-intel",
+      "publishedAt": null,
+      "headline": "Auror — Retail Crime Intelligence & Loss Prevention Platform",
+      "url": "https://www.auror.co/",
+      "domain": "auror.co",
+      "tier": "competitor",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "Auror is a crime intelligence SaaS for retailers. Focuses on reporting, repeat offender identification, and cross-retailer intelligence sharing. Competes with Sensormatic's ORC and Track & Trace capabilities. Offices in Denver, London, Melbourne, Auckland.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "comp-gartner-lp-market",
+      "publishedAt": null,
+      "headline": "Best Retail Loss Prevention and Asset Protection Solution Reviews 2026 — Gartner Peer Insights",
+      "url": "https://www.gartner.com/reviews/market/retail-loss-prevention-and-asset-protection-solution",
+      "domain": "gartner.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "Gartner Peer Insights market page for retail loss prevention and asset protection. High-authority buyer research destination — competitive landscape for Sensormatic vs. Checkpoint, RetailNext, Auror, and others.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "comp-rfid-journal-lp",
+      "publishedAt": null,
+      "headline": "From Alarms to Insights: How RFID Is Redefining the Future of Retail Loss Prevention",
+      "url": "https://www.rfidjournal.com/news/from-alarms-to-insights-how-rfid-is-redefining-the-future-of-retail-loss-prevention/224951",
+      "domain": "rfidjournal.com",
+      "tier": "trade",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "RFID Journal feature on RFID's evolution in loss prevention. Covers the transition from EAS alarms to insights-driven inventory and shrink platforms — the exact narrative Sensormatic is positioning against with TrueVUE and RFID Seam Tag.",
+      "isNotable": true,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    },
+    {
+      "id": "comp-appintent-cv-buyers-guide",
+      "publishedAt": "2026-01-01",
+      "headline": "The 10 Best Computer Vision Platforms for Retail: A 2026 Buyer's Guide",
+      "url": "https://www.appintent.com/software/ai/computer-vision/retail/",
+      "domain": "appintent.com",
+      "tier": "other",
+      "uvm": null,
+      "sentiment": "neutral",
+      "notes": "2026 buyer's guide for retail computer vision platforms. Comparison content that buyers use when evaluating Sensormatic's video AI (ShopperTrak, Store Guest Behaviors) against RetailNext, Dayta AI, and others.",
+      "isNotable": false,
+      "viaRss": false,
+      "firstSeen": "2026-05-05T20:00:00Z",
+      "syndications": []
+    }
+  ]
+}
+</script>
+
+<script>
+(function() {
+  const dataNode = document.getElementById("coverage-data");
+  let payload;
+  try { payload = JSON.parse(dataNode.textContent); }
+  catch (e) { payload = { client: "?", terms: [], feeds: [], earnedMedia: [], ownedMedia: [], competitorMedia: [], lastUpdated: null }; }
+
+  const client = payload.client || "Coverage";
+  document.getElementById("title").textContent = client + " Coverage Tracker";
+  document.title = client + " Coverage Tracker";
+  document.getElementById("terms-display").innerHTML = (payload.terms || []).map(t => `<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:11px">${escapeHtml(t)}</code>`).join(" ");
+
+  if (payload.lastUpdated) {
+    const d = new Date(payload.lastUpdated);
+    document.getElementById("last-updated").textContent = "Updated " + formatRelative(d);
+    document.getElementById("last-updated").title = d.toLocaleString();
+  } else {
+    document.getElementById("last-updated").textContent = "Not yet updated";
+  }
+
+  const feeds = payload.feeds || [];
+  if (feeds.length > 0) {
+    const feedsBar = document.getElementById("feeds-bar");
+    feedsBar.style.display = "";
+    const pillsEl = document.getElementById("feeds-pills");
+    const tbodyEl = document.getElementById("feeds-tbody");
+    pillsEl.innerHTML = feeds.map(f => `
+      <span class="feed-pill cat-${escapeHtml(f.category || "earned")}">
+        <span class="feed-dot"></span>${escapeHtml(f.name || f.url)}
+      </span>`).join("");
+    tbodyEl.innerHTML = feeds.map(f => `
+      <tr>
+        <td>${escapeHtml(f.name || "—")}</td>
+        <td><a href="${escapeHtml(f.url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(f.url || "")}</a></td>
+        <td><span class="badge b-tier-${f.category === "competitor" ? "competitor" : f.category === "owned" ? "owned" : "other"}">${escapeHtml(capitalize(f.category || "earned"))}</span></td>
+        <td>${f.lastSeenGuid ? `<code style="font-size:10px;color:#888">${escapeHtml(String(f.lastSeenGuid).slice(0,60))}</code>` : '<span class="dim">—</span>'}</td>
+      </tr>`).join("");
+    const toggleBtn = document.getElementById("feeds-toggle");
+    const detailEl = document.getElementById("feeds-detail");
+    toggleBtn.addEventListener("click", () => {
+      const open = detailEl.classList.toggle("open");
+      toggleBtn.textContent = open ? "Hide details ▴" : "Show details ▾";
+    });
+  }
+
+  const ackKey = "coverage-tracker:" + client.toLowerCase().replace(/\s+/g, "-") + ":ackAt";
+  let ackAt = parseInt(localStorage.getItem(ackKey) || "0", 10);
+
+  function flatten(stories) {
+    const rows = [];
+    for (const s of stories || []) {
+      const primaryRow = { ...s, _type: "primary", _parentId: null, _hasSyndications: (s.syndications || []).length > 0 };
+      delete primaryRow.syndications;
+      rows.push(primaryRow);
+      for (const syn of s.syndications || []) {
+        rows.push({ ...syn, _type: "pickup", _parentId: s.id, id: (s.id + "-syn-" + (syn.url || Math.random())) });
+      }
+    }
+    return rows;
+  }
+
+  const sections = {
+    earned:     flatten(payload.earnedMedia     || []),
+    owned:      flatten(payload.ownedMedia      || []),
+    competitor: flatten(payload.competitorMedia || [])
+  };
+
+  for (const key of Object.keys(sections)) {
+    sections[key].forEach(r => {
+      const fs = r.firstSeen ? new Date(r.firstSeen).getTime() : 0;
+      r._isNew = fs > ackAt;
+    });
+  }
+
+  const TIER_ORDER = ["national","trade","regional","blog","competitor","owned","other"];
+  function tiersIn(rows) {
+    const set = new Set();
+    rows.forEach(r => set.add(r.tier || "other"));
+    return TIER_ORDER.filter(t => set.has(t));
+  }
+  const SENTIMENTS = ["positive","neutral","mixed","negative"];
+
+  const state = {
+    tab: "earned",
+    type: "all",
+    tier: "all",
+    sentiment: "all",
+    notable: "all",
+    search: "",
+    dateFrom: null,
+    dateTo: null,
+    sortKey: "publishedAt",
+    sortDir: "desc",
+    expanded: new Set()
+  };
+
+  for (const key of ["earned","owned","competitor"]) {
+    sections[key].forEach(r => { if (r._type === "primary" && r._hasSyndications) state.expanded.add(r.id); });
+  }
+
+  function renderFilterChips() {
+    const allRows = [...sections.earned, ...sections.owned, ...sections.competitor];
+    const tierEl = document.getElementById("tier-filter");
+    const tierSet = tiersIn(allRows);
+    tierEl.innerHTML = `<span class="chip ${state.tier==="all"?"active":""}" data-key="all">All</span>` +
+      tierSet.map(t => `<span class="chip ${state.tier===t?"active":""}" data-key="${t}">${capitalize(t)}</span>`).join("");
+    tierEl.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { state.tier = el.dataset.key; render(); }));
+
+    const sentEl = document.getElementById("sent-filter");
+    sentEl.innerHTML = `<span class="chip ${state.sentiment==="all"?"active":""}" data-key="all">All</span>` +
+      SENTIMENTS.map(s => `<span class="chip ${state.sentiment===s?"active":""}" data-key="${s}">${capitalize(s)}</span>`).join("");
+    sentEl.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { state.sentiment = el.dataset.key; render(); }));
+
+    document.querySelectorAll("#type-filter .chip").forEach(el => el.addEventListener("click", () => {
+      state.type = el.dataset.key;
+      document.querySelectorAll("#type-filter .chip").forEach(c => c.classList.toggle("active", c.dataset.key === state.type));
+      render();
+    }));
+    document.querySelectorAll("#notable-filter .chip").forEach(el => el.addEventListener("click", () => {
+      state.notable = el.dataset.key;
+      document.querySelectorAll("#notable-filter .chip").forEach(c => c.classList.toggle("active", c.dataset.key === state.notable));
+      render();
+    }));
+    document.querySelectorAll("#period-presets .chip").forEach(el => el.addEventListener("click", () => applyPreset(el.dataset.preset)));
+  }
+
+  function applyPreset(p) {
+    const today = new Date(); today.setHours(23,59,59,999);
+    let from = null;
+    if (p === "all") { from = null; }
+    else if (p === "ytd") { from = new Date(today.getFullYear(), 0, 1); }
+    else { const days = parseInt(p, 10); from = new Date(today); from.setDate(from.getDate() - days); from.setHours(0,0,0,0); }
+    state.dateFrom = from ? toISODate(from) : null;
+    state.dateTo = toISODate(today);
+    document.getElementById("date-from").value = state.dateFrom || "";
+    document.getElementById("date-to").value = state.dateTo || "";
+    render();
+  }
+
+  document.getElementById("date-from").addEventListener("change", e => { state.dateFrom = e.target.value || null; render(); });
+  document.getElementById("date-to").addEventListener("change", e => { state.dateTo = e.target.value || null; render(); });
+  document.getElementById("search-input").addEventListener("input", e => { state.search = e.target.value.toLowerCase(); render(); });
+  document.getElementById("reset-filters").addEventListener("click", () => {
+    state.type = "all"; state.tier = "all"; state.sentiment = "all"; state.notable = "all"; state.search = ""; state.dateFrom = null; state.dateTo = null;
+    document.getElementById("date-from").value = "";
+    document.getElementById("date-to").value = "";
+    document.getElementById("search-input").value = "";
+    renderFilterChips(); render();
+  });
+  document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+    state.tab = t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === state.tab));
+    render();
+  }));
+  document.getElementById("mark-seen").addEventListener("click", () => {
+    ackAt = Date.now();
+    localStorage.setItem(ackKey, String(ackAt));
+    [...sections.earned, ...sections.owned, ...sections.competitor].forEach(r => r._isNew = false);
+    render();
+  });
+
+  document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
+    th.addEventListener("click", () => {
+      const k = th.dataset.sort;
+      if (state.sortKey === k) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+      else { state.sortKey = k; state.sortDir = (k === "publishedAt" || k === "uvm") ? "desc" : "asc"; }
+      render();
+    });
+  });
+
+  function rowMatches(r) {
+    if (state.type === "primary" && r._type !== "primary") return false;
+    if (state.type === "pickup"  && r._type !== "pickup")  return false;
+    if (state.tier !== "all" && (r.tier || "other") !== state.tier) return false;
+    if (state.sentiment !== "all" && (r.sentiment || "neutral") !== state.sentiment) return false;
+    if (state.notable === "notable" && !(r.isNotable || r.sentiment === "negative")) return false;
+    if (state.dateFrom) { if (!r.publishedAt || r.publishedAt < state.dateFrom) return false; }
+    if (state.dateTo)   { if (!r.publishedAt || r.publishedAt > state.dateTo)   return false; }
+    if (state.search) {
+      const hay = ((r.headline || "") + " " + (r.notes || "") + " " + (r.domain || "")).toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  }
+
+  function visibleRows() {
+    const flat = sections[state.tab];
+    let primaries = flat.filter(r => r._type === "primary" && rowMatches(r));
+    let pickups   = flat.filter(r => r._type === "pickup"  && rowMatches(r));
+    if (state.type === "pickup") { const list = pickups.slice(); sortInPlace(list); return { displayMode: "flat", rows: list }; }
+    if (state.type === "primary") { const list = primaries.slice(); sortInPlace(list); return { displayMode: "flat", rows: list }; }
+    sortInPlace(primaries);
+    const out = [];
+    for (const p of primaries) {
+      out.push(p);
+      const kids = pickups.filter(k => k._parentId === p.id);
+      if (state.expanded.has(p.id)) { sortInPlace(kids); out.push(...kids); }
+    }
+    const matchedParentIds = new Set(primaries.map(p => p.id));
+    const orphans = pickups.filter(k => !matchedParentIds.has(k._parentId));
+    sortInPlace(orphans); out.push(...orphans);
+    return { displayMode: "tree", rows: out };
+  }
+
+  function sortInPlace(arr) {
+    const k = state.sortKey, dir = state.sortDir === "asc" ? 1 : -1;
+    arr.sort((a, b) => {
+      let av, bv;
+      if (k === "publishedAt") { av = a.publishedAt || ""; bv = b.publishedAt || ""; }
+      else if (k === "uvm") { av = a.uvm == null ? -1 : a.uvm; bv = b.uvm == null ? -1 : b.uvm; }
+      else if (k === "tier") { av = TIER_ORDER.indexOf(a.tier || "other"); bv = TIER_ORDER.indexOf(b.tier || "other"); }
+      else if (k === "sentiment") { av = SENTIMENTS.indexOf(a.sentiment || "neutral"); bv = SENTIMENTS.indexOf(b.sentiment || "neutral"); }
+      else { av = (a[k] || "").toString().toLowerCase(); bv = (b[k] || "").toString().toLowerCase(); }
+      if (av < bv) return -1*dir; if (av > bv) return 1*dir; return 0;
+    });
+  }
+
+  function render() {
+    const earnedMatched     = sections.earned.filter(rowMatches).length;
+    const ownedMatched      = sections.owned.filter(rowMatches).length;
+    const competitorMatched = sections.competitor.filter(rowMatches).length;
+    document.getElementById("ct-earned").textContent     = earnedMatched;
+    document.getElementById("ct-owned").textContent      = ownedMatched;
+    document.getElementById("ct-competitor").textContent = competitorMatched;
+
+    renderSnapshot(sections[state.tab].filter(rowMatches));
+
+    document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
+      const arrow = th.querySelector(".sortarrow");
+      if (!arrow) return;
+      arrow.textContent = th.dataset.sort === state.sortKey ? (state.sortDir === "asc" ? "▲" : "▼") : "";
+    });
+
+    const { displayMode, rows } = visibleRows();
+    const tbody = document.getElementById("tbody");
+    const empty = document.getElementById("empty");
+    const table = document.getElementById("table");
+    if (rows.length === 0) { tbody.innerHTML = ""; empty.style.display = "block"; table.style.display = "none"; return; }
+    empty.style.display = "none"; table.style.display = "";
+
+    tbody.innerHTML = rows.map(r => {
+      const synClass  = r._type === "pickup" ? "synd" : "";
+      const isComp    = (r.tier === "competitor");
+      const noteClass = isComp ? "competitor-row" : (r.sentiment === "negative") ? "alert" : (r.isNotable ? "notable" : "");
+      const expandBtn = (r._type === "primary" && r._hasSyndications && displayMode === "tree")
+        ? `<button class="expand-btn" data-toggle="${escapeHtml(r.id)}">${state.expanded.has(r.id) ? "▼" : "▶"}</button>`
+        : `<span style="display:inline-block;width:16px"></span>`;
+      const typeBadge = r._type === "primary"
+        ? (isComp ? `<span class="badge b-competitor">Competitor</span>` : `<span class="badge b-primary">Primary</span>`)
+        : `<span class="badge b-pickup">Pickup</span>`;
+      const newBadge  = r._isNew ? ` <span class="badge b-new">New</span>` : "";
+      const rssBadge  = r.viaRss  ? ` <span class="badge b-via-rss">RSS</span>` : "";
+      const noteBadge = noteClass === "alert"
+        ? ` <span class="badge b-alert">Alert</span>`
+        : (noteClass === "notable" ? ` <span class="badge b-notable">Notable</span>` : "");
+      const tierClass = isComp ? "b-tier-competitor" : `b-tier-${escapeHtml(r.tier || "other")}`;
+      return `
+        <tr class="${synClass} ${noteClass}">
+          <td>${expandBtn} ${formatDate(r.publishedAt)}</td>
+          <td class="headline-cell">
+            <a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.headline || "(untitled)")}</a>
+            <div style="margin-top:4px">${typeBadge}${noteBadge}${newBadge}${rssBadge}</div>
+          </td>
+          <td class="url-cell"><a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(r.url || "")}">${escapeHtml(r.domain || "")}</a></td>
+          <td><span class="badge ${tierClass}">${escapeHtml(capitalize(r.tier || "other"))}</span></td>
+          <td>${formatUvm(r.uvm)}</td>
+          <td><span class="badge b-sent-${escapeHtml(r.sentiment || "neutral")}">${escapeHtml(capitalize(r.sentiment || "neutral"))}</span></td>
+          <td class="notes-cell">${escapeHtml(r.notes || "")}</td>
+        </tr>`;
+    }).join("");
+
+    tbody.querySelectorAll(".expand-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.toggle;
+        if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id);
+        render();
+      });
+    });
+  }
+
+  function renderSnapshot(rows) {
+    const total = rows.length;
+    const sentCounts = { positive:0, neutral:0, mixed:0, negative:0 };
+    const tierCounts = {};
+    let uvmSum = 0, uvmHave = 0, notableCount = 0, pickupCount = 0;
+    rows.forEach(r => {
+      const s = r.sentiment || "neutral"; if (sentCounts[s] !== undefined) sentCounts[s]++;
+      const t = r.tier || "other"; tierCounts[t] = (tierCounts[t] || 0) + 1;
+      if (typeof r.uvm === "number") { uvmSum += r.uvm; uvmHave++; }
+      if (r.isNotable || r.sentiment === "negative") notableCount++;
+      if (r._type === "pickup") pickupCount++;
+    });
+    const positivePct = total ? Math.round((sentCounts.positive/total)*100) : 0;
+    const negativePct = total ? Math.round((sentCounts.negative/total)*100) : 0;
+    const sentBars = total ? `
+      <div class="bars">
+        <span style="width:${(sentCounts.positive/total)*100}%;background:#4caf50"></span>
+        <span style="width:${(sentCounts.neutral/total)*100}%;background:#bdbdbd"></span>
+        <span style="width:${(sentCounts.mixed/total)*100}%;background:#f5a623"></span>
+        <span style="width:${(sentCounts.negative/total)*100}%;background:#d93025"></span>
+      </div>
+      <div class="legend">
+        <span><i style="background:#4caf50"></i>Positive ${sentCounts.positive}</span>
+        <span><i style="background:#bdbdbd"></i>Neutral ${sentCounts.neutral}</span>
+        <span><i style="background:#f5a623"></i>Mixed ${sentCounts.mixed}</span>
+        <span><i style="background:#d93025"></i>Negative ${sentCounts.negative}</span>
+      </div>` : `<div class="dim" style="font-size:11px;margin-top:4px">No data</div>`;
+    const topTiers = Object.entries(tierCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const tierLines = topTiers.length
+      ? topTiers.map(([t,n])=>`<span style="display:inline-block;margin-right:8px"><span class="badge b-tier-${t==="competitor"?"competitor":t}">${capitalize(t)}</span> <span style="color:#555">${n}</span></span>`).join("")
+      : `<span class="dim">No data</span>`;
+    document.getElementById("snapshot").innerHTML = `
+      <div class="stat"><div class="stat-label">Total mentions</div><div class="stat-val">${total}</div><div class="stat-sub">${pickupCount} pickup${pickupCount===1?"":"s"} included</div></div>
+      <div class="stat"><div class="stat-label">Sentiment</div><div class="stat-val" style="font-size:18px">${positivePct}% pos &middot; ${negativePct}% neg</div>${sentBars}</div>
+      <div class="stat"><div class="stat-label">UVM reach</div><div class="stat-val">${uvmHave ? formatUvm(uvmSum) : "—"}</div><div class="stat-sub">${uvmHave}/${total} items have UVM</div></div>
+      <div class="stat"><div class="stat-label">Tier breakdown</div><div style="margin-top:6px">${tierLines}</div></div>
+      <div class="stat" style="border-color:${notableCount?"#f5a623":"#e6e6e6"}">
+        <div class="stat-label">Notable / alerts</div>
+        <div class="stat-val" style="color:${notableCount?"#8a5a00":"#1a1a1a"}">${notableCount}</div>
+        <div class="stat-sub">National features &amp; neg. pieces</div>
+      </div>`;
+  }
+
+  function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function capitalize(s) { s = String(s ?? ""); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function formatRelative(d) {
+    const s = Math.round((Date.now() - d.getTime()) / 1000);
+    if (s < 60) return "just now"; if (s < 3600) return Math.floor(s/60) + "m ago";
+    if (s < 86400) return Math.floor(s/3600) + "h ago"; return Math.floor(s/86400) + "d ago";
+  }
+  function formatDate(iso) {
+    if (!iso) return `<span class="dim">—</span>`;
+    const d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return escapeHtml(iso);
+    return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+  }
+  function formatUvm(n) {
+    if (n == null || isNaN(n)) return `<span class="dim">—</span>`;
+    if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,"") + "B";
+    if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,"") + "M";
+    if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,"") + "K";
+    return String(n);
+  }
+  function toISODate(d) { const m = String(d.getMonth()+1).padStart(2,"0"); const day = String(d.getDate()).padStart(2,"0"); return d.getFullYear()+"-"+m+"-"+day; }
+
+  renderFilterChips();
+  render();
+})();
+</script>
+</body>
+</html>
