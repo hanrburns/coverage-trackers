@@ -3,7 +3,7 @@
 {
   "name": "Planview Coverage Tracker",
   "schemaVersion": 1,
-  "description": "Planview coverage tracker. Earned Media, Company Website, and Competitor Coverage tabs. Terms: Planview, Louise Allen, Anvi. Alerts: negative sentiment + national-tier placements. Updated by Claude scheduled task.",
+  "description": "Planview coverage tracker. Earned Media, Company Website, and Competitor Coverage tabs. Terms: Planview, Louise Allen, Anvi. Alerts: negative sentiment + national-tier placements. Updated by Claude scheduled task via RSS feed monitoring.",
   "mcpTools": [],
   "mcpServerNames": []
 }
@@ -25,8 +25,8 @@ h1 { margin: 0 0 2px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em
 .lastupdate .dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; display: inline-block; margin-right: 6px; vertical-align: middle; }
 button { background: white; color: #333; border: 1px solid #d0d0d0; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; }
 button:hover { background: #f0f0f0; }
-button.primary { background: #1a5fb4; color: white; border-color: #1a5fb4; }
-button.primary:hover { background: #144a8e; }
+button.primary { background: #F36724; color: white; border-color: #F36724; }
+button.primary:hover { background: #d9560d; }
 
 .snapshot { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
 .stat { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; }
@@ -44,7 +44,7 @@ button.primary:hover { background: #144a8e; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .chip { background: white; border: 1px solid #d0d0d0; border-radius: 999px; padding: 4px 11px; font-size: 11px; cursor: pointer; user-select: none; transition: all 0.1s; }
 .chip:hover { border-color: #999; }
-.chip.active { background: #1a5fb4; color: white; border-color: #1a5fb4; }
+.chip.active { background: #F36724; color: white; border-color: #F36724; }
 .daterange { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .daterange input[type=date] { font: inherit; padding: 4px 6px; border: 1px solid #d0d0d0; border-radius: 5px; background: white; }
 .searchbox { padding: 5px 10px; font: inherit; border: 1px solid #d0d0d0; border-radius: 6px; min-width: 200px; }
@@ -52,8 +52,8 @@ button.primary:hover { background: #144a8e; }
 
 .tabs { display: flex; gap: 2px; border-bottom: 2px solid #e6e6e6; margin-bottom: 12px; }
 .tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 16px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; margin-bottom: -2px; font-family: inherit; }
-.tab.active { color: #1a5fb4; border-bottom-color: #1a5fb4; }
-.tab .ct { background: #e8f1ff; color: #1a5fb4; padding: 1px 7px; border-radius: 999px; margin-left: 6px; font-size: 11px; font-weight: 600; }
+.tab.active { color: #F36724; border-bottom-color: #F36724; }
+.tab .ct { background: #fff0e8; color: #F36724; padding: 1px 7px; border-radius: 999px; margin-left: 6px; font-size: 11px; font-weight: 600; }
 .tab[data-tab="competitor"] .ct { background: #ffeee8; color: #b84a00; }
 .tab[data-tab="competitor"].active { color: #b84a00; border-bottom-color: #b84a00; }
 
@@ -72,14 +72,14 @@ table.coverage tbody tr.competitor-row td:first-child { box-shadow: inset 3px 0 
 .expand-btn { background: none; border: 0; color: #888; cursor: pointer; padding: 0 4px; font-size: 11px; }
 .expand-btn:hover { color: #333; background: transparent; }
 .headline-cell { max-width: 360px; }
-.headline-cell a { color: #1a5fb4; text-decoration: none; font-weight: 500; }
+.headline-cell a { color: #F36724; text-decoration: none; font-weight: 500; }
 .headline-cell a:hover { text-decoration: underline; }
 .url-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .url-cell a { color: #888; font-size: 11px; }
 .notes-cell { max-width: 200px; color: #555; font-size: 11.5px; }
 
 .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
-.b-primary { background: #e8f1ff; color: #1a5fb4; }
+.b-primary { background: #fff0e8; color: #F36724; }
 .b-pickup { background: #f0f0f0; color: #666; }
 .b-tier-national { background: #d8e9ff; color: #0a3d80; }
 .b-tier-trade { background: #d4f1e8; color: #0a6647; }
@@ -102,6 +102,24 @@ table.coverage tbody tr.competitor-row td:first-child { box-shadow: inset 3px 0 
 footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e6e6e6; color: #888; font-size: 11px; line-height: 1.6; }
 footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #555; }
 .dim { color: #aaa; }
+.feeds-bar { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.feeds-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; white-space: nowrap; }
+.feeds-list { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.feed-pill { display: inline-flex; align-items: center; gap: 5px; background: #f4f4f5; border: 1px solid #e0e0e0; border-radius: 999px; padding: 3px 10px; font-size: 11px; color: #444; }
+.feed-pill .feed-dot { width: 5px; height: 5px; border-radius: 50%; background: #bdbdbd; display: inline-block; flex-shrink: 0; }
+.feed-pill.cat-earned .feed-dot { background: #F36724; }
+.feed-pill.cat-owned .feed-dot { background: #7b3fc4; }
+.feed-pill.cat-competitor .feed-dot { background: #e8640a; }
+.feeds-bar-toggle { font-size: 11px; color: #888; cursor: pointer; white-space: nowrap; border: 0; background: none; padding: 0; }
+.feeds-bar-toggle:hover { color: #333; background: none; }
+.feeds-detail { display: none; width: 100%; }
+.feeds-detail.open { display: block; }
+.feeds-detail table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.feeds-detail table th { text-align: left; padding: 5px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #888; font-weight: 600; border-bottom: 1px solid #eee; }
+.feeds-detail table td { padding: 5px 8px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+.feeds-detail table tr:last-child td { border-bottom: 0; }
+.feeds-detail table td a { color: #888; font-size: 11px; word-break: break-all; }
+.b-via-rss { background: #e8f5e9; color: #1b5e20; }
 </style>
 </head>
 <body>
@@ -110,7 +128,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 <header class="top">
   <div>
     <h1 id="title">Planview Coverage Tracker</h1>
-    <div class="sub">Web monitoring &middot; refreshed by Claude on a schedule &middot; tracking: <span id="terms-display"></span></div>
+    <div class="sub">RSS-feed monitoring &middot; refreshed by Claude on a schedule &middot; tracking: <span id="terms-display"></span></div>
   </div>
   <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
     <span class="lastupdate"><span class="dot"></span><span id="last-updated">—</span></span>
@@ -119,6 +137,18 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 </header>
 
 <div class="snapshot" id="snapshot"></div>
+
+<div class="feeds-bar" id="feeds-bar" style="display:none">
+  <span class="feeds-bar-label">RSS Feeds</span>
+  <div class="feeds-list" id="feeds-pills"></div>
+  <button class="feeds-bar-toggle" id="feeds-toggle">Show details ▾</button>
+  <div class="feeds-detail" id="feeds-detail">
+    <table>
+      <thead><tr><th>Feed name</th><th>URL</th><th>Category</th><th>Last item seen</th></tr></thead>
+      <tbody id="feeds-tbody"></tbody>
+    </table>
+  </div>
+</div>
 
 <div class="filters">
   <div class="filter-row">
@@ -188,7 +218,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 </table>
 
 <footer>
-  <strong>Planview Coverage Tracker.</strong> Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>. Updated 3&times; daily by a Claude scheduled task running WebSearch for <code>Planview</code>, <code>Louise Allen</code>, and <code>Anvi</code>. UVMs can be populated from Cision / Muck Rack / Meltwater. The <strong>Competitor Coverage</strong> tab surfaces content published by or about key competitors referencing Planview.
+  <strong>Planview Coverage Tracker.</strong> Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>. Updated by a Claude scheduled task that polls RSS feeds (B2B Tech, AI, Technology, Business categories) and merges new items by URL deduplication. WebSearch fallback for terms: <code>Planview</code>, <code>Louise Allen</code>, <code>Anvi</code>. UVMs can be populated from Cision / Muck Rack / Meltwater. The <strong>Competitor Coverage</strong> tab tracks Planisware, Monday.com, Wrike, ServiceNow, ClickUp, and other SPM/PPM competitors.
 </footer>
 
 </div>
