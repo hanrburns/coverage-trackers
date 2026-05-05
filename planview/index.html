@@ -112,6 +112,10 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 .feed-pill.cat-competitor .feed-dot { background: #e8640a; }
 .feeds-bar-toggle { font-size: 11px; color: #888; cursor: pointer; white-space: nowrap; border: 0; background: none; padding: 0; }
 .feeds-bar-toggle:hover { color: #333; background: none; }
+.feed-pill.fp-scanning { border-color: #f5a623; animation: fp-pulse 1s ease-in-out infinite; }
+.feed-pill.fp-ok { border-color: #4caf50; }
+.feed-pill.fp-err { border-color: #d93025; opacity:0.7; }
+@keyframes fp-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
 .feeds-detail { display: none; width: 100%; }
 .feeds-detail.open { display: block; }
 .feeds-detail table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
@@ -128,10 +132,11 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 <header class="top">
   <div>
     <h1 id="title">Planview Coverage Tracker</h1>
-    <div class="sub">RSS-feed monitoring &middot; refreshed by Claude on a schedule &middot; tracking: <span id="terms-display"></span></div>
+    <div class="sub">Auto-scanning RSS feeds &middot; <span id="scan-sub">initializing</span> &middot; tracking: <span id="terms-display"></span></div>
   </div>
   <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
     <span class="lastupdate"><span class="dot"></span><span id="last-updated">—</span></span>
+    <button id="scan-now">Scan now</button>
     <button id="mark-seen">Mark all seen</button>
   </div>
 </header>
@@ -218,7 +223,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 </table>
 
 <footer>
-  <strong>Planview Coverage Tracker.</strong> Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>. Updated by a Claude scheduled task that polls RSS feeds (B2B Tech, AI, Technology, Business categories) and merges new items by URL deduplication. WebSearch fallback for terms: <code>Planview</code>, <code>Louise Allen</code>, <code>Anvi</code>. UVMs can be populated from Cision / Muck Rack / Meltwater. The <strong>Competitor Coverage</strong> tab tracks Planisware, Monday.com, Wrike, ServiceNow, ClickUp, and other SPM/PPM competitors.
+  <strong>Planview Coverage Tracker.</strong> Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>. Automatically polls RSS feeds (B2B Tech, AI, Technology, Business categories) and merges new items by URL deduplication. WebSearch fallback for terms: <code>Planview</code>, <code>Louise Allen</code>, <code>Anvi</code>. UVMs can be populated from Cision / Muck Rack / Meltwater. The <strong>Competitor Coverage</strong> tab tracks Planisware, Monday.com, Wrike, ServiceNow, ClickUp, and other SPM/PPM competitors.
 </footer>
 
 </div>
@@ -795,7 +800,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     const pillsEl = document.getElementById("feeds-pills");
     const tbodyEl = document.getElementById("feeds-tbody");
     pillsEl.innerHTML = feeds.map(f => `
-      <span class="feed-pill cat-${escapeHtml(f.category || "earned")}">
+      <span class="feed-pill cat-${escapeHtml(f.category || "earned")}" data-feed="${escapeHtml(f.name || '')}">
         <span class="feed-dot"></span>${escapeHtml(f.name || f.url)}
       </span>`).join("");
     tbodyEl.innerHTML = feeds.map(f => `
@@ -1079,7 +1084,10 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     const tierLines = topTiers.length
       ? topTiers.map(([t,n])=>`<span style="display:inline-block;margin-right:8px"><span class="badge b-tier-${t==="competitor"?"competitor":t}">${capitalize(t)}</span> <span style="color:#555">${n}</span></span>`).join("")
       : `<span class="dim">No data</span>`;
+    const _scanAge = scanMeta.lastScan ? (()=>{const s=Math.round((Date.now()-scanMeta.lastScan)/1000);return s<60?"just now":s<3600?Math.floor(s/60)+"m ago":s<86400?Math.floor(s/3600)+"h ago":Math.floor(s/86400)+"d ago";})() : "—";
     document.getElementById("snapshot").innerHTML = `
+      <div class="stat" id="stat-last-scan"><div class="stat-label">Last RSS scan</div><div class="stat-val" style="font-size:16px">${_scanAge}</div><div class="stat-sub" style="display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${scanMeta.lastScan?"#4caf50":"#bdbdbd"};display:inline-block;flex-shrink:0"></span>${scanMeta.lastScan?"Live &mdash; feeds active":"Awaiting first scan"}</div></div>
+      <div class="stat" id="stat-cycles"><div class="stat-label">Scan cycles</div><div class="stat-val">${scanMeta.cycleCount||0}</div><div class="stat-sub">Auto-refresh every 30 min</div></div>
       <div class="stat"><div class="stat-label">Total mentions</div><div class="stat-val">${total}</div><div class="stat-sub">${pickupCount} pickup${pickupCount===1?"":"s"} included</div></div>
       <div class="stat"><div class="stat-label">Sentiment</div><div class="stat-val" style="font-size:18px">${positivePct}% pos &middot; ${negativePct}% neg</div>${sentBars}</div>
       <div class="stat"><div class="stat-label">UVM reach</div><div class="stat-val">${uvmHave ? formatUvm(uvmSum) : "—"}</div><div class="stat-sub">${uvmHave}/${total} items have UVM</div></div>
@@ -1112,6 +1120,139 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     return String(n);
   }
   function toISODate(d) { const m = String(d.getMonth()+1).padStart(2,"0"); const day = String(d.getDate()).padStart(2,"0"); return d.getFullYear()+"-"+m+"-"+day; }
+
+  // ── Auto-scan RSS engine ──────────────────────────────────────────────────
+  const _SCAN_MS = 30 * 60 * 1000;
+  const _AGE_MS  = 90 * 24 * 60 * 60 * 1000;
+  const _PROXY   = "https://api.allorigins.win/get?url=";
+  const _sBase   = "ct:" + (client||"").toLowerCase().replace(/\s+/g,"-");
+  let scanMeta = (()=>{try{return JSON.parse(localStorage.getItem(_sBase+":meta")||"{}");}catch{return{};}})();
+  scanMeta = { lastScan: scanMeta.lastScan||null, cycleCount: scanMeta.cycleCount||0 };
+  let _rssItems = (()=>{try{return JSON.parse(localStorage.getItem(_sBase+":items")||"[]");}catch{return[];}})();
+  let _scanRunning = false, _scanTimer = null;
+
+  {
+    const _ex = new Set();
+    for (const arr of [payload.earnedMedia, payload.ownedMedia, payload.competitorMedia])
+      for (const r of arr||[]) { _ex.add(r.url); for (const s of r.syndications||[]) _ex.add(s.url); }
+    _rssItems = _rssItems.filter(it => !_ex.has(it.url));
+    for (const it of _rssItems) {
+      const sec = it._fc==="competitor"?"competitor":it._fc==="owned"?"owned":"earned";
+      const fs  = it.firstSeen ? new Date(it.firstSeen).getTime() : 0;
+      sections[sec].push({...it, _type:"primary", _parentId:null, _hasSyndications:false, _isNew:fs>ackAt});
+    }
+  }
+
+  function _knownUrls() {
+    const s = new Set();
+    for (const arr of [payload.earnedMedia, payload.ownedMedia, payload.competitorMedia])
+      for (const r of arr||[]) { s.add(r.url); for (const syn of r.syndications||[]) s.add(syn.url); }
+    _rssItems.forEach(it => s.add(it.url));
+    return s;
+  }
+
+  function _parseFeed(xml) {
+    const doc = new DOMParser().parseFromString(xml, "text/xml");
+    const items = Array.from(doc.querySelectorAll("item"));
+    if (items.length) return items.map(el => {
+      const lEl = el.querySelector("link");
+      const link = lEl ? (lEl.textContent.trim() || lEl.getAttribute("href") || "") : "";
+      return { title: el.querySelector("title")?.textContent?.trim()||"", link, pubDate: el.querySelector("pubDate")?.textContent||"", guid: el.querySelector("guid")?.textContent||link };
+    });
+    return Array.from(doc.querySelectorAll("entry")).map(el => ({
+      title: el.querySelector("title")?.textContent?.trim()||"",
+      link:  el.querySelector("link")?.getAttribute("href")||"",
+      pubDate: el.querySelector("published")?.textContent||el.querySelector("updated")?.textContent||"",
+      guid: el.querySelector("id")?.textContent||""
+    }));
+  }
+
+  function _inferSent(t) {
+    t = t.toLowerCase();
+    if (["breach","hack","attack","failure","flaw","vulnerab","layoff","bankrupt","crisis","fraud","lawsuit","penalty","outage","recall","sues","drops ","cuts "].some(w=>t.includes(w))) return "negative";
+    if (["launch","innovat","award","partner","growth","expands","success","leading","record","milestone","invest","fund","wins ","names "].some(w=>t.includes(w))) return "positive";
+    return "neutral";
+  }
+
+  function _inferTier(domain) {
+    if (["cnbc.com","ft.com","wsj.com","nytimes.com","bloomberg.com","reuters.com","bbc.co","washingtonpost.com","techcrunch.com","wired.com","axios.com","theguardian.com","apnews.com","forbes.com","time.com"].some(n=>domain.includes(n))) return "national";
+    if (["medium.com","substack.com","wordpress.com","blogspot.com"].some(n=>domain.includes(n))) return "blog";
+    return "trade";
+  }
+
+  function _setPill(name, st) {
+    const el = document.querySelector(`.feed-pill[data-feed="${CSS.escape(name)}"]`);
+    if (!el) return;
+    el.classList.remove("fp-scanning","fp-ok","fp-err");
+    if (st) el.classList.add("fp-"+st);
+  }
+
+  function _updateScanSub(scanning, done, total) {
+    const el = document.getElementById("scan-sub");
+    if (!el) return;
+    if (scanning) { el.textContent = `scanning… (${done}/${total} feeds)`; return; }
+    if (!scanMeta.lastScan) { el.textContent = "no scans yet — click Scan now"; return; }
+    const s = Math.round((Date.now()-scanMeta.lastScan)/1000);
+    el.textContent = "last scan "+(s<60?"just now":s<3600?Math.floor(s/60)+"m ago":s<86400?Math.floor(s/3600)+"h ago":Math.floor(s/86400)+"d ago")+" · "+scanMeta.cycleCount+" cycle"+(scanMeta.cycleCount===1?"":"s");
+  }
+
+  async function _scanFeed(feed, knownUrls) {
+    const res = await fetch(_PROXY+encodeURIComponent(feed.url), {signal:AbortSignal.timeout(12000)});
+    if (!res.ok) throw new Error("HTTP "+res.status);
+    const xml = (await res.json()).contents || "";
+    const fi = _parseFeed(xml);
+    const now = Date.now(), cutoff = now-_AGE_MS;
+    const out = [];
+    for (const f of fi) {
+      if (!f.link || knownUrls.has(f.link)) continue;
+      const pub = f.pubDate ? new Date(f.pubDate) : null;
+      if (pub && !isNaN(pub) && pub.getTime() < cutoff) continue;
+      if (!(payload.terms||[]).some(t => f.title.toLowerCase().includes(t.toLowerCase()))) continue;
+      const domain = (()=>{try{return new URL(f.link).hostname.replace(/^www\./,"");}catch{return "";}})();
+      out.push({ id:"rss-"+now+"-"+Math.random().toString(36).slice(2,7), publishedAt:pub&&!isNaN(pub)?pub.toISOString().slice(0,10):null, headline:f.title, url:f.link, domain, tier:feed.category==="competitor"?"competitor":_inferTier(domain), uvm:null, sentiment:_inferSent(f.title), notes:"Via "+feed.name+" RSS feed.", isNotable:false, viaRss:true, firstSeen:new Date().toISOString(), syndications:[], _fc:feed.category||"earned" });
+      knownUrls.add(f.link);
+    }
+    if (fi.length) feed.lastSeenGuid = fi[0].guid || fi[0].link;
+    return out;
+  }
+
+  async function runScan() {
+    if (_scanRunning) return;
+    _scanRunning = true;
+    const feeds = payload.feeds||[], kn = _knownUrls();
+    let totalNew = 0;
+    for (let i=0; i<feeds.length; i++) {
+      const feed = feeds[i];
+      _updateScanSub(true, i, feeds.length);
+      _setPill(feed.name, "scanning");
+      try {
+        const ni = await _scanFeed(feed, kn);
+        _setPill(feed.name, "ok");
+        if (ni.length) {
+          for (const it of ni) {
+            const sec = it._fc==="competitor"?"competitor":it._fc==="owned"?"owned":"earned";
+            sections[sec].push({...it, _type:"primary", _parentId:null, _hasSyndications:false, _isNew:true});
+            _rssItems.push(it);
+          }
+          totalNew += ni.length;
+        }
+      } catch { _setPill(feed.name, "err"); }
+    }
+    try { localStorage.setItem(_sBase+":items", JSON.stringify(_rssItems.slice(-500))); } catch {}
+    scanMeta.lastScan = Date.now();
+    scanMeta.cycleCount++;
+    try { localStorage.setItem(_sBase+":meta", JSON.stringify(scanMeta)); } catch {}
+    _scanRunning = false;
+    _updateScanSub(false);
+    if (totalNew > 0) render();
+    _scanTimer = setTimeout(runScan, _SCAN_MS);
+  }
+
+  document.getElementById("scan-now")?.addEventListener("click", () => { if (_scanTimer) clearTimeout(_scanTimer); runScan(); });
+  setInterval(() => _updateScanSub(false), 60000);
+  _updateScanSub(false);
+  setTimeout(runScan, 3000);
+  // ── end auto-scan ─────────────────────────────────────────────────────────
 
   renderFilterChips();
   render();
