@@ -8,6 +8,9 @@ versions/
 thumbnail.*
 *.tmp
 
+# Claude Code session data
+.claude/
+
 # OS noise
 .DS_Store
 Thumbs.db
