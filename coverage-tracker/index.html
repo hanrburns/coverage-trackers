@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coverage Tracker</title>
+<style>
+:root { color-scheme: light; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f8; color: #1a1a1a; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 20px; }
+header.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+h1 { margin: 0 0 2px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.sub { color: #666; font-size: 12px; }
+.header-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.status-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.live-pill { display: flex; align-items: center; gap: 6px; background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #555; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4caf50; box-shadow: 0 0 0 0 rgba(76,175,80,0.4); animation: pulse 2s infinite; flex-shrink: 0; }
+.live-dot.scanning { background: #f5a623; box-shadow: 0 0 0 0 rgba(245,166,35,0.4); animation: pulse-amber 2s infinite; }
+.live-dot.idle { background: #bbb; animation: none; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.4)} 50%{box-shadow:0 0 0 5px rgba(76,175,80,0)} }
+@keyframes pulse-amber { 0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,0.4)} 50%{box-shadow:0 0 0 5px rgba(245,166,35,0)} }
+.stat-pill { background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #555; white-space: nowrap; }
+.stat-pill strong { color: #1a1a1a; }
+#progress-wrap { width: 120px; height: 4px; background: #e6e6e6; border-radius: 2px; overflow: hidden; }
+#progress-fill { height: 100%; width: 0%; background: #1a5fb4; transition: width 0.3s; border-radius: 2px; }
+button { background: white; color: #333; border: 1px solid #d0d0d0; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.1s; }
+button:hover { background: #f0f0f0; }
+button.primary { background: #1a5fb4; color: white; border-color: #1a5fb4; }
+button.primary:hover { background: #144a8e; }
+.kw-section { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+.kw-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.kw-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; white-space: nowrap; }
+.kw-input-wrap { display: flex; gap: 6px; flex: 1; min-width: 200px; }
+#kw-input { flex: 1; font: inherit; padding: 5px 10px; border: 1px solid #d0d0d0; border-radius: 6px; outline: none; min-width: 0; }
+#kw-input:focus { border-color: #1a5fb4; box-shadow: 0 0 0 2px rgba(26,95,180,0.1); }
+.kw-tags { display: flex; gap: 6px; flex-wrap: wrap; min-height: 22px; }
+.kw-tag { display: inline-flex; align-items: center; gap: 5px; background: #e8f1ff; border: 1px solid #c5d9f5; border-radius: 999px; padding: 3px 10px; font-size: 12px; color: #1a5fb4; }
+.kw-tag button { background: none; border: none; color: #1a5fb4; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; opacity: 0.6; width: auto; }
+.kw-tag button:hover { opacity: 1; background: none; }
+.kw-empty { font-size: 12px; color: #aaa; }
+.snapshot { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.stat { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; margin-bottom: 6px; }
+.stat-val { font-size: 22px; font-weight: 600; line-height: 1.1; }
+.stat-sub { font-size: 11px; color: #666; margin-top: 4px; }
+.stat .bars { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 8px; background: #f0f0f0; }
+.stat .bars span { display: block; }
+.stat .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: #666; margin-top: 6px; }
+.stat .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+.filters { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+.filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; min-width: 58px; white-space: nowrap; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { background: white; border: 1px solid #d0d0d0; border-radius: 999px; padding: 4px 11px; font-size: 11px; cursor: pointer; user-select: none; transition: all 0.1s; }
+.chip:hover { border-color: #999; }
+.chip.active { background: #1a5fb4; color: white; border-color: #1a5fb4; }
+.daterange { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.daterange input[type=date] { font: inherit; padding: 4px 6px; border: 1px solid #d0d0d0; border-radius: 5px; background: white; }
+.searchbox { padding: 5px 10px; font: inherit; border: 1px solid #d0d0d0; border-radius: 6px; min-width: 200px; }
+.filter-actions { margin-left: auto; display: flex; gap: 8px; }
+.tabs { display: flex; gap: 2px; border-bottom: 2px solid #e6e6e6; margin-bottom: 12px; }
+.tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 16px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; margin-bottom: -2px; font-family: inherit; border-radius: 0; }
+.tab:hover { background: #f5f5f5; color: #333; }
+.tab.active { color: #1a5fb4; border-bottom-color: #1a5fb4; }
+.tab .ct { background: #e8f1ff; color: #1a5fb4; padding: 1px 7px; border-radius: 999px; margin-left: 6px; font-size: 11px; font-weight: 600; }
+.tab[data-tab="trade"] .ct, .tab[data-tab="trade"].active .ct { background: #d4f1e8; color: #0a6647; }
+.tab[data-tab="trade"].active { color: #0a6647; border-bottom-color: #0a6647; }
+.tab[data-tab="competitor"] .ct { background: #ffeee8; color: #b84a00; }
+.tab[data-tab="competitor"].active { color: #b84a00; border-bottom-color: #b84a00; }
+table.coverage { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; }
+table.coverage thead th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: #555; border-bottom: 1px solid #e6e6e6; white-space: nowrap; cursor: pointer; user-select: none; }
+table.coverage thead th:hover { background: #f0f0f0; }
+table.coverage thead th .sortarrow { color: #999; font-size: 9px; margin-left: 3px; }
+table.coverage tbody td { padding: 11px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; font-size: 12.5px; }
+table.coverage tbody tr:last-child td { border-bottom: 0; }
+table.coverage tbody tr.alert td:first-child { box-shadow: inset 3px 0 0 #d93025; }
+table.coverage tbody tr.notable td:first-child { box-shadow: inset 3px 0 0 #f5a623; }
+table.coverage tbody tr.new-row td:first-child { box-shadow: inset 3px 0 0 #1a5fb4; }
+.headline-cell { max-width: 420px; }
+.headline-cell a { color: #1a5fb4; text-decoration: none; font-weight: 500; line-height: 1.4; }
+.headline-cell a:hover { text-decoration: underline; }
+.headline-cell mark { background: rgba(255,200,0,0.35); border-radius: 2px; padding: 0 1px; font-style: normal; }
+.url-cell { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+.url-cell a { color: #888; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+.b-tier-national { background: #d8e9ff; color: #0a3d80; }
+.b-tier-trade    { background: #d4f1e8; color: #0a6647; }
+.b-tier-regional { background: #ffe8c2; color: #855300; }
+.b-tier-blog     { background: #ece3ff; color: #5a3c9a; }
+.b-tier-other    { background: #efefef; color: #555; }
+.b-sent-positive { background: #d4f1e8; color: #0a6647; }
+.b-sent-neutral  { background: #efefef; color: #555; }
+.b-sent-negative { background: #fde0de; color: #8a1c1c; }
+.b-sent-mixed    { background: #fff4d4; color: #8a5a00; }
+.b-type-news     { background: #e8f1ff; color: #1a5fb4; }
+.b-type-trade    { background: #d4f1e8; color: #0a6647; }
+.b-notable       { background: #fff4d4; color: #8a5a00; }
+.b-alert         { background: #fde0de; color: #8a1c1c; }
+.b-new           { background: #e8f1ff; color: #1a5fb4; }
+.b-competitor    { background: #ffeee8; color: #b84a00; }
+.b-comp-name     { display: inline-block; background: #fff0e8; color: #8a3a00; border: 1px solid #f5c4aa; border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; margin-right: 3px; margin-bottom: 2px; }
+.kw-divider { border-top: 1px solid #f0f0f0; margin: 10px 0 8px; }
+.comp-tag { display: inline-flex; align-items: center; gap: 5px; background: #fff0e8; border: 1px solid #f5c4aa; border-radius: 999px; padding: 3px 10px; font-size: 12px; color: #b84a00; }
+.comp-tag button { background: none; border: none; color: #b84a00; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; opacity: 0.6; width: auto; }
+.comp-tag button:hover { opacity: 1; background: none; }
+table.coverage tbody tr.comp-row td:first-child { box-shadow: inset 3px 0 0 #e8640a; }
+table.coverage tbody tr.comp-alert td:first-child { box-shadow: inset 3px 0 0 #d93025; }
+.empty { text-align: center; padding: 60px 20px; color: #888; background: white; border: 1px dashed #d0d0d0; border-radius: 8px; }
+.empty-title { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 6px; }
+.scanning-msg { text-align: center; padding: 60px 20px; color: #888; background: white; border: 1px solid #e6e6e6; border-radius: 8px; }
+.spin { display: inline-block; font-size: 28px; animation: spin 1.2s linear infinite; }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.network-banner { background: #fffbea; border: 1px solid #f5c842; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 12px; color: #7a5800; display: flex; gap: 10px; align-items: flex-start; }
+.network-banner strong { color: #5a3e00; }
+footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e6e6e6; color: #888; font-size: 11px; line-height: 1.7; }
+footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #555; }
+.dim { color: #bbb; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 id="page-title">Coverage Tracker</h1>
+    <div class="sub" id="page-sub">Live RSS monitor &middot; 157 feeds &middot; continuous background sync</div>
+  </div>
+  <div class="header-right">
+    <div class="status-row">
+      <div class="live-pill">
+        <div class="live-dot idle" id="live-dot"></div>
+        <span id="live-label">Initializing…</span>
+      </div>
+      <div class="stat-pill">Feeds <strong id="stat-feeds">0/157</strong></div>
+      <div class="stat-pill">Hits <strong id="stat-hits">0</strong></div>
+      <div class="stat-pill">Cycle <strong id="stat-cycle">—</strong></div>
+      <div id="progress-wrap"><div id="progress-fill"></div></div>
+    </div>
+    <div class="status-row">
+      <button id="mark-seen-btn">Mark all seen</button>
+      <button id="export-btn" class="primary">↓ Export CSV</button>
+    </div>
+  </div>
+</header>
+
+<div class="network-banner" id="network-banner">
+  <span>⚠️</span>
+  <div><strong>Live feed scanning is pending network access.</strong> The keyword/competitor tracking, filters, sorting, and CSV export are all fully functional. Article data will populate automatically once outbound network access is enabled for this artifact.</div>
+</div>
+
+<div class="kw-section">
+  <div class="kw-row">
+    <span class="kw-label">Client / Keywords</span>
+    <div class="kw-input-wrap">
+      <input id="kw-input" type="text" placeholder="Add client name or keyword and press Enter…" maxlength="80">
+      <button id="kw-add" class="primary">Add</button>
+    </div>
+  </div>
+  <div class="kw-tags" id="kw-tags">
+    <span class="kw-empty">No keywords yet — add a client or term above to start tracking coverage.</span>
+  </div>
+  <div class="kw-divider"></div>
+  <div class="kw-row">
+    <span class="kw-label" style="color:#b84a00">Competitors</span>
+    <div class="kw-input-wrap">
+      <input id="comp-input" type="text" placeholder="Add competitor name and press Enter…" maxlength="80" style="border-color:#f5c4aa;">
+      <button id="comp-add" style="background:#fff0e8;color:#b84a00;border-color:#f5c4aa;">Add</button>
+    </div>
+  </div>
+  <div class="kw-tags" id="comp-tags">
+    <span class="kw-empty">No competitors yet — add competitor names to enable the Competitor Coverage tab.</span>
+  </div>
+</div>
+
+<div class="snapshot" id="snapshot"></div>
+
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Period</span>
+    <div class="daterange">
+      <input type="date" id="date-from">
+      <span style="color:#888">→</span>
+      <input type="date" id="date-to">
+    </div>
+    <div class="chips" id="period-chips">
+      <span class="chip" data-p="1">Today</span>
+      <span class="chip" data-p="7">Last 7d</span>
+      <span class="chip active" data-p="30">Last 30d</span>
+      <span class="chip" data-p="90">Last 90d</span>
+      <span class="chip" data-p="ytd">YTD</span>
+      <span class="chip" data-p="all">All time</span>
+    </div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Tier</span>
+    <div class="chips" id="tier-chips">
+      <span class="chip active" data-v="all">All</span>
+      <span class="chip" data-v="national">National</span>
+      <span class="chip" data-v="trade">Trade</span>
+      <span class="chip" data-v="blog">Blog</span>
+      <span class="chip" data-v="other">Other</span>
+    </div>
+    <span class="filter-label" style="margin-left:8px">Sentiment</span>
+    <div class="chips" id="sent-chips">
+      <span class="chip active" data-v="all">All</span>
+      <span class="chip" data-v="positive">Positive</span>
+      <span class="chip" data-v="neutral">Neutral</span>
+      <span class="chip" data-v="mixed">Mixed</span>
+      <span class="chip" data-v="negative">Negative</span>
+    </div>
+  </div>
+  <div class="filter-row" id="comp-filter-row" style="display:none">
+    <span class="filter-label" style="color:#b84a00">Competitor</span>
+    <div class="chips" id="comp-chips">
+      <span class="chip active" data-v="all">All</span>
+    </div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Flag</span>
+    <div class="chips" id="flag-chips">
+      <span class="chip active" data-v="all">All</span>
+      <span class="chip" data-v="notable">Notable only</span>
+      <span class="chip" data-v="alert">Alerts only</span>
+      <span class="chip" data-v="new">New only</span>
+    </div>
+    <input class="searchbox" id="search-input" type="search" placeholder="Search headlines, sources…">
+    <div class="filter-actions">
+      <button id="reset-btn">Reset filters</button>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="all">All Coverage <span class="ct" id="ct-all">0</span></button>
+  <button class="tab" data-tab="news">News <span class="ct" id="ct-news">0</span></button>
+  <button class="tab" data-tab="trade">Trade <span class="ct" id="ct-trade">0</span></button>
+  <button class="tab" data-tab="competitor">Competitor Coverage <span class="ct" id="ct-competitor">0</span></button>
+</div>
+
+<div id="scanning-msg" class="scanning-msg">
+  <div class="spin" style="margin-bottom:10px">⟳</div>
+  <div style="font-size:14px;font-weight:600;color:#555;margin-bottom:4px">Starting feed scan…</div>
+  <div>Add a keyword above to filter results. Articles appear as feeds are scanned.</div>
+</div>
+<div id="empty-msg" class="empty" style="display:none">
+  <div class="empty-title">No coverage matches the current filters</div>
+  <div>Try widening the date range or clearing filters.</div>
+</div>
+
+<table class="coverage" id="table" style="display:none">
+  <thead>
+    <tr>
+      <th data-sort="date" style="width:110px">Date <span class="sortarrow">▼</span></th>
+      <th data-sort="headline">Headline</th>
+      <th data-sort="source" style="width:175px">Source</th>
+      <th data-sort="domain" style="width:165px">URL</th>
+      <th data-sort="tier" style="width:90px">Tier</th>
+      <th data-sort="sentiment" style="width:105px">Sentiment</th>
+      <th id="th-competitor" style="width:140px;display:none">Matched</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<footer>
+  <strong>Coverage Tracker</strong> — live RSS monitor polling <strong>157 feeds</strong> (45 general news + 112 trade publications). Feeds are rate-limited across two CORS proxies (≤50 req/min each) and a direct-fetch fallback; a full scan takes roughly 2–4 minutes. Tier is auto-assigned from source. Sentiment is auto-detected from headline keywords. <code>National + Negative = Alert</code>. Keywords and seen-state persist in your browser.
+</footer>
+</div>
+
+<script>
+// ─── FEED LIBRARY (157 feeds) ─────────────────────────────────────────────
+const ALL_FEEDS = [
+  {n:"Fox News",c:"Breaking News",u:"https://moxie.foxnews.com/google-publisher/latest.xml",t:"News"},
+  {n:"BBC News",c:"Breaking News",u:"https://feeds.bbci.co.uk/news/rss.xml",t:"News"},
+  {n:"NBC News",c:"Breaking News",u:"https://feeds.nbcnews.com/nbcnews/public/news",t:"News"},
+  {n:"Sky News",c:"Breaking News",u:"https://feeds.skynews.com/feeds/rss/home.xml",t:"News"},
+  {n:"POLITICO",c:"Politics & Government",u:"https://www.politico.com/rss/politicopicks.xml",t:"News"},
+  {n:"The New York Times",c:"Politics & Government",u:"https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/politics/rss.xml",t:"News"},
+  {n:"The Hill",c:"Politics & Government",u:"https://thehill.com/feed/",t:"News"},
+  {n:"BBC World News",c:"World News",u:"http://feeds.bbci.co.uk/news/world/rss.xml",t:"News"},
+  {n:"Al Jazeera",c:"World News",u:"https://www.aljazeera.com/rss",t:"News"},
+  {n:"The Guardian",c:"World News",u:"https://www.theguardian.com/world/rss",t:"News"},
+  {n:"The Washington Post",c:"World News",u:"https://feeds.washingtonpost.com/rss/world",t:"News"},
+  {n:"NPR",c:"World News",u:"https://feeds.npr.org/1001/rss.xml",t:"News"},
+  {n:"CNBC",c:"Business & Finance",u:"https://www.cnbc.com/id/10001147/device/rss/rss.html",t:"News"},
+  {n:"Financial Times",c:"Business & Finance",u:"https://www.ft.com/rss/home/international",t:"News"},
+  {n:"The Wall Street Journal",c:"Business & Finance",u:"https://feeds.content.dowjones.io/public/rss/WSJcomUSBusiness",t:"News"},
+  {n:"BBC Business",c:"Business & Finance",u:"http://feeds.bbci.co.uk/news/business/rss.xml",t:"News"},
+  {n:"International Business Times",c:"Business & Finance",u:"https://www.ibtimes.com/rss",t:"News"},
+  {n:"TechCrunch",c:"Technology",u:"https://techcrunch.com/feed/",t:"News"},
+  {n:"WIRED",c:"Technology",u:"https://www.wired.com/feed/rss",t:"News"},
+  {n:"The Verge",c:"Technology",u:"https://www.theverge.com/rss/index.xml",t:"News"},
+  {n:"CNET",c:"Technology",u:"https://www.cnet.com/rss/news/",t:"News"},
+  {n:"Ars Technica",c:"Technology",u:"https://feeds.arstechnica.com/arstechnica/index",t:"News"},
+  {n:"TechRadar",c:"Technology",u:"https://www.techradar.com/feeds.xml",t:"News"},
+  {n:"ESPN",c:"Sports",u:"https://www.espn.com/espn/rss/news",t:"News"},
+  {n:"BBC Sport",c:"Sports",u:"https://feeds.bbci.co.uk/sport/rss.xml",t:"News"},
+  {n:"FOX Sports",c:"Sports",u:"https://api.foxsports.com/v2/content/optimized-rss?partnerKey=MB0Wehpmuj2lUhuRhQaafhBjAJqaPU244mlTDK1i&size=30",t:"News"},
+  {n:"NBC Sports",c:"Sports",u:"https://www.nbcsports.com/index.atom",t:"News"},
+  {n:"Yahoo Sports",c:"Sports",u:"https://sports.yahoo.com/cycling/rss/",t:"News"},
+  {n:"Deadline",c:"Entertainment",u:"https://deadline.com/feed/rss/",t:"News"},
+  {n:"Variety",c:"Entertainment",u:"https://variety.com/feed/rss/",t:"News"},
+  {n:"The Hollywood Reporter",c:"Entertainment",u:"https://www.hollywoodreporter.com/feed/rss/",t:"News"},
+  {n:"News Medical",c:"Health & Wellness",u:"https://www.news-medical.net/syndication.axd?format=rss",t:"News"},
+  {n:"Health.com",c:"Health & Wellness",u:"https://feeds-api.dotdashmeredith.com/v1/rss/google/adf185b2-ff7d-4fe3-a978-b59ff8528c53",t:"News"},
+  {n:"Crime Online",c:"Crime & Justice",u:"https://www.crimeonline.com/feed/",t:"News"},
+  {n:"Court TV",c:"Crime & Justice",u:"https://www.courttv.com/feed/",t:"News"},
+  {n:"Nature.com",c:"Science & Nature",u:"https://www.nature.com/nature.rss",t:"News"},
+  {n:"Science News",c:"Science & Nature",u:"https://www.sciencenews.org/feed",t:"News"},
+  {n:"Smithsonian Magazine",c:"Science & Nature",u:"https://www.smithsonianmag.com/rss/science-nature/",t:"News"},
+  {n:"SciTechDaily",c:"Science & Nature",u:"https://scitechdaily.com/feed/",t:"News"},
+  {n:"Science Daily",c:"Science & Nature",u:"https://www.sciencedaily.com/rss/all.xml",t:"News"},
+  {n:"People.com",c:"Lifestyle & Culture",u:"https://feeds-api.dotdashmeredith.com/v1/rss/google/85fdec1d-95a2-4e50-8641-5e2d0ef816a7",t:"News"},
+  {n:"BBC Culture",c:"Lifestyle & Culture",u:"https://www.bbc.com/culture/feed.rss",t:"News"},
+  {n:"Harper's Bazaar",c:"Lifestyle & Culture",u:"https://www.harpersbazaar.com/rss/culture.xml",t:"News"},
+  {n:"WSJ Arts & Culture",c:"Lifestyle & Culture",u:"https://feeds.content.dowjones.io/public/rss/RSSArtsCulture",t:"News"},
+  {n:"The Guardian Natural Disasters",c:"Weather & Natural Disasters",u:"https://www.theguardian.com/world/natural--disasters/rss",t:"News"},
+  {n:"Retail Dive",c:"Retail",u:"https://www.retaildive.com/feeds/news/",t:"Trade"},
+  {n:"National Retail Federation",c:"Retail",u:"https://nrf.com/rss.xml",t:"Trade"},
+  {n:"Chain Store Age",c:"Retail",u:"https://chainstoreage.com/rss.xml",t:"Trade"},
+  {n:"Retail TouchPoints",c:"Retail",u:"https://retailtouchpoints.com/feed/",t:"Trade"},
+  {n:"WWD",c:"Retail",u:"https://wwd.com/feed/",t:"Trade"},
+  {n:"Grocery Dive",c:"Retail",u:"https://www.grocerydive.com/feeds/news/",t:"Trade"},
+  {n:"Supermarket News",c:"Retail",u:"https://www.supermarketnews.com/rss.xml",t:"Trade"},
+  {n:"Retail Week",c:"Retail",u:"https://www.retail-week.com/rss.xml",t:"Trade"},
+  {n:"Progressive Grocer",c:"Retail",u:"https://progressivegrocer.com/rss.xml",t:"Trade"},
+  {n:"Drug Store News",c:"Retail",u:"https://drugstorenews.com/rss.xml",t:"Trade"},
+  {n:"PYMNTS.com",c:"Retail",u:"https://www.pymnts.com/feed/",t:"Trade"},
+  {n:"Retail Technology Review",c:"Retail",u:"https://www.retailtechnologyreview.com/rss/news.rss",t:"Trade"},
+  {n:"Charged Retail",c:"Retail",u:"https://chargedretail.co.uk/feed/",t:"Trade"},
+  {n:"Retail Customer Experience",c:"Retail",u:"https://retailcustomerexperience.com/rss/",t:"Trade"},
+  {n:"Dark Reading",c:"Cybersecurity",u:"https://www.darkreading.com/rss.xml",t:"Trade"},
+  {n:"BleepingComputer",c:"Cybersecurity",u:"https://www.bleepingcomputer.com/feed/",t:"Trade"},
+  {n:"Krebs on Security",c:"Cybersecurity",u:"https://krebsonsecurity.com/feed/",t:"Trade"},
+  {n:"Threatpost",c:"Cybersecurity",u:"https://threatpost.com/feed/",t:"Trade"},
+  {n:"The Hacker News",c:"Cybersecurity",u:"https://feeds.feedburner.com/TheHackersNews",t:"Trade"},
+  {n:"Help Net Security",c:"Cybersecurity",u:"https://www.helpnetsecurity.com/feed/",t:"Trade"},
+  {n:"Infosecurity Magazine",c:"Cybersecurity",u:"https://www.infosecurity-magazine.com/rss/news/",t:"Trade"},
+  {n:"SC Magazine",c:"Cybersecurity",u:"https://www.scmagazine.com/feed",t:"Trade"},
+  {n:"Recorded Future News",c:"Cybersecurity",u:"https://therecord.media/feed",t:"Trade"},
+  {n:"SANS Internet Stormcast",c:"Cybersecurity",u:"https://isc.sans.edu/rssfeed_full.xml",t:"Trade"},
+  {n:"Cyber Security News",c:"Cybersecurity",u:"https://cybersecuritynews.com/feed/",t:"Trade"},
+  {n:"Graham Cluley Security",c:"Cybersecurity",u:"https://feeds.feedburner.com/GrahamCluleySecurityNews",t:"Trade"},
+  {n:"The Register",c:"Technology",u:"https://www.theregister.com/headlines.atom",t:"Trade"},
+  {n:"ZDNet",c:"Technology",u:"https://www.zdnet.com/news/rss.xml",t:"Trade"},
+  {n:"MIT Technology Review",c:"Technology",u:"https://www.technologyreview.com/feed/",t:"Trade"},
+  {n:"IEEE Spectrum",c:"Technology",u:"https://spectrum.ieee.org/feeds/feed.rss",t:"Trade"},
+  {n:"Information Week",c:"Technology",u:"https://www.informationweek.com/rss.xml",t:"Trade"},
+  {n:"Computer World",c:"Technology",u:"https://www.computerworld.com/index.rss",t:"Trade"},
+  {n:"Network World",c:"Technology",u:"https://www.networkworld.com/index.rss",t:"Trade"},
+  {n:"InfoWorld",c:"Technology",u:"https://www.infoworld.com/index.rss",t:"Trade"},
+  {n:"CIO.com",c:"Technology",u:"https://www.cio.com/index.rss",t:"Trade"},
+  {n:"TechRepublic",c:"Technology",u:"https://www.techrepublic.com/rssfeeds/articles/",t:"Trade"},
+  {n:"Slashdot",c:"Technology",u:"https://rss.slashdot.org/Slashdot/slashdotMain",t:"Trade"},
+  {n:"Engineering News-Record",c:"Engineering",u:"https://www.enr.com/rss/all",t:"Trade"},
+  {n:"Design Engineering",c:"Engineering",u:"https://www.design-engineering.com/feed/",t:"Trade"},
+  {n:"Machine Design",c:"Engineering",u:"https://www.machinedesign.com/rss.xml",t:"Trade"},
+  {n:"Design World",c:"Engineering",u:"https://www.designworldonline.com/feed/",t:"Trade"},
+  {n:"Electronic Design",c:"Engineering",u:"https://www.electronicdesign.com/rss.xml",t:"Trade"},
+  {n:"EE Times",c:"Engineering",u:"https://www.eetimes.com/feed/",t:"Trade"},
+  {n:"Embedded",c:"Engineering",u:"https://www.embedded.com/feed/",t:"Trade"},
+  {n:"EDN Network",c:"Engineering",u:"https://www.edn.com/feed/",t:"Trade"},
+  {n:"R&D World",c:"Engineering",u:"https://www.rdworldonline.com/feed/",t:"Trade"},
+  {n:"Healthcare IT News",c:"Healthcare",u:"https://www.healthcareitnews.com/rss.xml",t:"Trade"},
+  {n:"Becker's Hospital Review",c:"Healthcare",u:"https://www.beckershospitalreview.com/rss/all.html",t:"Trade"},
+  {n:"Modern Healthcare",c:"Healthcare",u:"https://www.modernhealthcare.com/section/rss",t:"Trade"},
+  {n:"Health Affairs",c:"Healthcare",u:"https://www.healthaffairs.org/rss/site_4/4.xml",t:"Trade"},
+  {n:"STAT News",c:"Healthcare",u:"https://www.statnews.com/feed/",t:"Trade"},
+  {n:"MedCity News",c:"Healthcare",u:"https://medcitynews.com/feed/",t:"Trade"},
+  {n:"Fierce Healthcare",c:"Healthcare",u:"https://www.fiercehealthcare.com/rss/xml",t:"Trade"},
+  {n:"Fierce Biotech",c:"Healthcare",u:"https://www.fiercebiotech.com/rss/xml",t:"Trade"},
+  {n:"MobiHealthNews",c:"Healthcare",u:"https://www.mobihealthnews.com/feed",t:"Trade"},
+  {n:"Health Data Management",c:"Healthcare",u:"https://www.healthdatamanagement.com/rss.xml",t:"Trade"},
+  {n:"Healthcare Dive",c:"Healthcare",u:"https://www.healthcaredive.com/feeds/news/",t:"Trade"},
+  {n:"SHRM",c:"HR Tech",u:"https://www.shrm.org/rss/news.aspx",t:"Trade"},
+  {n:"HR Technologist",c:"HR Tech",u:"https://www.hrtechnologist.com/feed/",t:"Trade"},
+  {n:"HR Dive",c:"HR Tech",u:"https://www.hrdive.com/feeds/news/",t:"Trade"},
+  {n:"HR Executive",c:"HR Tech",u:"https://hrexecutive.com/feed/",t:"Trade"},
+  {n:"TLNT",c:"HR Tech",u:"https://www.tlnt.com/feed/",t:"Trade"},
+  {n:"Recruiting Daily",c:"HR Tech",u:"https://recruitingdaily.com/feed/",t:"Trade"},
+  {n:"HR Morning",c:"HR Tech",u:"https://www.hrmorning.com/feed/",t:"Trade"},
+  {n:"People Management",c:"HR Tech",u:"https://www.peoplemanagement.co.uk/feed",t:"Trade"},
+  {n:"TechTarget",c:"B2B Tech",u:"https://www.techtarget.com/rss/All-TechTarget-News.xml",t:"Trade"},
+  {n:"CRN",c:"B2B Tech",u:"https://www.crn.com/feed",t:"Trade"},
+  {n:"Diginomica",c:"B2B Tech",u:"https://diginomica.com/feed",t:"Trade"},
+  {n:"SaaStr",c:"B2B Tech",u:"https://www.saastr.com/feed/",t:"Trade"},
+  {n:"Salesforce Blog",c:"B2B Tech",u:"https://www.salesforce.com/blog/feed/",t:"Trade"},
+  {n:"MarTech",c:"B2B Tech",u:"https://martech.org/feed/",t:"Trade"},
+  {n:"CMSWire",c:"B2B Tech",u:"https://www.cmswire.com/rss/all/",t:"Trade"},
+  {n:"ZDNet Enterprise",c:"B2B Tech",u:"https://www.zdnet.com/topic/enterprise-software/rss.xml",t:"Trade"},
+  {n:"Forrester Blogs",c:"B2B Tech",u:"https://www.forrester.com/blogs/feed/",t:"Trade"},
+  {n:"Channel Futures",c:"B2B Tech",u:"https://www.channelfutures.com/feed",t:"Trade"},
+  {n:"IT Pro Today",c:"B2B Tech",u:"https://www.itprotoday.com/rss.xml",t:"Trade"},
+  {n:"VentureBeat AI",c:"AI",u:"https://venturebeat.com/category/ai/feed/",t:"Trade"},
+  {n:"MIT Technology Review AI",c:"AI",u:"https://www.technologyreview.com/topic/artificial-intelligence/feed/",t:"Trade"},
+  {n:"The Gradient",c:"AI",u:"https://thegradient.pub/rss/",t:"Trade"},
+  {n:"Import AI",c:"AI",u:"https://importai.substack.com/feed",t:"Trade"},
+  {n:"AI Alignment Forum",c:"AI",u:"https://www.alignmentforum.org/feed.xml",t:"Trade"},
+  {n:"Last Week in AI",c:"AI",u:"https://lastweekin.ai/feed",t:"Trade"},
+  {n:"The Batch",c:"AI",u:"https://www.deeplearning.ai/the-batch/feed/",t:"Trade"},
+  {n:"Synced Review",c:"AI",u:"https://syncedreview.com/feed/",t:"Trade"},
+  {n:"AI Business",c:"AI",u:"https://aibusiness.com/feed/",t:"Trade"},
+  {n:"WIRED AI",c:"AI",u:"https://www.wired.com/feed/tag/artificial-intelligence/rss",t:"Trade"},
+  {n:"Google AI Blog",c:"AI",u:"https://blog.research.google/atom.xml",t:"Trade"},
+  {n:"OpenAI News",c:"AI",u:"https://openai.com/news/rss.xml",t:"Trade"},
+  {n:"Towards Data Science",c:"AI",u:"https://towardsdatascience.com/feed",t:"Trade"},
+  {n:"Manufacturing Dive",c:"Manufacturing",u:"https://www.manufacturingdive.com/feeds/news/",t:"Trade"},
+  {n:"IndustryWeek",c:"Manufacturing",u:"https://www.industryweek.com/rss.xml",t:"Trade"},
+  {n:"Assembly Magazine",c:"Manufacturing",u:"https://www.assemblymag.com/rss/topic/all",t:"Trade"},
+  {n:"Modern Machine Shop",c:"Manufacturing",u:"https://www.mmsonline.com/rss.xml",t:"Trade"},
+  {n:"Production Machining",c:"Manufacturing",u:"https://www.productionmachining.com/rss.xml",t:"Trade"},
+  {n:"Fabricating & Metalworking",c:"Manufacturing",u:"https://www.fabricatingandmetalworking.com/feed/",t:"Trade"},
+  {n:"Quality Magazine",c:"Manufacturing",u:"https://www.qualitymag.com/rss.xml",t:"Trade"},
+  {n:"SME Mfg Engineering",c:"Manufacturing",u:"https://www.sme.org/rss.xml",t:"Trade"},
+  {n:"Robotics & Automation News",c:"Manufacturing",u:"https://roboticsandautomationnews.com/feed/",t:"Trade"},
+  {n:"The Fabricator",c:"Manufacturing",u:"https://www.thefabricator.com/rss.xml",t:"Trade"},
+  {n:"PlasticsToday",c:"Manufacturing",u:"https://www.plasticstoday.com/rss.xml",t:"Trade"},
+  {n:"Packaging Digest",c:"Manufacturing",u:"https://www.packagingdigest.com/rss.xml",t:"Trade"},
+  {n:"Control Engineering",c:"Industrial",u:"https://www.controleng.com/feed/",t:"Trade"},
+  {n:"Plant Engineering",c:"Industrial",u:"https://www.plantengineering.com/rss.xml",t:"Trade"},
+  {n:"Industrial Distribution",c:"Industrial",u:"https://www.inddist.com/rss.xml",t:"Trade"},
+  {n:"Automation World",c:"Industrial",u:"https://www.automationworld.com/rss.xml",t:"Trade"},
+  {n:"Processing Magazine",c:"Industrial",u:"https://www.processingmagazine.com/feed/",t:"Trade"},
+  {n:"Chemical Engineering",c:"Industrial",u:"https://www.chemengonline.com/feed/",t:"Trade"},
+  {n:"Power Engineering",c:"Industrial",u:"https://www.power-eng.com/rss.xml",t:"Trade"},
+  {n:"Pumps & Systems",c:"Industrial",u:"https://www.pumpsandsystems.com/rss.xml",t:"Trade"},
+  {n:"Supply Chain Dive",c:"Industrial",u:"https://www.supplychaindive.com/feeds/news/",t:"Trade"},
+  {n:"Logistics Management",c:"Industrial",u:"https://www.logisticsmgmt.com/rss.xml",t:"Trade"}
+];
+
+// ─── TIER & SENTIMENT ────────────────────────────────────────────────────────────
+const NATIONAL_SET = new Set(["Fox News","BBC News","NBC News","Sky News","POLITICO","The New York Times","The Hill","BBC World News","Al Jazeera","The Guardian","The Washington Post","NPR","CNBC","Financial Times","The Wall Street Journal","BBC Business","International Business Times","TechCrunch","WIRED","The Verge","CNET","Ars Technica","ESPN","BBC Sport","FOX Sports","NBC Sports","Deadline","Variety","The Hollywood Reporter","Nature.com","People.com","BBC Culture","WSJ Arts & Culture","Science Daily","Smithsonian Magazine"]);
+const BLOG_DOMAINS = ["substack.com","medium.com","blogspot.com","wordpress.com","ghost.io"];
+const NEG_RE = /\b(crisis|breach|hack|lawsuit|layoff|loss|scandal|controversy|criticis|fail|failure|warning|risk|threat|decline|concern|probe|recall|outage|bankrupt|fraud|fine|penalt|suspend|block|ban|accus|charg|trial|arrest|plummet|crash|collaps|downgrad|slump|plunge|worsens?|deteriorat|attack|violat|discriminat|negligenc|incompeten|mismanag)\b/i;
+const POS_RE = /\b(award|leader|named|winner|wins?|growth|innovat|launch|partner|expan|appoint|promot|success|milestone|record|excel|breakthrough|celebrat|honor|recogni|top|best|first|pioneer|transform|revolutio|empower|achieve|surpass|exceed|outperform)\b/i;
+
+function tierFor(feed, url) {
+  if (NATIONAL_SET.has(feed.n)) return "national";
+  if (BLOG_DOMAINS.some(d => (url||"").includes(d))) return "blog";
+  if (feed.t === "Trade") return "trade";
+  return "other";
+}
+function sentimentFor(title) {
+  const neg = NEG_RE.test(title||""), pos = POS_RE.test(title||"");
+  if (neg && pos) return "mixed";
+  if (neg) return "negative";
+  if (pos) return "positive";
+  return "neutral";
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let keywords    = JSON.parse(localStorage.getItem("ct3_kw")   || "[]");
+let competitors = JSON.parse(localStorage.getItem("ct3_comp") || "[]");
+let ackAt       = parseInt(localStorage.getItem("ct3_ack")    || "0", 10);
+let articles = [], seenUrls = new Set();
+let feedsScanned = 0, totalCycles = 0;
+const TIER_ORD = ["national","trade","regional","blog","other"];
+const SENT_ORD = ["positive","neutral","mixed","negative"];
+const F = { tab:"all", tier:"all", sentiment:"all", flag:"all", comp:"all", search:"", dateFrom:null, dateTo:null, sortKey:"date", sortDir:"desc" };
+
+(function() {
+  const t = new Date(); t.setHours(23,59,59,999);
+  const f = new Date(t); f.setDate(f.getDate()-30); f.setHours(0,0,0,0);
+  F.dateTo = iso(t); F.dateFrom = iso(f);
+  document.getElementById("date-to").value   = F.dateTo;
+  document.getElementById("date-from").value = F.dateFrom;
+})();
+
+// ─── FETCH / PROXY LAYER ─────────────────────────────────────────────────────
+//
+// Problem with the old approach: 8 parallel fetches all hitting the same proxy
+// simultaneously causes immediate rate-limit errors that return HTML error
+// pages instead of XML, so everything silently fails.
+//
+// Fix: a ProxyQueue serializes requests to each proxy endpoint and enforces a
+// minimum gap between calls (≈50 req/min, well under free-tier limits). All
+// 157 feeds are enqueued at once and drain through two queues in round-robin.
+// A direct-fetch attempt runs first — feeds whose servers send CORS headers
+// (many trade pubs do) succeed for free without touching either proxy.
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// Returns true only if the string looks like actual RSS/Atom XML, not an error page.
+function looksLikeXML(t) {
+  if (!t || t.length < 60) return false;
+  const head = t.trimStart().slice(0, 500);
+  return head.includes('<') && (
+    head.includes('<?xml') || head.includes('<rss') || head.includes('<feed') ||
+    head.includes('<channel') || head.includes('<atom') || head.includes('<item') ||
+    head.includes('<entry')
+  );
+}
+
+// Serialized request queue: drains one request at a time, enforcing rateMs
+// minimum gap between sends to avoid hammering the same proxy endpoint.
+class ProxyQueue {
+  constructor(wrap, decode, rateMs) {
+    this._wrap   = wrap;
+    this._decode = decode;
+    this._rate   = rateMs;
+    this._queue  = [];
+    this._busy   = false;
+    this._last   = 0;
+    this.fails   = 0;
+  }
+
+  enqueue(url) {
+    return new Promise(resolve => {
+      this._queue.push({ url, resolve });
+      if (!this._busy) this._drain();
+    });
+  }
+
+  async _drain() {
+    this._busy = true;
+    while (this._queue.length) {
+      const { url, resolve } = this._queue.shift();
+      const wait = this._rate - (Date.now() - this._last);
+      if (wait > 0) await sleep(wait);
+      this._last = Date.now();
+      try { resolve(await this._attempt(url)); } catch { resolve(null); }
+    }
+    this._busy = false;
+  }
+
+  async _attempt(url) {
+    try {
+      const res = await fetch(this._wrap(url), { signal: AbortSignal.timeout(12000) });
+      if (!res.ok) { this.fails++; return null; }
+      const text = await this._decode(res);
+      if (!looksLikeXML(text)) { this.fails++; return null; }
+      this.fails = Math.max(0, this.fails - 1);
+      return text;
+    } catch {
+      this.fails++;
+      return null;
+    }
+  }
+}
+
+// Two proxy queues, each capped at ≤50 req/min (1200ms gap).
+// allorigins always returns JSON; corsproxy.io passes through raw content.
+const QUEUES = [
+  new ProxyQueue(
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    async r => {
+      const text = await r.text();
+      try { const j = JSON.parse(text); return j.contents || j.data || ""; } catch { return ""; }
+    },
+    1200
+  ),
+  new ProxyQueue(
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    async r => r.text(),
+    1200
+  )
+];
+let _qi = 0; // round-robin cursor
+
+async function fetchFeed(url) {
+  // Attempt direct fetch first — works for feeds that send CORS headers.
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(7000), mode: "cors" });
+    if (res.ok) {
+      const text = await res.text();
+      if (looksLikeXML(text)) return text;
+    }
+  } catch { /* CORS blocked or timed out — fall through to proxy */ }
+
+  // Round-robin primary proxy, other queue as fallback.
+  const pi = _qi++ % QUEUES.length;
+  const si = (pi + 1) % QUEUES.length;
+  const result = await QUEUES[pi].enqueue(url);
+  if (result) return result;
+  return QUEUES[si].enqueue(url);
+}
+
+// ─── PARSE ───────────────────────────────────────────────────────────────────
+function parseRSS(xml, feed) {
+  const doc = new DOMParser().parseFromString(xml, "text/xml");
+  const atom = !!doc.querySelector("feed");
+  const out = [];
+  doc.querySelectorAll(atom ? "entry" : "item").forEach(el => {
+    const g = tag => { const n = el.querySelector(tag); return n ? n.textContent.trim() : ""; };
+    const title = g("title");
+    const link  = atom
+      ? (el.querySelector("link[rel='alternate']") || el.querySelector("link"))?.getAttribute("href") || g("id")
+      : g("link") || g("guid");
+    if (!title || !link) return;
+    const raw = g("pubDate") || g("published") || g("updated");
+    out.push({ title, url: link, date: raw ? new Date(raw) : new Date(), source: feed.n, category: feed.c, feedType: feed.t, tier: tierFor(feed, link), sentiment: sentimentFor(title) });
+  });
+  return out;
+}
+
+// ─── POLLING ENGINE ──────────────────────────────────────────────────────────
+// All 157 feeds are enqueued concurrently. The ProxyQueues handle serialization
+// and rate-limiting internally, so no manual batching is needed here.
+// A full scan takes roughly 2–4 minutes depending on network latency.
+const GAP = 180000; // 3 min idle between cycle completions
+
+async function runCycle() {
+  feedsScanned = 0;
+  totalCycles++;
+  const start = Date.now();
+  setDot("scanning");
+  document.getElementById("network-banner").style.display = "none";
+
+  await Promise.allSettled(ALL_FEEDS.map(async feed => {
+    const xml = await fetchFeed(feed.u);
+    feedsScanned++;
+    document.getElementById("progress-fill").style.width = `${(feedsScanned / ALL_FEEDS.length * 100).toFixed(1)}%`;
+    document.getElementById("stat-feeds").textContent = `${feedsScanned}/157`;
+    if (!xml) return;
+    try {
+      let added = false;
+      parseRSS(xml, feed).forEach(a => {
+        if (seenUrls.has(a.url)) return;
+        seenUrls.add(a.url);
+        const cm = compMatch(a);
+        if (kwMatch(a) || cm.length > 0) {
+          articles.unshift({ ...a, isNew: true, matchedComps: cm });
+          added = true;
+        }
+      });
+      if (added) { if (articles.length > 1500) articles = articles.slice(0, 1500); render(); }
+    } catch {}
+  }));
+
+  document.getElementById("stat-cycle").textContent = `${((Date.now() - start) / 1000).toFixed(0)}s`;
+  document.getElementById("progress-fill").style.width = "100%";
+  setTimeout(() => { document.getElementById("progress-fill").style.width = "0%"; }, 1500);
+  setDot("live");
+  setTimeout(() => { articles.forEach(a => a.isNew = false); render(); }, 300000);
+  setTimeout(runCycle, GAP);
+}
+
+function setDot(s) {
+  const d = document.getElementById("live-dot"), l = document.getElementById("live-label");
+  if (s === "scanning") { d.className = "live-dot scanning"; l.textContent = "Scanning feeds…"; }
+  else if (s === "live") { d.className = "live-dot"; l.textContent = "Live · cycle " + totalCycles; }
+  else { d.className = "live-dot idle"; l.textContent = "Initializing…"; }
+}
+
+// ─── FILTER LOGIC ─────────────────────────────────────────────────────────────
+function kwMatch(a) {
+  if (!keywords.length) return true;
+  const h = (a.title + " " + (a.desc || "")).toLowerCase();
+  return keywords.some(k => h.includes(k.toLowerCase()));
+}
+function compMatch(a) {
+  if (!competitors.length) return [];
+  const h = (a.title + " " + (a.desc || "")).toLowerCase();
+  return competitors.filter(c => h.includes(c.toLowerCase()));
+}
+function rowOk(a) {
+  if (F.tab === "competitor") {
+    const cm = a.matchedComps || [];
+    if (!cm.length) return false;
+    if (F.comp !== "all" && !cm.includes(F.comp)) return false;
+    if (F.tier !== "all"      && a.tier !== F.tier)           return false;
+    if (F.sentiment !== "all" && a.sentiment !== F.sentiment) return false;
+    if (F.flag === "notable"  && !(a.tier === "national"))    return false;
+    if (F.flag === "alert"    && !(a.tier === "national" && a.sentiment === "negative")) return false;
+    if (F.flag === "new"      && !a.isNew)                    return false;
+    if (F.dateFrom && iso(a.date) < F.dateFrom) return false;
+    if (F.dateTo   && iso(a.date) > F.dateTo)   return false;
+    if (F.search) { const h = (a.title + " " + a.source + " " + cm.join(" ")).toLowerCase(); if (!h.includes(F.search)) return false; }
+    return true;
+  }
+  if (F.tab === "news"  && a.feedType !== "News")  return false;
+  if (F.tab === "trade" && a.feedType !== "Trade") return false;
+  if (!kwMatch(a)) return false;
+  if (F.tier !== "all"      && a.tier !== F.tier)           return false;
+  if (F.sentiment !== "all" && a.sentiment !== F.sentiment) return false;
+  if (F.flag === "notable"  && !(a.tier === "national"))    return false;
+  if (F.flag === "alert"    && !(a.tier === "national" && a.sentiment === "negative")) return false;
+  if (F.flag === "new"      && !a.isNew)                    return false;
+  if (F.dateFrom && iso(a.date) < F.dateFrom) return false;
+  if (F.dateTo   && iso(a.date) > F.dateTo)   return false;
+  if (F.search) { const h = (a.title + " " + a.source + " " + a.category).toLowerCase(); if (!h.includes(F.search)) return false; }
+  return true;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const visible = articles.filter(rowOk);
+  document.getElementById("stat-hits").textContent    = visible.length;
+  document.getElementById("ct-all").textContent        = articles.filter(a => kwMatch(a)).length;
+  document.getElementById("ct-news").textContent       = articles.filter(a => a.feedType === "News" && kwMatch(a)).length;
+  document.getElementById("ct-trade").textContent      = articles.filter(a => a.feedType === "Trade" && kwMatch(a)).length;
+  document.getElementById("ct-competitor").textContent = articles.filter(a => a.matchedComps && a.matchedComps.length > 0).length;
+  const isComp = F.tab === "competitor";
+  document.getElementById("th-competitor").style.display  = isComp ? "" : "none";
+  document.getElementById("comp-filter-row").style.display = isComp ? "" : "none";
+  renderSnapshot(visible);
+  renderTable(visible);
+}
+function renderSnapshot(rows) {
+  const tot = rows.length;
+  const sent = {positive:0, neutral:0, mixed:0, negative:0};
+  const tiers = {};
+  let notable = 0, alerts = 0, newCount = 0;
+  rows.forEach(a => {
+    const s = a.sentiment || "neutral"; if (s in sent) sent[s]++;
+    tiers[a.tier] = (tiers[a.tier] || 0) + 1;
+    if (a.tier === "national") notable++;
+    if (a.tier === "national" && a.sentiment === "negative") alerts++;
+    if (a.isNew) newCount++;
+  });
+  const pos = tot ? Math.round(sent.positive / tot * 100) : 0;
+  const neg = tot ? Math.round(sent.negative / tot * 100) : 0;
+  const bars = tot
+    ? `<div class="bars"><span style="width:${sent.positive/tot*100}%;background:#4caf50"></span><span style="width:${sent.neutral/tot*100}%;background:#bdbdbd"></span><span style="width:${sent.mixed/tot*100}%;background:#f5a623"></span><span style="width:${sent.negative/tot*100}%;background:#d93025"></span></div><div class="legend"><span><i style="background:#4caf50"></i>Positive ${sent.positive}</span><span><i style="background:#bdbdbd"></i>Neutral ${sent.neutral}</span><span><i style="background:#f5a623"></i>Mixed ${sent.mixed}</span><span><i style="background:#d93025"></i>Negative ${sent.negative}</span></div>`
+    : `<div class="dim" style="font-size:11px;margin-top:4px">No data yet</div>`;
+  const tierHtml = Object.entries(tiers).sort((a,b) => b[1]-a[1]).slice(0,4)
+    .map(([t,n]) => `<span class="badge b-tier-${t}" style="margin-right:5px">${cap(t)}</span><span style="color:#555;font-size:11px;margin-right:8px">${n}</span>`).join("") || `<span class="dim">No data yet</span>`;
+
+  if (F.tab === "competitor") {
+    const compCounts = {};
+    rows.forEach(a => (a.matchedComps||[]).forEach(c => { compCounts[c] = (compCounts[c]||0)+1; }));
+    const compRows = Object.entries(compCounts).sort((a,b) => b[1]-a[1]);
+    const compHtml = compRows.length
+      ? compRows.map(([c,n]) => `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f5f5f5"><span style="font-size:12px;color:#1a1a1a">${escH(c)}</span><span style="font-size:12px;font-weight:600;color:#b84a00">${n}</span></div>`).join("")
+      : `<div class="dim" style="font-size:11px;margin-top:4px">No data yet</div>`;
+    document.getElementById("snapshot").innerHTML = `
+      <div class="stat"><div class="stat-label">Competitor Mentions</div><div class="stat-val">${tot}</div><div class="stat-sub">${competitors.length} competitor${competitors.length===1?"":"s"} tracked</div></div>
+      <div class="stat"><div class="stat-label">Sentiment</div><div class="stat-val" style="font-size:17px">${pos}% pos · ${neg}% neg</div>${bars}</div>
+      <div class="stat" style="border-color:#f5c4aa"><div class="stat-label" style="color:#b84a00">By Competitor</div>${compHtml}</div>
+      <div class="stat"><div class="stat-label">Tier Breakdown</div><div style="margin-top:8px">${tierHtml}</div></div>
+      <div class="stat" style="border-color:${alerts?"#d93025":notable?"#f5a623":"#e6e6e6"}"><div class="stat-label">Alerts</div><div class="stat-val" style="color:${alerts?"#8a1c1c":notable?"#8a5a00":"#1a1a1a"}">${alerts}</div><div class="stat-sub">${notable} national · ${alerts} negative</div></div>`;
+    return;
+  }
+  document.getElementById("snapshot").innerHTML = `
+    <div class="stat"><div class="stat-label">Total Coverage</div><div class="stat-val">${tot}</div><div class="stat-sub">${articles.filter(a=>a.feedType==="News"&&kwMatch(a)).length} news · ${articles.filter(a=>a.feedType==="Trade"&&kwMatch(a)).length} trade</div></div>
+    <div class="stat"><div class="stat-label">Sentiment</div><div class="stat-val" style="font-size:17px">${pos}% pos · ${neg}% neg</div>${bars}</div>
+    <div class="stat"><div class="stat-label">Tier Breakdown</div><div style="margin-top:8px">${tierHtml}</div></div>
+    <div class="stat" style="border-color:${alerts?"#d93025":notable?"#f5a623":"#e6e6e6"}"><div class="stat-label">Alerts</div><div class="stat-val" style="color:${alerts?"#8a1c1c":notable?"#8a5a00":"#1a1a1a"}">${alerts}</div><div class="stat-sub">${notable} national · ${alerts} negative</div></div>
+    <div class="stat"><div class="stat-label">New Since Seen</div><div class="stat-val">${newCount}</div><div class="stat-sub">Since last "Mark seen"</div></div>`;
+}
+function renderTable(rows) {
+  const scanning = document.getElementById("scanning-msg");
+  const empty    = document.getElementById("empty-msg");
+  const table    = document.getElementById("table");
+  const tbody    = document.getElementById("tbody");
+  if (rows.length === 0 && feedsScanned === 0) { scanning.style.display="block"; empty.style.display="none"; table.style.display="none"; return; }
+  scanning.style.display = "none";
+  if (rows.length === 0) { empty.style.display="block"; table.style.display="none"; return; }
+  empty.style.display = "none"; table.style.display = "";
+  const dir = F.sortDir === "asc" ? 1 : -1;
+  const sorted = [...rows].sort((a,b) => {
+    if (F.sortKey === "date")      return (a.date - b.date) * dir;
+    if (F.sortKey === "tier")      return (TIER_ORD.indexOf(a.tier) - TIER_ORD.indexOf(b.tier)) * dir;
+    if (F.sortKey === "sentiment") return (SENT_ORD.indexOf(a.sentiment) - SENT_ORD.indexOf(b.sentiment)) * dir;
+    const av = (a[F.sortKey]||"").toString().toLowerCase(), bv = (b[F.sortKey]||"").toString().toLowerCase();
+    return av < bv ? -dir : av > bv ? dir : 0;
+  });
+  tbody.innerHTML = sorted.map(a => {
+    const isAlert  = a.tier === "national" && a.sentiment === "negative";
+    const isNat    = a.tier === "national";
+    const isCompTab = F.tab === "competitor";
+    const rc = isAlert ? (isCompTab?"comp-alert":"alert") : isCompTab?"comp-row" : isNat?"notable" : a.isNew?"new-row" : "";
+    const hlKws = isCompTab ? (a.matchedComps||[]) : keywords;
+    const hl    = a.title ? hlKw(escH(a.title), hlKws) : "(untitled)";
+    const dom   = getDom(a.url);
+    const badges = [
+      isAlert ? `<span class="badge b-alert">Alert</span>` : "",
+      isNat && !isAlert && !isCompTab ? `<span class="badge b-notable">Notable</span>` : "",
+      a.isNew ? `<span class="badge b-new">New</span>` : "",
+    ].filter(Boolean).join(" ");
+    const compCell = isCompTab
+      ? `<td>${(a.matchedComps||[]).map(c=>`<span class="b-comp-name">${escH(c)}</span>`).join("")}</td>`
+      : "";
+    return `<tr class="${rc}">
+      <td style="white-space:nowrap;font-size:12px;color:#555">${fmtDate(a.date)}</td>
+      <td class="headline-cell"><a href="${escH(a.url)}" target="_blank" rel="noopener">${hl}</a>${badges?`<div style="margin-top:4px">${badges}</div>`:""}</td>
+      <td><div style="font-weight:500;color:#1a1a1a;font-size:12px;margin-bottom:3px">${escH(a.source)}</div><span class="badge ${a.feedType==="News"?"b-type-news":"b-type-trade"}">${a.feedType}</span> <span style="font-size:10px;color:#888;background:#f5f5f5;padding:1px 5px;border-radius:3px">${escH(a.category)}</span></td>
+      <td class="url-cell"><a href="${escH(a.url)}" target="_blank" rel="noopener" title="${escH(a.url)}">${escH(dom)}</a></td>
+      <td><span class="badge b-tier-${a.tier}">${cap(a.tier)}</span></td>
+      <td><span class="badge b-sent-${a.sentiment}">${cap(a.sentiment)}</span></td>
+      ${compCell}
+    </tr>`;
+  }).join("");
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function escH(s){ return String(s||"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function cap(s){ s=String(s||""); return s ? s[0].toUpperCase()+s.slice(1) : s; }
+function iso(d){ const m=String(d.getMonth()+1).padStart(2,"0"); return d.getFullYear()+"-"+m+"-"+String(d.getDate()).padStart(2,"0"); }
+function getDom(u){ try{ return new URL(u).hostname.replace(/^www\./,""); }catch{ return u||""; } }
+function fmtDate(d){ if(!d||isNaN(d.getTime())) return '<span class="dim">—</span>'; return d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}); }
+function hlKw(h, kws){ if(!kws.length) return h; let s=h; kws.forEach(k=>{ s=s.replace(new RegExp(`(${k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")})`,"gi"),"<mark>$1</mark>"); }); return s; }
+
+// ─── KEYWORD UI ──────────────────────────────────────────────────────────────
+function addKw() {
+  const inp=document.getElementById("kw-input"), v=inp.value.trim();
+  if (!v || keywords.includes(v)) { inp.value=""; return; }
+  keywords.push(v); inp.value="";
+  localStorage.setItem("ct3_kw", JSON.stringify(keywords));
+  renderKwTags(); render();
+}
+function removeKw(kw) {
+  keywords = keywords.filter(k => k !== kw);
+  localStorage.setItem("ct3_kw", JSON.stringify(keywords));
+  renderKwTags(); render();
+}
+function renderKwTags() {
+  const el = document.getElementById("kw-tags");
+  if (!keywords.length) { el.innerHTML='<span class="kw-empty">No keywords yet — add a client or term above to start tracking coverage.</span>'; document.getElementById("page-sub").textContent="Live RSS monitor · 157 feeds · continuous background sync"; return; }
+  el.innerHTML = keywords.map(k=>`<div class="kw-tag">${escH(k)}<button onclick="removeKw(${JSON.stringify(k)})" title="Remove">×</button></div>`).join("");
+  document.getElementById("page-sub").textContent = "Live RSS monitor · 157 feeds · tracking: " + keywords.join(", ");
+}
+document.getElementById("kw-add").addEventListener("click", addKw);
+document.getElementById("kw-input").addEventListener("keydown", e => { if (e.key==="Enter") addKw(); });
+
+// ─── COMPETITOR UI ────────────────────────────────────────────────────────────
+function addComp() {
+  const inp=document.getElementById("comp-input"), v=inp.value.trim();
+  if (!v || competitors.includes(v)) { inp.value=""; return; }
+  competitors.push(v); inp.value="";
+  localStorage.setItem("ct3_comp", JSON.stringify(competitors));
+  articles.forEach(a => { a.matchedComps = compMatch(a); });
+  renderCompTags(); renderCompFilterChips(); render();
+}
+function removeComp(c) {
+  competitors = competitors.filter(x => x !== c);
+  localStorage.setItem("ct3_comp", JSON.stringify(competitors));
+  articles.forEach(a => { a.matchedComps = compMatch(a); });
+  renderCompTags(); renderCompFilterChips(); render();
+}
+function renderCompTags() {
+  const el = document.getElementById("comp-tags");
+  if (!competitors.length) { el.innerHTML='<span class="kw-empty">No competitors yet — add competitor names to enable the Competitor Coverage tab.</span>'; return; }
+  el.innerHTML = competitors.map(c=>`<div class="comp-tag">${escH(c)}<button onclick="removeComp(${JSON.stringify(c)})" title="Remove">×</button></div>`).join("");
+}
+function renderCompFilterChips() {
+  const el = document.getElementById("comp-chips");
+  el.innerHTML = `<span class="chip ${F.comp==="all"?"active":""}" data-v="all">All</span>`
+    + competitors.map(c=>`<span class="chip ${F.comp===c?"active":""}" data-v="${escH(c)}">${escH(c)}</span>`).join("");
+  el.querySelectorAll(".chip").forEach(ch => {
+    ch.addEventListener("click", () => {
+      F.comp = ch.dataset.v;
+      el.querySelectorAll(".chip").forEach(x => x.classList.toggle("active", x.dataset.v===F.comp));
+      render();
+    });
+  });
+}
+document.getElementById("comp-add").addEventListener("click", addComp);
+document.getElementById("comp-input").addEventListener("keydown", e => { if (e.key==="Enter") addComp(); });
+
+// ─── CHIP WIRING ─────────────────────────────────────────────────────────────
+function wireChips(id, key) {
+  document.querySelectorAll(`#${id} .chip`).forEach(c => {
+    c.addEventListener("click", () => {
+      F[key] = c.dataset.v;
+      document.querySelectorAll(`#${id} .chip`).forEach(x => x.classList.toggle("active", x.dataset.v===c.dataset.v));
+      render();
+    });
+  });
+}
+wireChips("tier-chips","tier");
+wireChips("sent-chips","sentiment");
+wireChips("flag-chips","flag");
+
+document.querySelectorAll("#period-chips .chip").forEach(c => {
+  c.addEventListener("click", () => {
+    const p=c.dataset.p, today=new Date(); today.setHours(23,59,59,999);
+    let from=null;
+    if (p==="all") { F.dateFrom=null; F.dateTo=null; document.getElementById("date-from").value=""; document.getElementById("date-to").value=""; }
+    else if (p==="ytd") { from=new Date(today.getFullYear(),0,1); }
+    else { from=new Date(today); from.setDate(from.getDate()-parseInt(p)); from.setHours(0,0,0,0); }
+    if (from) { F.dateFrom=iso(from); F.dateTo=iso(today); document.getElementById("date-from").value=F.dateFrom; document.getElementById("date-to").value=F.dateTo; }
+    document.querySelectorAll("#period-chips .chip").forEach(x => x.classList.toggle("active", x.dataset.p===p));
+    render();
+  });
+});
+document.getElementById("date-from").addEventListener("change",  e => { F.dateFrom=e.target.value||null; render(); });
+document.getElementById("date-to").addEventListener("change",    e => { F.dateTo=e.target.value||null;   render(); });
+document.getElementById("search-input").addEventListener("input", e => { F.search=e.target.value.toLowerCase(); render(); });
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+  F.tier="all"; F.sentiment="all"; F.flag="all"; F.comp="all"; F.search=""; F.dateFrom=null; F.dateTo=null;
+  document.getElementById("date-from").value=""; document.getElementById("date-to").value="";
+  document.getElementById("search-input").value="";
+  ["tier-chips","sent-chips","flag-chips"].forEach(id => document.querySelectorAll(`#${id} .chip`).forEach(c => c.classList.toggle("active", c.dataset.v==="all")));
+  document.querySelectorAll("#period-chips .chip").forEach(c => c.classList.remove("active"));
+  renderCompFilterChips(); render();
+});
+
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  F.tab=t.dataset.tab; F.comp="all";
+  renderCompFilterChips();
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab===F.tab));
+  render();
+}));
+
+document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
+  th.addEventListener("click", () => {
+    const k=th.dataset.sort;
+    if (F.sortKey===k) F.sortDir=F.sortDir==="asc"?"desc":"asc"; else { F.sortKey=k; F.sortDir=k==="date"?"desc":"asc"; }
+    document.querySelectorAll("#table thead th .sortarrow").forEach(a => a.textContent="");
+    const a=th.querySelector(".sortarrow"); if (a) a.textContent=F.sortDir==="asc"?"▲":"▼";
+    render();
+  });
+});
+
+document.getElementById("mark-seen-btn").addEventListener("click", () => {
+  ackAt=Date.now(); localStorage.setItem("ct3_ack", String(ackAt));
+  articles.forEach(a => a.isNew=false); render();
+});
+
+document.getElementById("export-btn").addEventListener("click", () => {
+  const rows = articles.filter(rowOk);
+  if (!rows.length) { alert("No articles match current filters."); return; }
+  const isComp = F.tab==="competitor";
+  const header = isComp
+    ? ["Date","Headline","Source","Category","Feed Type","Tier","Sentiment","Matched Competitors","URL"]
+    : ["Date","Headline","Source","Category","Feed Type","Tier","Sentiment","URL"];
+  const csv = [header, ...rows.map(a => {
+    const base = [`"${iso(a.date)}"`,`"${(a.title||"").replace(/"/g,'""')}"`,`"${a.source}"`,`"${a.category}"`,`"${a.feedType}"`,`"${a.tier}"`,`"${a.sentiment}"`];
+    if (isComp) base.push(`"${(a.matchedComps||[]).join("; ")}"`);
+    base.push(`"${a.url}"`);
+    return base;
+  })].map(r => r.join(",")).join("\n");
+  const el=document.createElement("a"); el.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); el.download="coverage-"+iso(new Date())+".csv"; el.click();
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderKwTags();
+renderCompTags();
+renderCompFilterChips();
+render();
+runCycle();
+</script>
+</body>
+</html>
