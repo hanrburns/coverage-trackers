@@ -124,6 +124,16 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
 .feeds-detail table tr:last-child td { border-bottom: 0; }
 .feeds-detail table td a { color: #888; font-size: 11px; word-break: break-all; }
 .b-via-rss { background: #e8f5e9; color: #1b5e20; }
+.b-target-1 { background: #fff8e1; color: #7c5500; }
+.b-target-2 { background: #e3f2fd; color: #0d47a1; }
+.targets-panel { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+.targets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 4px; margin-top: 6px; }
+.tp-item { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 5px; font-size: 11.5px; }
+.tp-item.tp-hit { background: #e8f5e9; color: #1b5e20; }
+.tp-item.tp-miss { background: #f5f5f5; color: #999; }
+.tp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.tp-hit .tp-dot { background: #4caf50; }
+.tp-miss .tp-dot { background: #bdbdbd; }
 </style>
 </head>
 <body>
@@ -152,6 +162,20 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       <thead><tr><th>Feed name</th><th>URL</th><th>Category</th><th>Last item seen</th></tr></thead>
       <tbody id="feeds-tbody"></tbody>
     </table>
+  </div>
+</div>
+
+<div class="targets-panel" id="targets-panel" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:600">Media Targets</span>
+    <span id="targets-summary-bar" style="font-size:11px;color:#555"></span>
+    <button class="feeds-bar-toggle" id="targets-toggle" style="margin-left:auto">Show targets ▾</button>
+  </div>
+  <div id="targets-detail" style="display:none;margin-top:10px">
+    <div style="font-size:11px;font-weight:600;color:#7c5500;margin-bottom:4px">◎ Tier 1 — Bullseye</div>
+    <div class="targets-grid" id="targets-tier1-grid"></div>
+    <div style="font-size:11px;font-weight:600;color:#0d47a1;margin:10px 0 4px">⊙ Tier 2 — Broad Targets</div>
+    <div class="targets-grid" id="targets-tier2-grid"></div>
   </div>
 </div>
 
@@ -188,6 +212,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     <div class="chips" id="notable-filter">
       <span class="chip active" data-key="all">All</span>
       <span class="chip" data-key="notable">Notable only</span>
+      <span class="chip" data-key="target">Target pubs</span>
     </div>
     <input class="searchbox" id="search-input" type="search" placeholder="Search headlines, notes…" />
     <div class="filter-actions">
@@ -346,7 +371,135 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
       "url": "https://www.cnbc.com/id/10001147/device/rss/rss.html",
       "category": "earned",
       "lastSeenGuid": null
+    },
+    {
+      "name": "Forbes (Tech)",
+      "url": "https://www.forbes.com/innovation/feed/",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "Inc. Magazine",
+      "url": "https://www.inc.com/rss.xml",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "Harvard Business Review",
+      "url": "https://feeds.hbr.org/harvardbusiness",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "Reuters (Technology)",
+      "url": "https://feeds.reuters.com/reuters/technologyNews",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "CIO Dive",
+      "url": "https://www.ciodive.com/feeds/news/",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "InformationWeek",
+      "url": "https://www.informationweek.com/rss.xml",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "TechRepublic",
+      "url": "https://www.techrepublic.com/rss/all/",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "The Verge",
+      "url": "https://www.theverge.com/rss/index.xml",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "SD Times",
+      "url": "https://sdtimes.com/feed/",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "Solutions Review",
+      "url": "https://solutionsreview.com/feed/",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "Entrepreneur",
+      "url": "https://www.entrepreneur.com/latest.rss",
+      "category": "earned",
+      "lastSeenGuid": null
+    },
+    {
+      "name": "CIO (Foundry)",
+      "url": "https://www.cio.com/feed/",
+      "category": "earned",
+      "lastSeenGuid": null
     }
+  ],
+  "targetPublications": [
+    {"name":"Bloomberg","display":"Bloomberg / Bloomberg TV","tier":1,"domains":["bloomberg.com"]},
+    {"name":"Business Insider","tier":1,"domains":["businessinsider.com","insider.com"]},
+    {"name":"CNBC","tier":1,"domains":["cnbc.com"]},
+    {"name":"The Economist","tier":1,"domains":["economist.com"]},
+    {"name":"Fast Company","tier":1,"domains":["fastcompany.com"]},
+    {"name":"Financial Times","tier":1,"domains":["ft.com"]},
+    {"name":"Fortune","tier":1,"domains":["fortune.com"]},
+    {"name":"Newsweek","tier":1,"domains":["newsweek.com"]},
+    {"name":"Wall Street Journal","display":"WSJ / CIO Journal","tier":1,"domains":["wsj.com","ciojournal.com"]},
+    {"name":"AI Business","tier":2,"domains":["aibusiness.com"]},
+    {"name":"Austin American-Statesman","tier":2,"domains":["statesman.com","austin360.com"]},
+    {"name":"Austin Business Journal","display":"Austin Business Journal / AustinInno","tier":2,"domains":["bizjournals.com","austininno.com"]},
+    {"name":"Austin Tech Connect","tier":2,"domains":["austintechconnect.com"]},
+    {"name":"Automation World","tier":2,"domains":["automationworld.com"]},
+    {"name":"Automotive Logistics","tier":2,"domains":["automotivelogistics.media"]},
+    {"name":"Automotive News","tier":2,"domains":["autonews.com"]},
+    {"name":"Axios","tier":2,"domains":["axios.com"]},
+    {"name":"BBC","display":"BBC (Broadcast) & Radio","tier":2,"domains":["bbc.com","bbc.co.uk"]},
+    {"name":"BizTech Magazine","tier":2,"domains":["biztechmagazine.com"]},
+    {"name":"Chief Executive Magazine","tier":2,"domains":["chiefexecutive.net"]},
+    {"name":"CNN","tier":2,"domains":["cnn.com"]},
+    {"name":"Data Center Knowledge","tier":2,"domains":["datacenterknowledge.com"]},
+    {"name":"Database Trends & Applications","tier":2,"domains":["dbta.com"]},
+    {"name":"Dive Publications","display":"Dive (CIO Dive, CFO Dive, HR Dive, etc.)","tier":2,"domains":["ciodive.com","cfodive.com","hrdive.com","supplychaindive.com","retaildive.com","constructiondive.com"]},
+    {"name":"Entrepreneur","tier":2,"domains":["entrepreneur.com"]},
+    {"name":"eWEEK","tier":2,"domains":["eweek.com"]},
+    {"name":"Forbes","tier":2,"domains":["forbes.com"]},
+    {"name":"Foundry","display":"Foundry (CIO, InfoWorld, ComputerWorld, NetworkWorld)","tier":2,"domains":["cio.com","infoworld.com","computerworld.com","networkworld.com"]},
+    {"name":"Harvard Business Review","tier":2,"domains":["hbr.org"]},
+    {"name":"Inc.","tier":2,"domains":["inc.com"]},
+    {"name":"InformationWeek","tier":2,"domains":["informationweek.com"]},
+    {"name":"InsideAI News","tier":2,"domains":["insideainews.com"]},
+    {"name":"IoT World Today","tier":2,"domains":["iotworldtoday.com"]},
+    {"name":"IT Business Edge","tier":2,"domains":["itbusinessedge.com"]},
+    {"name":"Enterprise AI World","tier":2,"domains":["enterpriseaiworld.com"]},
+    {"name":"Morning Brew","display":"Morning Brew (IT Brew, Tech Brew, etc.)","tier":2,"domains":["morningbrew.com","itbrew.com"]},
+    {"name":"NBC","tier":2,"domains":["nbcnews.com","nbc.com"]},
+    {"name":"New York Times","tier":2,"domains":["nytimes.com"]},
+    {"name":"NYSE Floor Talk","tier":2,"domains":["nyse.com"]},
+    {"name":"Reuters","tier":2,"domains":["reuters.com"]},
+    {"name":"SD Times","tier":2,"domains":["sdtimes.com"]},
+    {"name":"SDxCentral","tier":2,"domains":["sdxcentral.com"]},
+    {"name":"Solutions Review","tier":2,"domains":["solutionsreview.com"]},
+    {"name":"TechCrunch","tier":2,"domains":["techcrunch.com"]},
+    {"name":"TechRadar","tier":2,"domains":["techradar.com"]},
+    {"name":"TechRepublic","tier":2,"domains":["techrepublic.com"]},
+    {"name":"Techstrong Network","display":"Techstrong (DevOps.com, Techstrong.AI, TV)","tier":2,"domains":["devops.com","techstrong.ai","techstrongtv.com"]},
+    {"name":"TechTarget","tier":2,"domains":["techtarget.com"]},
+    {"name":"The Information","tier":2,"domains":["theinformation.com"]},
+    {"name":"USA Today","tier":2,"domains":["usatoday.com"]},
+    {"name":"The Verge","tier":2,"domains":["theverge.com"]},
+    {"name":"VentureBeat","tier":2,"domains":["venturebeat.com"]},
+    {"name":"WIRED","tier":2,"domains":["wired.com"]},
+    {"name":"ZDNet","tier":2,"domains":["zdnet.com"]}
   ],
   "earnedMedia": [
     {
@@ -1041,6 +1194,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     if (state.tier !== "all" && (r.tier || "other") !== state.tier) return false;
     if (state.sentiment !== "all" && (r.sentiment || "neutral") !== state.sentiment) return false;
     if (state.notable === "notable" && !(r.isNotable || r.sentiment === "negative")) return false;
+    if (state.notable === "target" && !_matchTarget(r.domain)) return false;
     if (state.dateFrom) { if (!r.publishedAt || r.publishedAt < state.dateFrom) return false; }
     if (state.dateTo)   { if (!r.publishedAt || r.publishedAt > state.dateTo)   return false; }
     if (state.search) {
@@ -1091,6 +1245,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     document.getElementById("ct-competitor").textContent = competitorMatched;
 
     renderSnapshot(sections[state.tab].filter(rowMatches));
+    renderTargetsPanel();
 
     document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
       const arrow = th.querySelector(".sortarrow");
@@ -1117,6 +1272,8 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
         : `<span class="badge b-pickup">Pickup</span>`;
       const newBadge  = r._isNew ? ` <span class="badge b-new">New</span>` : "";
       const rssBadge  = r.viaRss ? ' <span class="badge b-via-rss">RSS</span>' : "";
+      const _tp = _matchTarget(r.domain);
+      const targetBadge = _tp ? ` <span class="badge b-target-${_tp.tier}">${_tp.tier===1?"◎ Bullseye":"⊙ Target"}</span>` : "";
       const noteBadge = noteClass === "alert"
         ? ` <span class="badge b-alert">Alert</span>`
         : (noteClass === "notable" ? ` <span class="badge b-notable">Notable</span>` : "");
@@ -1126,7 +1283,7 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
           <td>${expandBtn} ${formatDate(r.publishedAt)}</td>
           <td class="headline-cell">
             <a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.headline || "(untitled)")}</a>
-            <div style="margin-top:4px">${typeBadge}${noteBadge}${newBadge}${rssBadge}</div>
+            <div style="margin-top:4px">${typeBadge}${noteBadge}${newBadge}${rssBadge}${targetBadge}</div>
           </td>
           <td class="url-cell"><a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(r.url || "")}">${escapeHtml(r.domain || "")}</a></td>
           <td><span class="badge ${tierClass}">${escapeHtml(capitalize(r.tier || "other"))}</span></td>
@@ -1176,6 +1333,19 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     const tierLines = topTiers.length
       ? topTiers.map(([t,n])=>`<span style="display:inline-block;margin-right:8px"><span class="badge b-tier-${t==="competitor"?"competitor":t}">${capitalize(t)}</span> <span style="color:#555">${n}</span></span>`).join("")
       : `<span class="dim">No data</span>`;
+    const _tpAll = payload.targetPublications || [];
+    const _tpHits = new Set();
+    for (const r of sections.earned) { const m = _matchTarget(r.domain); if (m) _tpHits.add(m.name); }
+    const _t1All = _tpAll.filter(t => t.tier === 1);
+    const _t2All = _tpAll.filter(t => t.tier === 2);
+    const _t1Hits = _t1All.filter(t => _tpHits.has(t.name)).length;
+    const _t2Hits = _t2All.filter(t => _tpHits.has(t.name)).length;
+    const targetStatCard = _tpAll.length ? `
+      <div class="stat" style="border-color:${_t1Hits>0?'#f5c842':'#e6e6e6'}">
+        <div class="stat-label">Target Coverage</div>
+        <div class="stat-val" style="font-size:16px">${_t1Hits}<span style="font-size:12px;color:#aaa;font-weight:400">/${_t1All.length} T1</span> &nbsp;·&nbsp; ${_t2Hits}<span style="font-size:12px;color:#aaa;font-weight:400">/${_t2All.length} T2</span></div>
+        <div class="stat-sub">Bullseye hits &middot; Broad target hits</div>
+      </div>` : "";
     const _scanAge = scanMeta.lastScan ? (()=>{const s=Math.round((Date.now()-scanMeta.lastScan)/1000);return s<60?"just now":s<3600?Math.floor(s/60)+"m ago":s<86400?Math.floor(s/3600)+"h ago":Math.floor(s/86400)+"d ago";})() : "—";
     document.getElementById("snapshot").innerHTML = `
       <div class="stat" id="stat-last-scan"><div class="stat-label">Last RSS scan</div><div class="stat-val" style="font-size:16px">${_scanAge}</div><div class="stat-sub" style="display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${scanMeta.lastScan?"#4caf50":"#bdbdbd"};display:inline-block;flex-shrink:0"></span>${scanMeta.lastScan?"Live &mdash; feeds active":"Awaiting first scan"}</div></div>
@@ -1188,7 +1358,8 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
         <div class="stat-label">Notable / alerts</div>
         <div class="stat-val" style="color:${notableCount?"#8a5a00":"#1a1a1a"}">${notableCount}</div>
         <div class="stat-sub">National features &amp; neg. pieces</div>
-      </div>`;
+      </div>
+      ${targetStatCard}`;
   }
 
   function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
@@ -1281,6 +1452,15 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     return "neutral";
   }
 
+  function _matchTarget(domain) {
+    if (!domain || !(payload.targetPublications||[]).length) return null;
+    const d = domain.toLowerCase();
+    for (const tp of payload.targetPublications) {
+      if ((tp.domains||[]).some(td => d === td.toLowerCase() || d.endsWith('.'+td.toLowerCase()))) return tp;
+    }
+    return null;
+  }
+
   function _inferTier(domain) {
     if (["cnbc.com","ft.com","wsj.com","nytimes.com","bloomberg.com","reuters.com","bbc.co","washingtonpost.com","techcrunch.com","wired.com","axios.com","theguardian.com","apnews.com","forbes.com","time.com"].some(n=>domain.includes(n))) return "national";
     if (["medium.com","substack.com","wordpress.com","blogspot.com"].some(n=>domain.includes(n))) return "blog";
@@ -1351,6 +1531,38 @@ footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-si
     _updateScanSub(false);
     if (totalNew > 0) render();
     _scanTimer = setTimeout(runScan, _SCAN_MS);
+  }
+
+  function renderTargetsPanel() {
+    const tp = payload.targetPublications || [];
+    if (!tp.length) return;
+    const panel = document.getElementById("targets-panel");
+    if (!panel) return;
+    panel.style.display = "";
+    const hitNames = new Set();
+    for (const r of sections.earned) { const m = _matchTarget(r.domain); if (m) hitNames.add(m.name); }
+    const t1 = tp.filter(t => t.tier === 1);
+    const t2 = tp.filter(t => t.tier === 2);
+    const t1Hits = t1.filter(t => hitNames.has(t.name)).length;
+    const t2Hits = t2.filter(t => hitNames.has(t.name)).length;
+    document.getElementById("targets-summary-bar").textContent =
+      `Tier 1: ${t1Hits}/${t1.length} hit · Tier 2: ${t2Hits}/${t2.length} hit`;
+    const makeItem = t => {
+      const hit = hitNames.has(t.name);
+      return `<div class="tp-item ${hit?"tp-hit":"tp-miss"}"><span class="tp-dot"></span>${escapeHtml(t.display||t.name)}</div>`;
+    };
+    document.getElementById("targets-tier1-grid").innerHTML = t1.map(makeItem).join("");
+    document.getElementById("targets-tier2-grid").innerHTML = t2.map(makeItem).join("");
+  }
+
+  {
+    const toggleBtn = document.getElementById("targets-toggle");
+    const detailEl  = document.getElementById("targets-detail");
+    if (toggleBtn) toggleBtn.addEventListener("click", () => {
+      const open = detailEl.style.display === "none";
+      detailEl.style.display = open ? "" : "none";
+      toggleBtn.textContent = open ? "Hide targets ▴" : "Show targets ▾";
+    });
   }
 
   document.getElementById("scan-now")?.addEventListener("click", () => { if (_scanTimer) clearTimeout(_scanTimer); runScan(); });
