@@ -1,4 +1,3 @@
-
 <!doctype html><script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Sensormatic Solutions Coverage Tracker",
@@ -29,3 +28,993 @@ button.primary { background: #0057B8; color: white; border-color: #0057B8; }
 button.primary:hover { background: #00489a; }
 
 .snapshot { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.stat { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; margin-bottom: 6px; }
+.stat-val { font-size: 22px; font-weight: 600; line-height: 1.1; }
+.stat-sub { font-size: 11px; color: #666; margin-top: 4px; }
+.stat .bars { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 8px; background: #f0f0f0; }
+.stat .bars span { display: block; }
+.stat .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: #666; margin-top: 6px; }
+.stat .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+.feeds-bar { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.feeds-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; white-space: nowrap; }
+.feeds-list { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.feed-pill { display: inline-flex; align-items: center; gap: 5px; background: #f4f4f5; border: 1px solid #e0e0e0; border-radius: 999px; padding: 3px 10px; font-size: 11px; color: #444; }
+.feed-pill .feed-dot { width: 5px; height: 5px; border-radius: 50%; background: #bdbdbd; display: inline-block; flex-shrink: 0; }
+.feed-pill.cat-earned .feed-dot { background: #0057B8; }
+.feed-pill.cat-owned .feed-dot { background: #7b3fc4; }
+.feed-pill.cat-competitor .feed-dot { background: #e8640a; }
+.feeds-bar-toggle { font-size: 11px; color: #888; cursor: pointer; white-space: nowrap; border: 0; background: none; padding: 0; }
+.feeds-bar-toggle:hover { color: #333; background: none; }
+.feed-pill.fp-scanning { border-color: #f5a623; animation: fp-pulse 1s ease-in-out infinite; }
+.feed-pill.fp-ok { border-color: #4caf50; }
+.feed-pill.fp-err { border-color: #d93025; opacity:0.7; }
+@keyframes fp-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+.feeds-detail { display: none; width: 100%; }
+.feeds-detail.open { display: block; }
+.feeds-detail table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.feeds-detail table th { text-align: left; padding: 5px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #888; font-weight: 600; border-bottom: 1px solid #eee; }
+.feeds-detail table td { padding: 5px 8px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+.feeds-detail table tr:last-child td { border-bottom: 0; }
+.feeds-detail table td a { color: #888; font-size: 11px; word-break: break-all; }
+
+.filters { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr; gap: 10px; }
+.filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #777; font-weight: 600; min-width: 60px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { background: white; border: 1px solid #d0d0d0; border-radius: 999px; padding: 4px 11px; font-size: 11px; cursor: pointer; user-select: none; transition: all 0.1s; }
+.chip:hover { border-color: #999; }
+.chip.active { background: #0057B8; color: white; border-color: #0057B8; }
+.daterange { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.daterange input[type=date] { font: inherit; padding: 4px 6px; border: 1px solid #d0d0d0; border-radius: 5px; background: white; }
+.searchbox { padding: 5px 10px; font: inherit; border: 1px solid #d0d0d0; border-radius: 6px; min-width: 200px; }
+.filter-actions { margin-left: auto; display: flex; gap: 8px; }
+
+.tabs { display: flex; gap: 2px; border-bottom: 2px solid #e6e6e6; margin-bottom: 12px; }
+.tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 16px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; margin-bottom: -2px; font-family: inherit; }
+.tab.active { color: #0057B8; border-bottom-color: #0057B8; }
+.tab .ct { background: #e0eeff; color: #0057B8; padding: 1px 7px; border-radius: 999px; margin-left: 6px; font-size: 11px; font-weight: 600; }
+.tab[data-tab="competitor"] .ct { background: #ffeee8; color: #b84a00; }
+.tab[data-tab="competitor"].active { color: #b84a00; border-bottom-color: #b84a00; }
+
+table.coverage { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; }
+table.coverage thead th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: #555; border-bottom: 1px solid #e6e6e6; white-space: nowrap; cursor: pointer; user-select: none; }
+table.coverage thead th:hover { background: #f0f0f0; }
+table.coverage thead th .sortarrow { color: #999; font-size: 9px; margin-left: 3px; }
+table.coverage tbody td { padding: 11px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; font-size: 12.5px; }
+table.coverage tbody tr:last-child td { border-bottom: 0; }
+table.coverage tbody tr.synd td { background: #fafbfc; padding-left: 30px; font-size: 12px; color: #555; }
+table.coverage tbody tr.synd td:first-child { padding-left: 30px; position: relative; }
+table.coverage tbody tr.synd td:first-child::before { content: "↳"; position: absolute; left: 14px; color: #aaa; font-size: 11px; }
+table.coverage tbody tr.notable td:first-child { box-shadow: inset 3px 0 0 #f5a623; }
+table.coverage tbody tr.alert td:first-child { box-shadow: inset 3px 0 0 #d93025; }
+table.coverage tbody tr.competitor-row td:first-child { box-shadow: inset 3px 0 0 #e8640a; }
+.expand-btn { background: none; border: 0; color: #888; cursor: pointer; padding: 0 4px; font-size: 11px; }
+.expand-btn:hover { color: #333; background: transparent; }
+.headline-cell { max-width: 360px; }
+.headline-cell a { color: #0057B8; text-decoration: none; font-weight: 500; }
+.headline-cell a:hover { text-decoration: underline; }
+.url-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.url-cell a { color: #888; font-size: 11px; }
+.notes-cell { max-width: 200px; color: #555; font-size: 11.5px; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; white-space: nowrap; }
+.b-primary { background: #e0eeff; color: #0057B8; }
+.b-pickup { background: #f0f0f0; color: #666; }
+.b-tier-national { background: #d8e9ff; color: #0a3d80; }
+.b-tier-trade { background: #d4f1e8; color: #0a6647; }
+.b-tier-regional { background: #ffe8c2; color: #855300; }
+.b-tier-blog { background: #ece3ff; color: #5a3c9a; }
+.b-tier-owned { background: #e9e1f5; color: #4a2d80; }
+.b-tier-competitor { background: #ffeee8; color: #b84a00; }
+.b-tier-other { background: #efefef; color: #555; }
+.b-sent-positive { background: #d4f1e8; color: #0a6647; }
+.b-sent-neutral { background: #efefef; color: #555; }
+.b-sent-negative { background: #fde0de; color: #8a1c1c; }
+.b-sent-mixed { background: #fff4d4; color: #8a5a00; }
+.b-notable { background: #fff4d4; color: #8a5a00; }
+.b-alert { background: #fde0de; color: #8a1c1c; }
+.b-new { background: #fff4d4; color: #8a5a00; }
+.b-competitor { background: #ffeee8; color: #b84a00; }
+.b-via-rss { background: #e8f5e9; color: #1b5e20; }
+
+.empty { text-align: center; padding: 50px 20px; color: #888; background: white; border: 1px dashed #d0d0d0; border-radius: 8px; }
+.empty-title { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 4px; }
+footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e6e6e6; color: #888; font-size: 11px; line-height: 1.6; }
+footer code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #555; }
+.dim { color: #aaa; }
+.b-target-1 { background: #fff8e1; color: #7c5500; }
+.b-target-2 { background: #e3f2fd; color: #0d47a1; }
+.b-manual { background: #f3e5f5; color: #6a1b9a; }
+.targets-panel { background: white; border: 1px solid #e6e6e6; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+.targets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; margin-top: 6px; }
+.tp-item { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 5px; font-size: 11.5px; justify-content: space-between; }
+.tp-item.tp-hit { background: #e8f5e9; color: #1b5e20; }
+.tp-item.tp-miss { background: #f5f5f5; color: #999; }
+.tp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.tp-hit .tp-dot { background: #4caf50; }
+.tp-miss .tp-dot { background: #bdbdbd; }
+.tp-add { background: none; border: 1px solid #d0d0d0; border-radius: 4px; color: #888; font-size: 10px; padding: 1px 6px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.tp-add:hover { border-color: #0057B8; color: #0057B8; background: #e8f0fe; }
+.tp-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: white; border-radius: 10px; padding: 20px 24px; width: 480px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+.modal-field { margin-bottom: 12px; }
+.modal-field label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: #666; margin-bottom: 4px; }
+.modal-field input, .modal-field select, .modal-field textarea { width: 100%; font: inherit; font-size: 13px; padding: 6px 9px; border: 1px solid #d0d0d0; border-radius: 6px; }
+.modal-field textarea { height: 60px; resize: vertical; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.modal-token-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+.modal-token-toggle { background: none; border: 0; color: #999; font-size: 11px; cursor: pointer; padding: 0; font-family: inherit; }
+.modal-token-toggle:hover { color: #555; background: none; }
+.modal-token-hint { font-size: 10px; color: #aaa; margin-top: 3px; }
+.modal-save-status { font-size: 11px; margin-top: 6px; text-align: right; min-height: 16px; color: #888; }
+.gh-toast { position: fixed; bottom: 24px; right: 24px; padding: 10px 16px; border-radius: 6px; font-size: 12px; color: white; background: #2e7d32; z-index: 2000; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+.gh-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 id="title">Sensormatic Solutions Coverage Tracker</h1>
+    <div class="sub">Auto-scanning RSS feeds &middot; <span id="scan-sub">initializing</span> &middot; tracking: <span id="terms-display"></span></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    <span class="lastupdate"><span class="dot"></span><span id="last-updated">—</span></span>
+    <button id="scan-now">Scan now</button>
+    <button id="mark-seen">Mark all seen</button>
+  </div>
+</header>
+
+<div class="snapshot" id="snapshot"></div>
+
+<div class="feeds-bar" id="feeds-bar" style="display:none">
+  <span class="feeds-bar-label">RSS Feeds</span>
+  <div class="feeds-list" id="feeds-pills"></div>
+  <button class="feeds-bar-toggle" id="feeds-toggle">Show details ▾</button>
+  <div class="feeds-detail" id="feeds-detail">
+    <table>
+      <thead><tr><th>Feed name</th><th>URL</th><th>Category</th><th>Last item seen</th></tr></thead>
+      <tbody id="feeds-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="targets-panel" id="targets-panel" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:600">Media Targets</span>
+    <span id="targets-summary-bar" style="font-size:11px;color:#555"></span>
+    <button class="feeds-bar-toggle" id="targets-toggle" style="margin-left:auto">Show targets ▾</button>
+  </div>
+  <div id="targets-detail" style="display:none;margin-top:10px">
+    <div style="font-size:11px;font-weight:600;color:#7c5500;margin-bottom:4px">◎ Tier 1 — National / Broadcast</div>
+    <div class="targets-grid" id="targets-tier1-grid"></div>
+    <div style="font-size:11px;font-weight:600;color:#0d47a1;margin:10px 0 4px">⊙ Tier 2 — Trade / Industry</div>
+    <div class="targets-grid" id="targets-tier2-grid"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="add-modal">
+  <div class="modal-box">
+    <div class="modal-title">Add Coverage Manually</div>
+    <div class="modal-field">
+      <label>Publication</label>
+      <select id="modal-pub"></select>
+    </div>
+    <div class="modal-field">
+      <label>Headline *</label>
+      <input type="text" id="modal-headline" placeholder="Article headline" />
+    </div>
+    <div class="modal-field">
+      <label>URL *</label>
+      <input type="url" id="modal-url" placeholder="https://…" />
+    </div>
+    <div class="modal-field">
+      <label>Date Published</label>
+      <input type="date" id="modal-date" />
+    </div>
+    <div class="modal-field">
+      <label>Sentiment</label>
+      <select id="modal-sentiment">
+        <option value="positive">Positive</option>
+        <option value="neutral" selected>Neutral</option>
+        <option value="mixed">Mixed</option>
+        <option value="negative">Negative</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Notes</label>
+      <textarea id="modal-notes" placeholder="Context, key quotes, angle…"></textarea>
+    </div>
+    <div class="modal-token-row">
+      <button type="button" class="modal-token-toggle" id="modal-token-toggle">⚙ GitHub commit settings</button>
+      <div id="modal-token-body" style="display:none;margin-top:8px">
+        <div class="modal-field" style="margin-bottom:4px">
+          <label>GitHub token (repo write scope)</label>
+          <input type="password" id="modal-gh-token" placeholder="ghp_…" autocomplete="off" />
+        </div>
+        <div class="modal-token-hint">Stored in this browser only. Saves the item permanently to the repo on each add.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button id="modal-cancel">Cancel</button>
+      <button class="primary" id="modal-save">Add to tracker</button>
+    </div>
+    <div class="modal-save-status" id="modal-save-status"></div>
+  </div>
+</div>
+<div class="gh-toast" id="gh-toast"></div>
+
+<div class="filters">
+  <div class="filter-row">
+    <span class="filter-label">Period</span>
+    <div class="daterange">
+      <input type="date" id="date-from" />
+      <span style="color:#888">→</span>
+      <input type="date" id="date-to" />
+      <div class="chips" id="period-presets">
+        <span class="chip" data-preset="7">Last 7d</span>
+        <span class="chip" data-preset="30">Last 30d</span>
+        <span class="chip" data-preset="90">Last 90d</span>
+        <span class="chip" data-preset="ytd">YTD</span>
+        <span class="chip" data-preset="all">All time</span>
+      </div>
+    </div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Type</span>
+    <div class="chips" id="type-filter">
+      <span class="chip active" data-key="all">All</span>
+      <span class="chip" data-key="primary">Primary only</span>
+      <span class="chip" data-key="pickup">Syndications only</span>
+    </div>
+    <span class="filter-label" style="margin-left:8px">Tier</span>
+    <div class="chips" id="tier-filter"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Sentiment</span>
+    <div class="chips" id="sent-filter"></div>
+    <span class="filter-label" style="margin-left:8px">Notable</span>
+    <div class="chips" id="notable-filter">
+      <span class="chip active" data-key="all">All</span>
+      <span class="chip" data-key="notable">Notable only</span>
+      <span class="chip" data-key="target">Target pubs</span>
+    </div>
+    <input class="searchbox" id="search-input" type="search" placeholder="Search headlines, notes…" />
+    <div class="filter-actions">
+      <button id="reset-filters">Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="earned">Earned Media <span class="ct" id="ct-earned">0</span></button>
+  <button class="tab" data-tab="owned">Company Website <span class="ct" id="ct-owned">0</span></button>
+  <button class="tab" data-tab="competitor">Competitor Coverage <span class="ct" id="ct-competitor">0</span></button>
+</div>
+
+<div id="empty" class="empty" style="display:none">
+  <div class="empty-title">No coverage matches the current filters</div>
+  <div>Try widening the period or clearing filters.</div>
+</div>
+
+<table class="coverage" id="table">
+  <thead>
+    <tr>
+      <th data-sort="publishedAt" style="width:110px">Date <span class="sortarrow">▼</span></th>
+      <th data-sort="headline">Headline</th>
+      <th data-sort="domain" style="width:160px">URL</th>
+      <th data-sort="tier" style="width:90px">Tier</th>
+      <th data-sort="uvm" style="width:90px">UVM</th>
+      <th data-sort="sentiment" style="width:100px">Sentiment</th>
+      <th style="width:200px">Notes</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<footer>
+  <strong>Sensormatic Solutions Coverage Tracker.</strong> Alerts fire on <strong>negative sentiment</strong> and <strong>national-tier placements</strong>. Automatically polls the configured <strong>RSS feeds</strong> (Retail Dive, NRF, Chain Store Age, Retail TouchPoints, VentureBeat AI, TechCrunch, Diginomica, and more) and merges new items by URL deduplication. Terms monitored via WebSearch fallback: <code>Sensormatic Solutions</code>, <code>Sensormatic</code>, <code>TrueVUE</code>, <code>ShopperTrak</code>. UVMs can be populated from Cision / Muck Rack / Meltwater. The <strong>Competitor Coverage</strong> tab tracks Checkpoint Systems, RetailNext, Auror, and other retail loss prevention / analytics players.
+</footer>
+
+</div>
+
+<script id="coverage-data" type="application/json" data-client="Sensormatic Solutions">
+{"client":"Sensormatic Solutions","terms":["Sensormatic Solutions","Sensormatic","TrueVUE","ShopperTrak"],"domain":"sensormatic.com","lastUpdated":"2026-05-05T20:00:00Z","feeds":[{"name":"Retail Dive","url":"https://www.retaildive.com/feeds/news/","category":"earned","lastSeenGuid":null},{"name":"National Retail Federation","url":"https://nrf.com/rss.xml","category":"earned","lastSeenGuid":null},{"name":"Chain Store Age","url":"https://chainstoreage.com/rss.xml","category":"earned","lastSeenGuid":null},{"name":"Retail TouchPoints","url":"https://retailtouchpoints.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Retail Technology Review","url":"https://www.retailtechnologyreview.com/rss/news.rss","category":"earned","lastSeenGuid":null},{"name":"Retail Customer Experience","url":"https://retailcustomerexperience.com/rss/","category":"earned","lastSeenGuid":null},{"name":"Progressive Grocer","url":"https://progressivegrocer.com/rss.xml","category":"earned","lastSeenGuid":null},{"name":"PYMNTS.com","url":"https://www.pymnts.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Supply Chain Dive","url":"https://www.supplychaindive.com/feeds/news/","category":"earned","lastSeenGuid":null},{"name":"VentureBeat (AI)","url":"https://venturebeat.com/category/ai/feed/","category":"earned","lastSeenGuid":null},{"name":"MIT Technology Review (AI)","url":"https://www.technologyreview.com/topic/artificial-intelligence/feed/","category":"earned","lastSeenGuid":null},{"name":"WIRED (AI)","url":"https://www.wired.com/feed/tag/artificial-intelligence/rss","category":"earned","lastSeenGuid":null},{"name":"AI Business","url":"https://aibusiness.com/feed/","category":"earned","lastSeenGuid":null},{"name":"TechCrunch","url":"https://techcrunch.com/feed/","category":"earned","lastSeenGuid":null},{"name":"The Verge","url":"https://www.theverge.com/rss/index.xml","category":"earned","lastSeenGuid":null},{"name":"ZDNet","url":"https://www.zdnet.com/news/rss.xml","category":"earned","lastSeenGuid":null},{"name":"Diginomica","url":"https://diginomica.com/feed","category":"earned","lastSeenGuid":null},{"name":"CMSWire","url":"https://www.cmswire.com/rss/all/","category":"earned","lastSeenGuid":null},{"name":"TechTarget","url":"https://www.techtarget.com/rss/All-TechTarget-News.xml","category":"earned","lastSeenGuid":null},{"name":"CNBC Business","url":"https://www.cnbc.com/id/10001147/device/rss/rss.html","category":"earned","lastSeenGuid":null},{"name":"Bloomberg Technology","url":"https://feeds.bloomberg.com/technology/news.rss","category":"earned","lastSeenGuid":null},{"name":"Reuters Technology","url":"https://feeds.reuters.com/reuters/technologyNews","category":"earned","lastSeenGuid":null},{"name":"AP News (Business)","url":"https://feeds.apnews.com/rss/business","category":"earned","lastSeenGuid":null},{"name":"New York Times (Retail)","url":"https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml","category":"earned","lastSeenGuid":null},{"name":"Forbes (Business)","url":"https://www.forbes.com/business/feed/","category":"earned","lastSeenGuid":null},{"name":"Fortune","url":"https://fortune.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Business Insider","url":"https://feeds.businessinsider.com/custom/all","category":"earned","lastSeenGuid":null},{"name":"Fast Company","url":"https://www.fastcompany.com/latest/rss","category":"earned","lastSeenGuid":null},{"name":"Inc. Magazine","url":"https://www.inc.com/rss.xml","category":"earned","lastSeenGuid":null},{"name":"TIME","url":"https://time.com/feed/","category":"earned","lastSeenGuid":null},{"name":"NPR News","url":"https://feeds.npr.org/1001/rss.xml","category":"earned","lastSeenGuid":null},{"name":"NBC News","url":"https://feeds.nbcnews.com/nbcnews/public/news","category":"earned","lastSeenGuid":null},{"name":"USA Today","url":"https://rss.usatoday.com/feeds-news-tech.xml","category":"earned","lastSeenGuid":null},{"name":"Axios","url":"https://api.axios.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Grocery Dive","url":"https://www.grocerydive.com/feeds/news/","category":"earned","lastSeenGuid":null},{"name":"Food Dive","url":"https://www.fooddive.com/feeds/news/","category":"earned","lastSeenGuid":null},{"name":"C-Store Dive","url":"https://www.cstoredive.com/feeds/news/","category":"earned","lastSeenGuid":null},{"name":"CX Dive","url":"https://www.cxdive.com/feeds/news/","category":"earned","lastSeenGuid":null},{"name":"Modern Retail","url":"https://www.modernretail.co/feed/","category":"earned","lastSeenGuid":null},{"name":"Total Retail","url":"https://www.totalretail.com/feed/","category":"earned","lastSeenGuid":null},{"name":"RetailWire","url":"https://retailwire.com/feed/","category":"earned","lastSeenGuid":null},{"name":"RETHINK Retail","url":"https://rethinkretail.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Supermarket News","url":"https://www.supermarketnews.com/rss/all.xml","category":"earned","lastSeenGuid":null},{"name":"Digital Commerce 360","url":"https://www.digitalcommerce360.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Loss Prevention Magazine","url":"https://losspreventionmedia.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Supply Chain Brain","url":"https://www.supplychainbrain.com/rss/","category":"earned","lastSeenGuid":null},{"name":"DC Velocity","url":"https://www.dcvelocity.com/rss/","category":"earned","lastSeenGuid":null},{"name":"Sourcing Journal","url":"https://sourcingjournal.com/feed/","category":"earned","lastSeenGuid":null},{"name":"SiliconANGLE","url":"https://siliconangle.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Vogue Business","url":"https://www.voguebusiness.com/feed","category":"earned","lastSeenGuid":null},{"name":"Women's Wear Daily","url":"https://wwd.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Footwear News","url":"https://footwearnews.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Glossy","url":"https://www.glossy.co/feed/","category":"earned","lastSeenGuid":null},{"name":"Winsight Grocery Business","url":"https://www.winsightgrocerybusiness.com/rss.xml","category":"earned","lastSeenGuid":null},{"name":"RFID Journal","url":"https://www.rfidjournal.com/feed","category":"earned","lastSeenGuid":null},{"name":"InformationWeek","url":"https://www.informationweek.com/rss.xml","category":"earned","lastSeenGuid":null},{"name":"TechRepublic","url":"https://www.techrepublic.com/rss/all/","category":"earned","lastSeenGuid":null},{"name":"The New Stack","url":"https://thenewstack.io/feed/","category":"earned","lastSeenGuid":null},{"name":"TechStrong","url":"https://techstrong.ai/feed/","category":"earned","lastSeenGuid":null},{"name":"New York Post","url":"https://nypost.com/feed/","category":"earned","lastSeenGuid":null},{"name":"Fox Business","url":"https://moxie.foxbusiness.com/google-manager/feeds/latest.xml","category":"earned","lastSeenGuid":null}],"targetPublications":[{"name":"Bloomberg","display":"Bloomberg / Bloomberg TV","tier":1,"domains":["bloomberg.com","bloomberglaw.com"]},{"name":"CNBC","display":"CNBC (incl. Squawk Box, Fast Money, Mad Money, etc.)","tier":1,"domains":["cnbc.com"]},{"name":"Fox Business","display":"Fox Business (incl. Varney, Mornings with Maria, Kudlow, etc.)","tier":1,"domains":["foxbusiness.com"]},{"name":"NBC / TODAY","display":"NBC / TODAY / NBC Nightly News","tier":1,"domains":["nbc.com","nbcnews.com","today.com"]},{"name":"ABC News","display":"ABC News / Good Morning America / Nightline","tier":1,"domains":["abcnews.go.com","goodmorningamerica.com","abc.com"]},{"name":"CBS","tier":1,"domains":["cbsnews.com","cbs.com"]},{"name":"CNN","tier":1,"domains":["cnn.com"]},{"name":"The New York Times","tier":1,"domains":["nytimes.com"]},{"name":"The Wall Street Journal","display":"The Wall Street Journal / WSJ","tier":1,"domains":["wsj.com"]},{"name":"USA Today","tier":1,"domains":["usatoday.com"]},{"name":"Forbes","tier":1,"domains":["forbes.com"]},{"name":"Fortune","tier":1,"domains":["fortune.com"]},{"name":"Reuters","tier":1,"domains":["reuters.com"]},{"name":"Associated Press","tier":1,"domains":["apnews.com","ap.org"]},{"name":"NPR","tier":1,"domains":["npr.org"]},{"name":"Business Insider","tier":1,"domains":["businessinsider.com","insider.com"]},{"name":"Fast Company","tier":1,"domains":["fastcompany.com"]},{"name":"TIME","tier":1,"domains":["time.com"]},{"name":"Financial Times","tier":1,"domains":["ft.com"]},{"name":"Inc.","tier":1,"domains":["inc.com"]},{"name":"People","tier":1,"domains":["people.com"]},{"name":"Good Housekeeping","tier":1,"domains":["goodhousekeeping.com"]},{"name":"New York Post","tier":1,"domains":["nypost.com"]},{"name":"Barron's","tier":1,"domains":["barrons.com"]},{"name":"Newsday","tier":1,"domains":["newsday.com"]},{"name":"Parents","tier":1,"domains":["parents.com"]},{"name":"Scary Mommy","tier":1,"domains":["scarymommy.com"]},{"name":"She Knows","tier":1,"domains":["sheknows.com"]},{"name":"Axios","tier":1,"domains":["axios.com"]},{"name":"NYSE Floor Talk","display":"NYSE Floor Talk / Live From MarketSite","tier":1,"domains":["nyse.com"]},{"name":"Retail Dive","tier":2,"domains":["retaildive.com"]},{"name":"Chain Store Age","tier":2,"domains":["chainstoreage.com"]},{"name":"Retail TouchPoints","tier":2,"domains":["retailtouchpoints.com"]},{"name":"CMSWire","tier":2,"domains":["cmswire.com"]},{"name":"Retail Customer Experience","tier":2,"domains":["retailcustomerexperience.com"]},{"name":"Progressive Grocer","tier":2,"domains":["progressivegrocer.com"]},{"name":"PYMNTS","tier":2,"domains":["pymnts.com"]},{"name":"Supply Chain Dive","tier":2,"domains":["supplychaindive.com"]},{"name":"Grocery Dive","tier":2,"domains":["grocerydive.com"]},{"name":"Food Dive","tier":2,"domains":["fooddive.com"]},{"name":"C-Store Dive","tier":2,"domains":["cstoredive.com"]},{"name":"CX Dive","tier":2,"domains":["cxdive.com"]},{"name":"Modern Retail","tier":2,"domains":["modernretail.co"]},{"name":"Total Retail","tier":2,"domains":["totalretail.com"]},{"name":"RetailWire","tier":2,"domains":["retailwire.com"]},{"name":"RETHINK Retail","tier":2,"domains":["rethinkretail.com"]},{"name":"Supermarket News","tier":2,"domains":["supermarketnews.com"]},{"name":"Digital Commerce 360","tier":2,"domains":["digitalcommerce360.com"]},{"name":"Loss Prevention Magazine","tier":2,"domains":["losspreventionmedia.com"]},{"name":"Vogue Business","tier":2,"domains":["voguebusiness.com"]},{"name":"Women's Wear Daily","tier":2,"domains":["wwd.com"]},{"name":"Footwear News","tier":2,"domains":["footwearnews.com"]},{"name":"Business of Fashion","tier":2,"domains":["businessoffashion.com"]},{"name":"Sourcing Journal","tier":2,"domains":["sourcingjournal.com"]},{"name":"Glossy","tier":2,"domains":["glossy.co"]},{"name":"Luxury Daily","tier":2,"domains":["luxurydaily.com"]},{"name":"National Jeweler","tier":2,"domains":["nationaljeweler.com"]},{"name":"Furniture Today","tier":2,"domains":["furnituretoday.com"]},{"name":"Winsight Grocery Business","tier":2,"domains":["winsightgrocerybusiness.com"]},{"name":"Drug Store News","tier":2,"domains":["drugstorenews.com"]},{"name":"Convenience Store News","tier":2,"domains":["csnews.com"]},{"name":"Consumer Goods Technology","tier":2,"domains":["consumergoods.com"]},{"name":"Future Commerce","tier":2,"domains":["futurecommerce.com"]},{"name":"Retail Brew","display":"Retail Brew (Morning Brew)","tier":2,"domains":["morningbrew.com"]},{"name":"Tech Brew","display":"Tech Brew (Morning Brew)","tier":2,"domains":["morningbrew.com"]},{"name":"Supply Chain Brain","tier":2,"domains":["supplychainbrain.com"]},{"name":"DC Velocity","tier":2,"domains":["dcvelocity.com"]},{"name":"Supply & Demand Chain Executive","tier":2,"domains":["sdcexec.com"]},{"name":"Inbound Logistics","tier":2,"domains":["inboundlogistics.com"]},{"name":"Logistics Management","tier":2,"domains":["logisticsmgmt.com"]},{"name":"Logistics Viewpoints","tier":2,"domains":["logisticsviewpoints.com"]},{"name":"Modern Materials Handling","tier":2,"domains":["mmh.com"]},{"name":"Food Logistics","tier":2,"domains":["foodlogistics.com"]},{"name":"Journal of Commerce","tier":2,"domains":["joc.com"]},{"name":"Supply Chain Management Review","tier":2,"domains":["scmr.com"]},{"name":"Supply Chain Xchange","tier":2,"domains":["thescx.com"]},{"name":"Supply Chain 24/7","tier":2,"domains":["supplychain247.com"]},{"name":"Supply Chain Connect","tier":2,"domains":["supplychainconnect.com"]},{"name":"RFID Journal","tier":2,"domains":["rfidjournal.com"]},{"name":"InformationWeek","tier":2,"domains":["informationweek.com"]},{"name":"TechRepublic","tier":2,"domains":["techrepublic.com"]},{"name":"SiliconANGLE","tier":2,"domains":["siliconangle.com"]},{"name":"The New Stack","tier":2,"domains":["thenewstack.io"]},{"name":"TechStrong","tier":2,"domains":["techstrong.ai","devops.com"]},{"name":"EMarketer","tier":2,"domains":["emarketer.com","insiderintelligence.com"]},{"name":"CX Today","tier":2,"domains":["cxtoday.com"]},{"name":"Smart Industry","tier":2,"domains":["smartindustry.com"]},{"name":"Printed Electronics Now","tier":2,"domains":["printedelectronicsnow.com"]},{"name":"Food Processing","tier":2,"domains":["foodprocessing.com"]},{"name":"Food Business News","tier":2,"domains":["foodbusinessnews.net"]},{"name":"BevNET Magazine","tier":2,"domains":["bevnet.com"]},{"name":"Meat + Poultry","tier":2,"domains":["meatpoultry.com"]},{"name":"National Provisioner","tier":2,"domains":["provisioneronline.com"]},{"name":"Prepared Foods","tier":2,"domains":["preparedfoods.com"]},{"name":"ProFood World","tier":2,"domains":["profoodworld.com"]},{"name":"Produce News","tier":2,"domains":["theproducenews.com"]},{"name":"Retail Tech Innovation Hub","tier":2,"domains":["retailtechinnovationhub.com"]},{"name":"Retail Insider","tier":2,"domains":["retail-insider.com"]},{"name":"Retail IT Insights","tier":2,"domains":["retailitinsights.com"]},{"name":"Retail Geek","tier":2,"domains":["retailgeek.com"]},{"name":"The Information","tier":2,"domains":["theinformation.com"]},{"name":"The Skimm","tier":2,"domains":["theskimm.com"]},{"name":"D&D Daily","tier":2,"domains":["dndaily.com","ddailynews.com"]},{"name":"VentureBeat","tier":2,"domains":["venturebeat.com"]},{"name":"TechCrunch","tier":2,"domains":["techcrunch.com"]},{"name":"The Verge","tier":2,"domains":["theverge.com"]},{"name":"ZDNet","tier":2,"domains":["zdnet.com"]}],"earnedMedia":[{"id":"60th-anniversary-bw","publishedAt":"2026-04-21","headline":"Sensormatic Solutions Celebrates 60 Years of Retail Firsts, Proven Leadership, and Measurable Impact","url":"https://www.businesswire.com/news/home/20260421868867/en/Sensormatic-Solutions-Celebrates-60-Years-of-Retail-Firsts-Proven-Leadership-and-Measurable-Impact","domain":"businesswire.com","tier":"other","uvm":null,"sentiment":"positive","notes":"Wire marking 60 years of retail innovation, from theft deterrence origins to today's AI-driven portfolio. Highlights 1,700+ retail patents. Strong milestone placement.","isNotable":true,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[{"publishedAt":"2026-04-21","headline":"Sensormatic Solutions Celebrates 60 Years of Retail Firsts, Proven Leadership, and Measurable Impact","url":"https://finance.yahoo.com/sectors/technology/articles/sensormatic-solutions-celebrates-60-years-130000008.html","domain":"finance.yahoo.com","tier":"national","uvm":null,"sentiment":"positive","notes":"Yahoo Finance national pickup of 60th anniversary wire.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-04-21","headline":"Sensormatic Solutions Celebrates 60 Years of Retail Firsts, Proven Leadership, and Measurable Impact","url":"https://losspreventionmedia.com/sensormatic-solutions-celebrates-60-years-of-retail-firsts-proven-leadership-and-measurable-impact/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Loss Prevention Media trade pickup of 60th anniversary announcement.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-04-21","headline":"Sensormatic Solutions marks 60 years, 1,700 patents","url":"https://www.stocktitan.net/news/JCI/sensormatic-solutions-celebrates-60-years-of-retail-firsts-proven-4oifjhx0kg34.html","domain":"stocktitan.net","tier":"other","uvm":null,"sentiment":"positive","notes":"StockTitan (JCI stock news) pickup of anniversary wire.","firstSeen":"2026-05-05T20:00:00Z"}]},{"id":"rts-2026-innovations","publishedAt":"2026-04-22","headline":"Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact At Retail Technology Show 2026","url":"https://365retail.co.uk/sensormatic-solutions-unveils-innovations-that-help-retailers-turn-insights-into-impact-at-retail-technology-show-2026/","domain":"365retail.co.uk","tier":"trade","uvm":null,"sentiment":"positive","notes":"365 Retail covers Sensormatic at RTS 2026 (April 22–23, London). Showcased Storefront Engagement Platform combining visual merchandising, retail media network, and loss prevention; also RFID Seam Tag for apparel inventory and brand authentication.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"nrf-2026-bw","publishedAt":"2026-01-07","headline":"Storefronts Reimagined: Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact at 2026 NRF Big Show","url":"https://www.businesswire.com/news/home/20260107698515/en/Storefronts-Reimagined-Sensormatic-Solutions-Unveils-Innovations-That-Help-Retailers-Turn-Insights-Into-Impact-at-2026-NRF-Big-Show","domain":"businesswire.com","tier":"other","uvm":null,"sentiment":"positive","notes":"NRF Big Show wire. Unveiled FLEX storefront platform, RFID Seam Tag, Shrink Analyzer ML updates, and Store Guest Behaviors analytics. Full portfolio showcase at NRF 2026.","isNotable":true,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[{"publishedAt":"2026-01-07","headline":"Storefronts Reimagined: Sensormatic Solutions Unveiled Retail Innovations at 2026 NRF Big Show","url":"https://losspreventionmedia.com/storefronts-reimagined-sensormatic-solutions-unveiled-retail-innovations-at-2026-nrf-big-show/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Loss Prevention Media trade coverage of NRF 2026 debut.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-01-07","headline":"Storefronts Reimagined: Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact at 2026 NRF Big Show","url":"https://www.morningstar.com/news/business-wire/20260107698515/storefronts-reimagined-sensormatic-solutions-unveils-innovations-that-help-retailers-turn-insights-into-impact-at-2026-nrf-big-show","domain":"morningstar.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Morningstar financial/trade pickup of NRF Big Show wire.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-01-07","headline":"Sensormatic Solutions to debut new retail tech at 2026 NRF Big Show","url":"https://www.stocktitan.net/news/JCI/sensormatic-solutions-to-debut-new-retail-tech-at-2026-NRF-Big-Show","domain":"stocktitan.net","tier":"other","uvm":null,"sentiment":"positive","notes":"StockTitan (JCI) pickup of NRF 2026 announcement.","firstSeen":"2026-05-05T20:00:00Z"}]},{"id":"shrink-analyzer-ml","publishedAt":null,"headline":"Sensormatic Solutions Expands Shrink Analyzer, Unveils New ML Tools for Retail Loss","url":"https://losspreventionmedia.com/sensormatic-solutions-expands-shrink-analyzer-unveils-new-ml-tools-for-retail-loss/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Loss Prevention Media covers new Shrink Analyzer ML features: Track and Trace (stolen merchandise tracing), At-Risk Merchandise Forecast, ORC Activity Predictions, and an AI Chat Bot for data interaction.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[{"publishedAt":null,"headline":"AI tools help retailers trace stolen goods and predict when theft may hit","url":"https://www.stocktitan.net/news/JCI/sensormatic-solutions-expands-shrink-analyzer-introduces-new-ml-pfip88upy696.html","domain":"stocktitan.net","tier":"other","uvm":null,"sentiment":"positive","notes":"StockTitan pickup framing Shrink Analyzer ML update around theft prediction.","firstSeen":"2026-05-05T20:00:00Z"}]},{"id":"store-guest-behaviors","publishedAt":null,"headline":"Sensormatic Solutions AI-Enabled Sensor and Video Technologies Power Store Guest Behaviors Analytics","url":"https://losspreventionmedia.com/sensormatic-solutions-ai-enabled-sensor-and-video-technologies-power-store-guest-behaviors-analytics/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"LPM covers Sensormatic's Store Guest Behaviors product: Re-ID technology within Orbit AI overhead counters and Video AI cameras feeding ShopperTrak Analytics for in-store shopper journey insights.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"flex-storefront","publishedAt":null,"headline":"Sensormatic Solutions Enhances Storefront Design and Delivers Shrink Insights With FLEX","url":"https://losspreventionmedia.com/sensormatic-solutions-enhances-storefront-design-and-delivers-shrink-insights-with-flex/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"LPM covers FLEX, Sensormatic's customizable EAS platform combining loss prevention with digital merchandising and retail media capabilities. Redefines storefront function.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"category-shrink-eas","publishedAt":null,"headline":"Sensormatic Solutions Introduces EAS-Based, Category-Level Shrink Intelligence","url":"https://losspreventionmedia.com/sensormatic-solutions-introduces-eas-based-category-level-shrink-intelligence/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Category-Level Shrink Insights powered by Acousto-Magnetic (AM) technology. Extends EAS investments to surface shrink data by top theft category, adding analytics on top of existing infrastructure.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"truevue-paas","publishedAt":null,"headline":"Sensormatic Solutions Adds PaaS to TrueVUE Cloud","url":"https://losspreventionmedia.com/sensormatic-solutions-adds-paas-to-truevue-cloud/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"TrueVUE Cloud PaaS launch lets retailers integrate RFID-based inventory insights into their own cloud platforms, opening the data layer to broader enterprise ecosystems.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"retail-dive-smarter-stores","publishedAt":null,"headline":"Smarter stores start behind the scenes","url":"https://www.retaildive.com/spons/smarter-stores-start-behind-the-scenes/817600/","domain":"retaildive.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Retail Dive sponsored content by Sensormatic. Connected systems framing — positions back-of-house intelligence (inventory, traffic, loss prevention) as the foundation of the modern store.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"source-to-store","publishedAt":null,"headline":"Sensormatic Solutions Offers All-Inclusive Services that Connect Source to Store, Simplifying Retail and Enhancing Shopper Experiences","url":"https://losspreventionmedia.com/sensormatic-solutions-offers-all-inclusive-services-that-connect-source-to-store-simplifying-retail-and-enhancing-shopper-experiences/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Source-to-store connected services announcement. Positions Sensormatic as an end-to-end partner across inventory, loss prevention, and shopper experience from supply chain to shelf.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"eas-rf-solutions","publishedAt":null,"headline":"Sensormatic Solutions Provides Retailers a One-Stop Destination for EAS Technology with Addition of RF-based Solutions","url":"https://losspreventionmedia.com/sensormatic-solutions-provides-retailers-a-one-stop-destination-for-eas-technology-with-addition-of-rf-based-solutions/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Sensormatic expands EAS portfolio with RF (radio frequency) solutions alongside its existing AM (Acousto-Magnetic) line, becoming a single-vendor EAS source for retailers.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"bw-truevue-paas-wire","publishedAt":"2026-01-12","headline":"Sensormatic Solutions Adds PaaS to TrueVUE Cloud, Designed to Make RFID Inventory Management Easier for Retailers Using Their Own Cloud Services","url":"https://www.businesswire.com/news/home/20260112015301/en/Sensormatic-Solutions-Adds-PaaS-to-TrueVUE-Cloud-Designed-to-Make-RFID-Inventory-Management-Easier-for-Retailers-Using-Their-Own-Cloud-Services","domain":"businesswire.com","tier":"other","uvm":null,"sentiment":"positive","notes":"BusinessWire wire for TrueVUE Cloud PaaS launch. PaaS option lets retailers integrate RFID inventory management into their own cloud infrastructure. Available March 2026 alongside existing SaaS model.","isNotable":true,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[{"publishedAt":"2026-01-12","headline":"Sensormatic Solutions Adds PaaS to TrueVUE Cloud","url":"https://finance.yahoo.com/news/sensormatic-solutions-adds-paas-truevue-140000653.html","domain":"finance.yahoo.com","tier":"national","uvm":null,"sentiment":"positive","notes":"Yahoo Finance national pickup of TrueVUE PaaS wire.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-01-12","headline":"Sensormatic Solutions Adds PaaS to TrueVUE Cloud","url":"https://www.morningstar.com/news/business-wire/20260112015301/sensormatic-solutions-adds-paas-to-truevue-cloud-designed-to-make-rfid-inventory-management-easier-for-retailers-using-their-own-cloud-services","domain":"morningstar.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Morningstar trade pickup of TrueVUE PaaS wire.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-01-12","headline":"Sensormatic Solutions (JCI) adds PaaS option to TrueVUE Cloud","url":"https://www.stocktitan.net/news/JCI/sensormatic-solutions-adds-paa-s-to-true-vue-cloud-designed-to-make-73dbxxamu43k.html","domain":"stocktitan.net","tier":"other","uvm":null,"sentiment":"positive","notes":"StockTitan (JCI) pickup of TrueVUE PaaS wire.","firstSeen":"2026-05-05T20:00:00Z"}]},{"id":"bw-keonn-hands-free","publishedAt":"2026-01-13","headline":"Sensormatic Solutions and Keonn Collaboration Supports the Automation of Inventory Counts to Help Workflows, Increase Visibility and Ease Friction","url":"https://www.businesswire.com/news/home/20260113388223/en/Sensormatic-Solutions-and-Keonn-Collaboration-Supports-the-Automation-of-Inventory-Counts-to-Help-Workflows-Increase-Visibility-and-Ease-Friction","domain":"businesswire.com","tier":"other","uvm":null,"sentiment":"positive","notes":"BusinessWire wire for Keonn partnership and Hands Free Cycle Counting. Integrates Keonn AdvanTrack-600 RTLS with TrueVUE Cloud for automated, near-continuous inventory counts at 99% accuracy.","isNotable":true,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[{"publishedAt":"2026-01-13","headline":"Sensormatic Solutions and Keonn Collaboration Supports Automated Inventory Counts","url":"https://finance.yahoo.com/news/sensormatic-solutions-keonn-collaboration-supports-140000703.html","domain":"finance.yahoo.com","tier":"national","uvm":null,"sentiment":"positive","notes":"Yahoo Finance national pickup of Keonn partnership wire.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-01-13","headline":"Sensormatic, Keonn link RFID for hands-free counts","url":"https://www.stocktitan.net/news/JCI/sensormatic-solutions-and-keonn-collaboration-supports-the-dzp2db4wxgqb.html","domain":"stocktitan.net","tier":"other","uvm":null,"sentiment":"positive","notes":"StockTitan (JCI) pickup of Keonn partnership wire.","firstSeen":"2026-05-05T20:00:00Z"},{"publishedAt":"2026-01-13","headline":"Sensormatic Solutions and Keonn Collaboration Supports the Automation of Inventory Counts","url":"https://www.morningstar.com/news/business-wire/20260113388223/sensormatic-solutions-and-keonn-collaboration-supports-the-automation-of-inventory-counts-to-help-workflows-increase-visibility-and-ease-friction","domain":"morningstar.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Morningstar pickup of Keonn partnership wire.","firstSeen":"2026-05-05T20:00:00Z"}]},{"id":"yahoo-flex-wire","publishedAt":"2026-01-07","headline":"Sensormatic Solutions Enhances Storefront Design, Supports Retail Media Efforts and Delivers Shrink Insights With Flexible Loss-prevention & Engagement Experience System (FLEX)","url":"https://finance.yahoo.com/news/sensormatic-solutions-enhances-storefront-design-133000871.html","domain":"finance.yahoo.com","tier":"national","uvm":null,"sentiment":"positive","notes":"Yahoo Finance national pickup of FLEX platform wire. Highlights retail media network capabilities, EAS integration, and digital merchandising tools within the FLEX storefront system.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"salestechstar-nrf-2026","publishedAt":"2026-01-07","headline":"Storefronts Reimagined: Sensormatic Solutions Unveils Innovations That Help Retailers Turn Insights Into Impact at 2026 NRF Big Show","url":"https://salestechstar.com/buyer-insights/storefronts-reimagined-sensormatic-solutions-unveils-innovations-that-help-retailers-turn-insights-into-impact-at-2026-nrf-big-show/","domain":"salestechstar.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"SalesTech Star trade pickup of NRF 2026 announcement. B2B sales/tech audience. Covers full portfolio showcase at NRF Big Show.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"retail-dive-whats-next","publishedAt":"2026-04-06","headline":"What's next for retail: Technology, transparency and total opportunity","url":"https://www.retaildive.com/spons/whats-next-for-retail-technology-transparency-and-total-opportunity/813704/","domain":"retaildive.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Retail Dive sponsored content by Tony D'Onofrio, president of Sensormatic Solutions. Positions Sensormatic's 60-year legacy in the context of retail's data-driven transformation. Companion piece to 60th anniversary milestone.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"tech4trade-euroshop-2026","publishedAt":"2026-02-22","headline":"EuroShop 2026: Sensormatic Solutions Svela le Tecnologie che Trasformeranno il Futuro del Retail","url":"https://www.tech4trade.it/euroshop-2026-sensormatic-solutions-svela-le-tecnologie-che-trasformeranno-il-futuro-del-retail/","domain":"tech4trade.it","tier":"trade","uvm":null,"sentiment":"positive","notes":"Italian trade press (Tech4Trade) covers Sensormatic at EuroShop 2026. Showcases AI-powered shrink analytics, Hands Free Cycle Counting, and expanded partner ecosystem with Keonn, Indyme, and Solink.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"digital-security-euroshop-2026","publishedAt":"2026-02-23","headline":"Sensormatic Exhibe en EuroShop 2026 Innovación y Seguridad con IA para Retail","url":"https://www.digitalsecuritymagazine.com/en/2026/02/23/sensormatic-exhibe-euroshop-2026-innovacion-y-seguridad-ia-retail/","domain":"digitalsecuritymagazine.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"Spanish security trade press (Digital Security Magazine) covers Sensormatic at EuroShop 2026. AI for retail security angle — positions Sensormatic across loss prevention, RFID, and video analytics innovation.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"lpm-rfid-service-bureaus","publishedAt":null,"headline":"Sensormatic Solutions' Network of Service Bureaus Enables End-to-End RFID Solutions Worldwide","url":"https://losspreventionmedia.com/sensormatic-solutions-network-of-service-bureaus-enables-end-to-end-rfid-solutions-worldwide/","domain":"losspreventionmedia.com","tier":"trade","uvm":null,"sentiment":"positive","notes":"LPM covers Sensormatic's global RFID service bureau network, providing end-to-end RFID label encoding, source tagging, and inventory intelligence services for retailers worldwide.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]}],"ownedMedia":[{"id":"owned-60th-landing","publishedAt":"2026-04-21","headline":"60 Years of Retail Firsts — Sensormatic Solutions Anniversary Hub","url":"https://www.sensormatic.com/landing/60-Anniversary-Landing-Page","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"Dedicated 60th anniversary landing page. Central hub for milestone content and timeline of retail innovation from EAS origins to AI platform.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-rts-2026-pr","publishedAt":"2026-04-22","headline":"Press Release: Retail Technology Show 2026 Innovations — Sensormatic","url":"https://www.sensormatic.com/en_uk/resources/pr/2026/rts-2026-innovations-press-release","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"Owned UK press release for RTS 2026 (April 22–23, London). Announces Storefront Engagement Platform and RFID Seam Tag innovations.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-euroshop-2026","publishedAt":null,"headline":"EuroShop 2026 — Sensormatic Partner Ecosystem Press Release","url":"https://www.sensormatic.com/en_my/resources/pr/2026/euroshop-2026-partners-press-release","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"EuroShop 2026 partner ecosystem announcement. Showcases integrations with Keonn, Indyme, and Solink across inventory intelligence, loss prevention, store operations, and video analytics.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-homepage","publishedAt":null,"headline":"Retail Technology Solutions — Sensormatic","url":"https://www.sensormatic.com","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"neutral","notes":"Primary product and solutions landing page.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-60th-anniversary-pr","publishedAt":"2026-04-21","headline":"Press Release: Sensormatic 60th Anniversary — Sensormatic","url":"https://www.sensormatic.com/resources/pr/2026/sensormatic-60th-anniversary-press-release","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"Official owned press release for the 60th anniversary milestone. Source material for the BW wire.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-nrf-shrink-analyzer-pr","publishedAt":"2026-01-07","headline":"Press Release: NRF 2026 Shrink Analyzer Expansion — Sensormatic","url":"https://www.sensormatic.com/resources/pr/2026/nrf-2026-shrink-analyzer-expansion-press-release","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"Owned press release detailing four new Shrink Analyzer ML features announced at NRF 2026: Track and Trace, At-Risk Merchandise Forecast, ORC Activity Predictions, AI Chat Bot.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-nrf-hands-free-pr","publishedAt":"2026-01-13","headline":"Press Release: NRF 2026 Hands Free Cycle Counting — Sensormatic","url":"https://www.sensormatic.com/Resources/pr/2026/NRF-2026-Hands-Free-Cycle-Counting","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"Owned press release for Hands Free Cycle Counting in partnership with Keonn. Automates inventory counts using RTLS and Gen2X RFID, achieving 99% accuracy.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"owned-euroshop-innovations-pr","publishedAt":"2026-02-22","headline":"Press Release: EuroShop 2026 Innovations — Sensormatic","url":"https://www.sensormatic.com/en_ca/Resources/pr/2026/EuroShop-2026-Innovations-Press-Release","domain":"sensormatic.com","tier":"owned","uvm":null,"sentiment":"positive","notes":"Owned innovations press release for EuroShop 2026. Covers full portfolio shown at Düsseldorf show: Shrink Analyzer ML, Hands Free Cycle Counting, RFID Seam Tag, and expanded partner ecosystem.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]}],"competitorMedia":[{"id":"comp-checkpoint-ort","publishedAt":null,"headline":"Checkpoint Systems Introduces New ORT Solutions Suite To Help Retailers Fight Organized Retail Theft","url":"https://www.retailitinsights.com/doc/loss-prevention-checkpoint-systems-introduces-0002","domain":"retailitinsights.com","tier":"trade","uvm":null,"sentiment":"neutral","notes":"Checkpoint Systems (direct EAS/RFID competitor) launches ORT solutions suite targeting organized retail crime. Directly competes with Sensormatic's Shrink Analyzer ML and ORC Activity Predictions.","isNotable":true,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"comp-retailnext-asset-protection","publishedAt":null,"headline":"Asset Protection | Aurora — AI-Powered Retail Loss Prevention","url":"https://retailnext.net/solution/asset-protection","domain":"retailnext.net","tier":"competitor","uvm":null,"sentiment":"neutral","notes":"RetailNext's Aurora product uses patented 3D imagery + deep learning fusion for asset protection analytics. Direct competitor in video AI and in-store analytics — overlaps with Sensormatic's Store Guest Behaviors and ShopperTrak.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"comp-auror-crime-intel","publishedAt":null,"headline":"Auror — Retail Crime Intelligence & Loss Prevention Platform","url":"https://www.auror.co/","domain":"auror.co","tier":"competitor","uvm":null,"sentiment":"neutral","notes":"Auror is a crime intelligence SaaS for retailers. Focuses on reporting, repeat offender identification, and cross-retailer intelligence sharing. Competes with Sensormatic's ORC and Track & Trace capabilities. Offices in Denver, London, Melbourne, Auckland.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"comp-gartner-lp-market","publishedAt":null,"headline":"Best Retail Loss Prevention and Asset Protection Solution Reviews 2026 — Gartner Peer Insights","url":"https://www.gartner.com/reviews/market/retail-loss-prevention-and-asset-protection-solution","domain":"gartner.com","tier":"trade","uvm":null,"sentiment":"neutral","notes":"Gartner Peer Insights market page for retail loss prevention and asset protection. High-authority buyer research destination — competitive landscape for Sensormatic vs. Checkpoint, RetailNext, Auror, and others.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"comp-rfid-journal-lp","publishedAt":null,"headline":"From Alarms to Insights: How RFID Is Redefining the Future of Retail Loss Prevention","url":"https://www.rfidjournal.com/news/from-alarms-to-insights-how-rfid-is-redefining-the-future-of-retail-loss-prevention/224951","domain":"rfidjournal.com","tier":"trade","uvm":null,"sentiment":"neutral","notes":"RFID Journal feature on RFID's evolution in loss prevention. Covers the transition from EAS alarms to insights-driven inventory and shrink platforms — the exact narrative Sensormatic is positioning against with TrueVUE and RFID Seam Tag.","isNotable":true,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]},{"id":"comp-appintent-cv-buyers-guide","publishedAt":"2026-01-01","headline":"The 10 Best Computer Vision Platforms for Retail: A 2026 Buyer's Guide","url":"https://www.appintent.com/software/ai/computer-vision/retail/","domain":"appintent.com","tier":"other","uvm":null,"sentiment":"neutral","notes":"2026 buyer's guide for retail computer vision platforms. Comparison content that buyers use when evaluating Sensormatic's video AI (ShopperTrak, Store Guest Behaviors) against RetailNext, Dayta AI, and others.","isNotable":false,"viaRss":false,"firstSeen":"2026-05-05T20:00:00Z","syndications":[]}]}
+</script>
+
+<script>
+(function() {
+  const dataNode = document.getElementById("coverage-data");
+  let payload;
+  try { payload = JSON.parse(dataNode.textContent); }
+  catch (e) { payload = { client: "?", terms: [], feeds: [], earnedMedia: [], ownedMedia: [], competitorMedia: [], lastUpdated: null }; }
+
+  const client = payload.client || "Coverage";
+  document.getElementById("title").textContent = client + " Coverage Tracker";
+  document.title = client + " Coverage Tracker";
+  document.getElementById("terms-display").innerHTML = (payload.terms || []).map(t => `<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:11px">${escapeHtml(t)}</code>`).join(" ");
+
+  if (payload.lastUpdated) {
+    const d = new Date(payload.lastUpdated);
+    document.getElementById("last-updated").textContent = "Updated " + formatRelative(d);
+    document.getElementById("last-updated").title = d.toLocaleString();
+  } else {
+    document.getElementById("last-updated").textContent = "Not yet updated";
+  }
+
+  const feeds = payload.feeds || [];
+  if (feeds.length > 0) {
+    const feedsBar = document.getElementById("feeds-bar");
+    feedsBar.style.display = "";
+    const pillsEl = document.getElementById("feeds-pills");
+    const tbodyEl = document.getElementById("feeds-tbody");
+    pillsEl.innerHTML = feeds.map(f => `
+      <span class="feed-pill cat-${escapeHtml(f.category || "earned")}" data-feed="${escapeHtml(f.name || '')}">
+        <span class="feed-dot"></span>${escapeHtml(f.name || f.url)}
+      </span>`).join("");
+    tbodyEl.innerHTML = feeds.map(f => `
+      <tr>
+        <td>${escapeHtml(f.name || "—")}</td>
+        <td><a href="${escapeHtml(f.url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(f.url || "")}</a></td>
+        <td><span class="badge b-tier-${f.category === "competitor" ? "competitor" : f.category === "owned" ? "owned" : "other"}">${escapeHtml(capitalize(f.category || "earned"))}</span></td>
+        <td>${f.lastSeenGuid ? `<code style="font-size:10px;color:#888">${escapeHtml(String(f.lastSeenGuid).slice(0,60))}</code>` : '<span class="dim">—</span>'}</td>
+      </tr>`).join("");
+    const toggleBtn = document.getElementById("feeds-toggle");
+    const detailEl = document.getElementById("feeds-detail");
+    toggleBtn.addEventListener("click", () => {
+      const open = detailEl.classList.toggle("open");
+      toggleBtn.textContent = open ? "Hide details ▴" : "Show details ▾";
+    });
+  }
+
+  const ackKey = "coverage-tracker:" + client.toLowerCase().replace(/\s+/g, "-") + ":ackAt";
+  let ackAt = parseInt(localStorage.getItem(ackKey) || "0", 10);
+
+  function flatten(stories) {
+    const rows = [];
+    for (const s of stories || []) {
+      const primaryRow = { ...s, _type: "primary", _parentId: null, _hasSyndications: (s.syndications || []).length > 0 };
+      delete primaryRow.syndications;
+      rows.push(primaryRow);
+      for (const syn of s.syndications || []) {
+        rows.push({ ...syn, _type: "pickup", _parentId: s.id, id: (s.id + "-syn-" + (syn.url || Math.random())) });
+      }
+    }
+    return rows;
+  }
+
+  const sections = {
+    earned:     flatten(payload.earnedMedia     || []),
+    owned:      flatten(payload.ownedMedia      || []),
+    competitor: flatten(payload.competitorMedia || [])
+  };
+
+  for (const key of Object.keys(sections)) {
+    sections[key].forEach(r => {
+      const fs = r.firstSeen ? new Date(r.firstSeen).getTime() : 0;
+      r._isNew = fs > ackAt;
+    });
+  }
+
+  const TIER_ORDER = ["national","trade","regional","blog","competitor","owned","other"];
+  function tiersIn(rows) {
+    const set = new Set();
+    rows.forEach(r => set.add(r.tier || "other"));
+    return TIER_ORDER.filter(t => set.has(t));
+  }
+  const SENTIMENTS = ["positive","neutral","mixed","negative"];
+
+  const state = {
+    tab: "earned",
+    type: "all",
+    tier: "all",
+    sentiment: "all",
+    notable: "all",
+    search: "",
+    dateFrom: null,
+    dateTo: null,
+    sortKey: "publishedAt",
+    sortDir: "desc",
+    expanded: new Set()
+  };
+
+  for (const key of ["earned","owned","competitor"]) {
+    sections[key].forEach(r => { if (r._type === "primary" && r._hasSyndications) state.expanded.add(r.id); });
+  }
+
+  function renderFilterChips() {
+    const allRows = [...sections.earned, ...sections.owned, ...sections.competitor];
+    const tierEl = document.getElementById("tier-filter");
+    const tierSet = tiersIn(allRows);
+    tierEl.innerHTML = `<span class="chip ${state.tier==="all"?"active":""}" data-key="all">All</span>` +
+      tierSet.map(t => `<span class="chip ${state.tier===t?"active":""}" data-key="${t}">${capitalize(t)}</span>`).join("");
+    tierEl.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { state.tier = el.dataset.key; render(); }));
+
+    const sentEl = document.getElementById("sent-filter");
+    sentEl.innerHTML = `<span class="chip ${state.sentiment==="all"?"active":""}" data-key="all">All</span>` +
+      SENTIMENTS.map(s => `<span class="chip ${state.sentiment===s?"active":""}" data-key="${s}">${capitalize(s)}</span>`).join("");
+    sentEl.querySelectorAll(".chip").forEach(el => el.addEventListener("click", () => { state.sentiment = el.dataset.key; render(); }));
+
+    document.querySelectorAll("#type-filter .chip").forEach(el => el.addEventListener("click", () => {
+      state.type = el.dataset.key;
+      document.querySelectorAll("#type-filter .chip").forEach(c => c.classList.toggle("active", c.dataset.key === state.type));
+      render();
+    }));
+    document.querySelectorAll("#notable-filter .chip").forEach(el => el.addEventListener("click", () => {
+      state.notable = el.dataset.key;
+      document.querySelectorAll("#notable-filter .chip").forEach(c => c.classList.toggle("active", c.dataset.key === state.notable));
+      render();
+    }));
+    document.querySelectorAll("#period-presets .chip").forEach(el => el.addEventListener("click", () => applyPreset(el.dataset.preset)));
+  }
+
+  function applyPreset(p) {
+    const today = new Date(); today.setHours(23,59,59,999);
+    let from = null;
+    if (p === "all") { from = null; }
+    else if (p === "ytd") { from = new Date(today.getFullYear(), 0, 1); }
+    else { const days = parseInt(p, 10); from = new Date(today); from.setDate(from.getDate() - days); from.setHours(0,0,0,0); }
+    state.dateFrom = from ? toISODate(from) : null;
+    state.dateTo = toISODate(today);
+    document.getElementById("date-from").value = state.dateFrom || "";
+    document.getElementById("date-to").value = state.dateTo || "";
+    render();
+  }
+
+  document.getElementById("date-from").addEventListener("change", e => { state.dateFrom = e.target.value || null; render(); });
+  document.getElementById("date-to").addEventListener("change", e => { state.dateTo = e.target.value || null; render(); });
+  document.getElementById("search-input").addEventListener("input", e => { state.search = e.target.value.toLowerCase(); render(); });
+  document.getElementById("reset-filters").addEventListener("click", () => {
+    state.type = "all"; state.tier = "all"; state.sentiment = "all"; state.notable = "all"; state.search = ""; state.dateFrom = null; state.dateTo = null;
+    document.getElementById("date-from").value = "";
+    document.getElementById("date-to").value = "";
+    document.getElementById("search-input").value = "";
+    renderFilterChips(); render();
+  });
+  document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+    state.tab = t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === state.tab));
+    render();
+  }));
+  document.getElementById("mark-seen").addEventListener("click", () => {
+    ackAt = Date.now();
+    localStorage.setItem(ackKey, String(ackAt));
+    [...sections.earned, ...sections.owned, ...sections.competitor].forEach(r => r._isNew = false);
+    render();
+  });
+
+  document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
+    th.addEventListener("click", () => {
+      const k = th.dataset.sort;
+      if (state.sortKey === k) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+      else { state.sortKey = k; state.sortDir = (k === "publishedAt" || k === "uvm") ? "desc" : "asc"; }
+      render();
+    });
+  });
+
+  function rowMatches(r) {
+    if (state.type === "primary" && r._type !== "primary") return false;
+    if (state.type === "pickup"  && r._type !== "pickup")  return false;
+    if (state.tier !== "all" && (r.tier || "other") !== state.tier) return false;
+    if (state.sentiment !== "all" && (r.sentiment || "neutral") !== state.sentiment) return false;
+    if (state.notable === "notable" && !(r.isNotable || r.sentiment === "negative")) return false;
+    if (state.notable === "target" && !_matchTarget(r.domain)) return false;
+    if (state.dateFrom) { if (!r.publishedAt || r.publishedAt < state.dateFrom) return false; }
+    if (state.dateTo)   { if (!r.publishedAt || r.publishedAt > state.dateTo)   return false; }
+    if (state.search) {
+      const hay = ((r.headline || "") + " " + (r.notes || "") + " " + (r.domain || "")).toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  }
+
+  function visibleRows() {
+    const flat = sections[state.tab];
+    let primaries = flat.filter(r => r._type === "primary" && rowMatches(r));
+    let pickups   = flat.filter(r => r._type === "pickup"  && rowMatches(r));
+    if (state.type === "pickup") { const list = pickups.slice(); sortInPlace(list); return { displayMode: "flat", rows: list }; }
+    if (state.type === "primary") { const list = primaries.slice(); sortInPlace(list); return { displayMode: "flat", rows: list }; }
+    sortInPlace(primaries);
+    const out = [];
+    for (const p of primaries) {
+      out.push(p);
+      const kids = pickups.filter(k => k._parentId === p.id);
+      if (state.expanded.has(p.id)) { sortInPlace(kids); out.push(...kids); }
+    }
+    const matchedParentIds = new Set(primaries.map(p => p.id));
+    const orphans = pickups.filter(k => !matchedParentIds.has(k._parentId));
+    sortInPlace(orphans); out.push(...orphans);
+    return { displayMode: "tree", rows: out };
+  }
+
+  function sortInPlace(arr) {
+    const k = state.sortKey, dir = state.sortDir === "asc" ? 1 : -1;
+    arr.sort((a, b) => {
+      let av, bv;
+      if (k === "publishedAt") { av = a.publishedAt || ""; bv = b.publishedAt || ""; }
+      else if (k === "uvm") { av = a.uvm == null ? -1 : a.uvm; bv = b.uvm == null ? -1 : b.uvm; }
+      else if (k === "tier") { av = TIER_ORDER.indexOf(a.tier || "other"); bv = TIER_ORDER.indexOf(b.tier || "other"); }
+      else if (k === "sentiment") { av = SENTIMENTS.indexOf(a.sentiment || "neutral"); bv = SENTIMENTS.indexOf(b.sentiment || "neutral"); }
+      else { av = (a[k] || "").toString().toLowerCase(); bv = (b[k] || "").toString().toLowerCase(); }
+      if (av < bv) return -1*dir; if (av > bv) return 1*dir; return 0;
+    });
+  }
+
+  function render() {
+    const earnedMatched     = sections.earned.filter(rowMatches).length;
+    const ownedMatched      = sections.owned.filter(rowMatches).length;
+    const competitorMatched = sections.competitor.filter(rowMatches).length;
+    document.getElementById("ct-earned").textContent     = earnedMatched;
+    document.getElementById("ct-owned").textContent      = ownedMatched;
+    document.getElementById("ct-competitor").textContent = competitorMatched;
+
+    renderSnapshot(sections[state.tab].filter(rowMatches));
+    renderTargetsPanel();
+
+    document.querySelectorAll("#table thead th[data-sort]").forEach(th => {
+      const arrow = th.querySelector(".sortarrow");
+      if (!arrow) return;
+      arrow.textContent = th.dataset.sort === state.sortKey ? (state.sortDir === "asc" ? "▲" : "▼") : "";
+    });
+
+    const { displayMode, rows } = visibleRows();
+    const tbody = document.getElementById("tbody");
+    const empty = document.getElementById("empty");
+    const table = document.getElementById("table");
+    if (rows.length === 0) { tbody.innerHTML = ""; empty.style.display = "block"; table.style.display = "none"; return; }
+    empty.style.display = "none"; table.style.display = "";
+
+    tbody.innerHTML = rows.map(r => {
+      const synClass  = r._type === "pickup" ? "synd" : "";
+      const isComp    = (r.tier === "competitor");
+      const noteClass = isComp ? "competitor-row" : (r.sentiment === "negative") ? "alert" : (r.isNotable ? "notable" : "");
+      const expandBtn = (r._type === "primary" && r._hasSyndications && displayMode === "tree")
+        ? `<button class="expand-btn" data-toggle="${escapeHtml(r.id)}">${state.expanded.has(r.id) ? "▼" : "▶"}</button>`
+        : `<span style="display:inline-block;width:16px"></span>`;
+      const typeBadge = r._type === "primary"
+        ? (isComp ? `<span class="badge b-competitor">Competitor</span>` : `<span class="badge b-primary">Primary</span>`)
+        : `<span class="badge b-pickup">Pickup</span>`;
+      const newBadge  = r._isNew ? ` <span class="badge b-new">New</span>` : "";
+      const rssBadge  = r.viaRss  ? ` <span class="badge b-via-rss">RSS</span>` : "";
+      const _manualBadge = r._manual ? ' <span class="badge b-manual">Manual</span>' : "";
+      const _tp = _matchTarget(r.domain);
+      const targetBadge = _tp ? ` <span class="badge b-target-${_tp.tier}">${_tp.tier===1?"◎ Bullseye":"⊙ Target"}</span>` : "";
+      const noteBadge = noteClass === "alert"
+        ? ` <span class="badge b-alert">Alert</span>`
+        : (noteClass === "notable" ? ` <span class="badge b-notable">Notable</span>` : "");
+      const tierClass = isComp ? "b-tier-competitor" : `b-tier-${escapeHtml(r.tier || "other")}`;
+      return `
+        <tr class="${synClass} ${noteClass}">
+          <td>${expandBtn} ${formatDate(r.publishedAt)}</td>
+          <td class="headline-cell">
+            <a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.headline || "(untitled)")}</a>
+            <div style="margin-top:4px">${typeBadge}${noteBadge}${newBadge}${rssBadge}${_manualBadge}${targetBadge}</div>
+          </td>
+          <td class="url-cell"><a href="${escapeHtml(r.url || "#")}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(r.url || "")}">${escapeHtml(r.domain || "")}</a></td>
+          <td><span class="badge ${tierClass}">${escapeHtml(capitalize(r.tier || "other"))}</span></td>
+          <td>${formatUvm(r.uvm)}</td>
+          <td><span class="badge b-sent-${escapeHtml(r.sentiment || "neutral")}">${escapeHtml(capitalize(r.sentiment || "neutral"))}</span></td>
+          <td class="notes-cell">${escapeHtml(r.notes || "")}</td>
+        </tr>`;
+    }).join("");
+
+    tbody.querySelectorAll(".expand-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.toggle;
+        if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id);
+        render();
+      });
+    });
+  }
+
+  function renderSnapshot(rows) {
+    const total = rows.length;
+    const sentCounts = { positive:0, neutral:0, mixed:0, negative:0 };
+    const tierCounts = {};
+    let uvmSum = 0, uvmHave = 0, notableCount = 0, pickupCount = 0;
+    rows.forEach(r => {
+      const s = r.sentiment || "neutral"; if (sentCounts[s] !== undefined) sentCounts[s]++;
+      const t = r.tier || "other"; tierCounts[t] = (tierCounts[t] || 0) + 1;
+      if (typeof r.uvm === "number") { uvmSum += r.uvm; uvmHave++; }
+      if (r.isNotable || r.sentiment === "negative") notableCount++;
+      if (r._type === "pickup") pickupCount++;
+    });
+    const positivePct = total ? Math.round((sentCounts.positive/total)*100) : 0;
+    const negativePct = total ? Math.round((sentCounts.negative/total)*100) : 0;
+    const sentBars = total ? `
+      <div class="bars">
+        <span style="width:${(sentCounts.positive/total)*100}%;background:#4caf50"></span>
+        <span style="width:${(sentCounts.neutral/total)*100}%;background:#bdbdbd"></span>
+        <span style="width:${(sentCounts.mixed/total)*100}%;background:#f5a623"></span>
+        <span style="width:${(sentCounts.negative/total)*100}%;background:#d93025"></span>
+      </div>
+      <div class="legend">
+        <span><i style="background:#4caf50"></i>Positive ${sentCounts.positive}</span>
+        <span><i style="background:#bdbdbd"></i>Neutral ${sentCounts.neutral}</span>
+        <span><i style="background:#f5a623"></i>Mixed ${sentCounts.mixed}</span>
+        <span><i style="background:#d93025"></i>Negative ${sentCounts.negative}</span>
+      </div>` : `<div class="dim" style="font-size:11px;margin-top:4px">No data</div>`;
+    const topTiers = Object.entries(tierCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const tierLines = topTiers.length
+      ? topTiers.map(([t,n])=>`<span style="display:inline-block;margin-right:8px"><span class="badge b-tier-${t==="competitor"?"competitor":t}">${capitalize(t)}</span> <span style="color:#555">${n}</span></span>`).join("")
+      : `<span class="dim">No data</span>`;
+    const _tpAll = payload.targetPublications || [];
+    const _tpHits = new Set();
+    for (const r of sections.earned) { const m = _matchTarget(r.domain); if (m) _tpHits.add(m.name); }
+    const _t1All = _tpAll.filter(t => t.tier === 1);
+    const _t2All = _tpAll.filter(t => t.tier === 2);
+    const _t1Hits = _t1All.filter(t => _tpHits.has(t.name)).length;
+    const _t2Hits = _t2All.filter(t => _tpHits.has(t.name)).length;
+    const targetStatCard = _tpAll.length ? `
+      <div class="stat" style="border-color:${_t1Hits>0?'#f5c842':'#e6e6e6'}">
+        <div class="stat-label">Target Coverage</div>
+        <div class="stat-val" style="font-size:16px">${_t1Hits}<span style="font-size:12px;color:#aaa;font-weight:400">/${_t1All.length} T1</span> &nbsp;·&nbsp; ${_t2Hits}<span style="font-size:12px;color:#aaa;font-weight:400">/${_t2All.length} T2</span></div>
+        <div class="stat-sub">Bullseye hits &middot; Broad target hits</div>
+      </div>` : "";
+    const _scanAge = scanMeta.lastScan ? (()=>{const s=Math.round((Date.now()-scanMeta.lastScan)/1000);return s<60?"just now":s<3600?Math.floor(s/60)+"m ago":s<86400?Math.floor(s/3600)+"h ago":Math.floor(s/86400)+"d ago";})() : "—";
+    document.getElementById("snapshot").innerHTML = `
+      <div class="stat" id="stat-last-scan"><div class="stat-label">Last RSS scan</div><div class="stat-val" style="font-size:16px">${_scanAge}</div><div class="stat-sub" style="display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${scanMeta.lastScan?"#4caf50":"#bdbdbd"};display:inline-block;flex-shrink:0"></span>${scanMeta.lastScan?"Live &mdash; feeds active":"Awaiting first scan"}</div></div>
+      <div class="stat" id="stat-cycles"><div class="stat-label">Scan cycles</div><div class="stat-val">${scanMeta.cycleCount||0}</div><div class="stat-sub">Auto-refresh every 30 min</div></div>
+      <div class="stat"><div class="stat-label">Total mentions</div><div class="stat-val">${total}</div><div class="stat-sub">${pickupCount} pickup${pickupCount===1?"":"s"} included</div></div>
+      <div class="stat"><div class="stat-label">Sentiment</div><div class="stat-val" style="font-size:18px">${positivePct}% pos &middot; ${negativePct}% neg</div>${sentBars}</div>
+      <div class="stat"><div class="stat-label">UVM reach</div><div class="stat-val">${uvmHave ? formatUvm(uvmSum) : "—"}</div><div class="stat-sub">${uvmHave}/${total} items have UVM</div></div>
+      <div class="stat"><div class="stat-label">Tier breakdown</div><div style="margin-top:6px">${tierLines}</div></div>
+      <div class="stat" style="border-color:${notableCount?"#f5a623":"#e6e6e6"}">
+        <div class="stat-label">Notable / alerts</div>
+        <div class="stat-val" style="color:${notableCount?"#8a5a00":"#1a1a1a"}">${notableCount}</div>
+        <div class="stat-sub">National features &amp; neg. pieces</div>
+      </div>
+      ${targetStatCard}`;
+  }
+
+  function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function capitalize(s) { s = String(s ?? ""); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function formatRelative(d) {
+    const s = Math.round((Date.now() - d.getTime()) / 1000);
+    if (s < 60) return "just now"; if (s < 3600) return Math.floor(s/60) + "m ago";
+    if (s < 86400) return Math.floor(s/3600) + "h ago"; return Math.floor(s/86400) + "d ago";
+  }
+  function formatDate(iso) {
+    if (!iso) return `<span class="dim">—</span>`;
+    const d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return escapeHtml(iso);
+    return d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+  }
+  function formatUvm(n) {
+    if (n == null || isNaN(n)) return `<span class="dim">—</span>`;
+    if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,"") + "B";
+    if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,"") + "M";
+    if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,"") + "K";
+    return String(n);
+  }
+  function toISODate(d) { const m = String(d.getMonth()+1).padStart(2,"0"); const day = String(d.getDate()).padStart(2,"0"); return d.getFullYear()+"-"+m+"-"+day; }
+
+  // ── Auto-scan RSS engine ───────────────────────────────────────────────────────────────────
+  const _SCAN_MS = 30 * 60 * 1000;
+  const _AGE_MS  = 90 * 24 * 60 * 60 * 1000;
+  const _sBase   = "ct:" + (client||"").toLowerCase().replace(/\s+/g,"-");
+  let scanMeta = (()=>{try{return JSON.parse(localStorage.getItem(_sBase+":meta")||"{}");}catch{return{};}})();
+  scanMeta = { lastScan: scanMeta.lastScan||null, cycleCount: scanMeta.cycleCount||0 };
+  let _rssItems = (()=>{try{return JSON.parse(localStorage.getItem(_sBase+":items")||"[]");}catch{return[];}})();
+  let _scanRunning = false, _scanTimer = null;
+
+  // Merge stored RSS items into live sections
+  {
+    const _ex = new Set();
+    for (const arr of [payload.earnedMedia, payload.ownedMedia, payload.competitorMedia])
+      for (const r of arr||[]) { _ex.add(r.url); for (const s of r.syndications||[]) _ex.add(s.url); }
+    _rssItems = _rssItems.filter(it => !_ex.has(it.url));
+    for (const it of _rssItems) {
+      const sec = it._fc=="competitor"?"competitor":it._fc=="owned"?"owned":"earned";
+      const fs  = it.firstSeen ? new Date(it.firstSeen).getTime() : 0;
+      sections[sec].push({...it, _type:"primary", _parentId:null, _hasSyndications:false, _isNew:fs>ackAt});
+    }
+  }
+
+  function _knownUrls() {
+    const s = new Set();
+    for (const arr of [payload.earnedMedia, payload.ownedMedia, payload.competitorMedia])
+      for (const r of arr||[]) { s.add(r.url); for (const syn of r.syndications||[]) s.add(syn.url); }
+    _rssItems.forEach(it => s.add(it.url));
+    return s;
+  }
+
+  async function _fetchXml(url) {
+    const proxies = [
+      async u => { const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, {signal:AbortSignal.timeout(15000)}); if (!r.ok) throw 0; const j = await r.json(); if (!j.contents || j.contents.length < 100) throw 0; return j.contents; },
+      async u => { const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(u)}`, {signal:AbortSignal.timeout(15000)}); if (!r.ok) throw 0; const t = await r.text(); if (!t || t.length < 100) throw 0; return t; },
+      async u => { const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, {signal:AbortSignal.timeout(15000)}); if (!r.ok) throw 0; const t = await r.text(); if (!t || t.length < 100) throw 0; return t; }
+    ];
+    for (const proxy of proxies) {
+      try { return await proxy(url); } catch {}
+    }
+    throw new Error("All proxies failed");
+  }
+
+  function _parseFeed(xml) {
+    if (!xml || xml.length < 100) return [];
+    const s = xml.trimStart();
+    if (s.startsWith("<html") || s.startsWith("<!") || s.startsWith("{\"error")) return [];
+    const doc = new DOMParser().parseFromString(xml, "text/xml");
+    if (doc.querySelector("parsererror")) return [];
+    const items = Array.from(doc.querySelectorAll("item"));
+    if (items.length) return items.map(el => {
+      const lEl = el.querySelector("link");
+      const link = lEl ? (lEl.textContent.trim() || lEl.getAttribute("href") || "") : "";
+      return { title: el.querySelector("title")?.textContent?.trim()||"", link, pubDate: el.querySelector("pubDate")?.textContent||"", guid: el.querySelector("guid")?.textContent||link };
+    });
+    return Array.from(doc.querySelectorAll("entry")).map(el => ({
+      title: el.querySelector("title")?.textContent?.trim()||"",
+      link:  el.querySelector("link")?.getAttribute("href")||"",
+      pubDate: el.querySelector("published")?.textContent||el.querySelector("updated")?.textContent||"",
+      guid: el.querySelector("id")?.textContent||""
+    }));
+  }
+
+  function _matchTarget(domain) {
+    if (!domain || !(payload.targetPublications||[]).length) return null;
+    const d = domain.toLowerCase();
+    for (const tp of payload.targetPublications) {
+      if ((tp.domains||[]).some(td => d === td.toLowerCase() || d.endsWith('.'+td.toLowerCase()))) return tp;
+    }
+    return null;
+  }
+
+  function _inferSent(t) {
+    t = t.toLowerCase();
+    if (["breach","hack","attack","failure","flaw","vulnerab","layoff","bankrupt","crisis","fraud","lawsuit","penalty","outage","recall","sues","drops ","cuts "].some(w=>t.includes(w))) return "negative";
+    if (["launch","innovat","award","partner","growth","expands","success","leading","record","milestone","invest","fund","wins ","names "].some(w=>t.includes(w))) return "positive";
+    return "neutral";
+  }
+
+  function _inferTier(domain) {
+    if (["cnbc.com","ft.com","wsj.com","nytimes.com","bloomberg.com","reuters.com","bbc.co","washingtonpost.com","techcrunch.com","wired.com","axios.com","theguardian.com","apnews.com","forbes.com","time.com"].some(n=>domain.includes(n))) return "national";
+    if (["medium.com","substack.com","wordpress.com","blogspot.com"].some(n=>domain.includes(n))) return "blog";
+    return "trade";
+  }
+
+  function _setPill(name, st) {
+    const el = document.querySelector(`.feed-pill[data-feed="${CSS.escape(name)}"]`);
+    if (!el) return;
+    el.classList.remove("fp-scanning","fp-ok","fp-err");
+    if (st) el.classList.add("fp-"+st);
+  }
+
+  function _updateScanSub(scanning, done, total) {
+    const el = document.getElementById("scan-sub");
+    if (!el) return;
+    if (scanning) { el.textContent = `scanning… (${done}/${total} feeds)`; return; }
+    if (!scanMeta.lastScan) { el.textContent = "no scans yet — click Scan now"; return; }
+    const s = Math.round((Date.now()-scanMeta.lastScan)/1000);
+    el.textContent = "last scan "+(s<60?"just now":s<3600?Math.floor(s/60)+"m ago":s<86400?Math.floor(s/3600)+"h ago":Math.floor(s/86400)+"d ago")+" · "+scanMeta.cycleCount+" cycle"+(scanMeta.cycleCount===1?"":"s");
+  }
+
+  async function _scanFeed(feed, knownUrls) {
+    const xml = await _fetchXml(feed.url);
+    const fi = _parseFeed(xml);
+    const now = Date.now(), cutoff = now-_AGE_MS;
+    const out = [];
+    for (const f of fi) {
+      if (!f.link || knownUrls.has(f.link)) continue;
+      const pub = f.pubDate ? new Date(f.pubDate) : null;
+      if (pub && !isNaN(pub) && pub.getTime() < cutoff) continue;
+      if (!(payload.terms||[]).some(t => f.title.toLowerCase().includes(t.toLowerCase()))) continue;
+      const domain = (()=>{try{return new URL(f.link).hostname.replace(/^www\./,"");}catch{return "";}})();
+      out.push({ id:"rss-"+now+"-"+Math.random().toString(36).slice(2,7), publishedAt:pub&&!isNaN(pub)?pub.toISOString().slice(0,10):null, headline:f.title, url:f.link, domain, tier:feed.category==="competitor"?"competitor":_inferTier(domain), uvm:null, sentiment:_inferSent(f.title), notes:"Via "+feed.name+" RSS feed.", isNotable:false, viaRss:true, firstSeen:new Date().toISOString(), syndications:[], _fc:feed.category||"earned" });
+      knownUrls.add(f.link);
+    }
+    if (fi.length) feed.lastSeenGuid = fi[0].guid || fi[0].link;
+    return out;
+  }
+
+  async function runScan() {
+    if (_scanRunning) return;
+    _scanRunning = true;
+    const feeds = payload.feeds||[], kn = _knownUrls();
+    let totalNew = 0;
+    for (let i=0; i<feeds.length; i++) {
+      const feed = feeds[i];
+      _updateScanSub(true, i, feeds.length);
+      _setPill(feed.name, "scanning");
+      try {
+        const ni = await _scanFeed(feed, kn);
+        _setPill(feed.name, "ok");
+        if (ni.length) {
+          for (const it of ni) {
+            const sec = it._fc=="competitor"?"competitor":it._fc=="owned"?"owned":"earned";
+            sections[sec].push({...it, _type:"primary", _parentId:null, _hasSyndications:false, _isNew:true});
+            _rssItems.push(it);
+          }
+          totalNew += ni.length;
+        }
+      } catch { _setPill(feed.name, "err"); }
+    }
+    try { localStorage.setItem(_sBase+":items", JSON.stringify(_rssItems.slice(-500))); } catch {}
+    scanMeta.lastScan = Date.now();
+    scanMeta.cycleCount++;
+    try { localStorage.setItem(_sBase+":meta", JSON.stringify(scanMeta)); } catch {}
+    _scanRunning = false;
+    _updateScanSub(false);
+    if (totalNew > 0) render();
+    _scanTimer = setTimeout(runScan, _SCAN_MS);
+  }
+
+  function renderTargetsPanel() {
+    const tp = payload.targetPublications || [];
+    if (!tp.length) return;
+    const panel = document.getElementById("targets-panel");
+    if (!panel) return;
+    panel.style.display = "";
+    const hitNames = new Set();
+    for (const r of sections.earned) { const m = _matchTarget(r.domain); if (m) hitNames.add(m.name); }
+    const t1 = tp.filter(t => t.tier === 1);
+    const t2 = tp.filter(t => t.tier === 2);
+    const t1Hits = t1.filter(t => hitNames.has(t.name)).length;
+    const t2Hits = t2.filter(t => hitNames.has(t.name)).length;
+    document.getElementById("targets-summary-bar").textContent =
+      `Tier 1: ${t1Hits}/${t1.length} hit · Tier 2: ${t2Hits}/${t2.length} hit`;
+    const makeItem = t => {
+      const hit = hitNames.has(t.name);
+      return `<div class="tp-item ${hit?"tp-hit":"tp-miss"}">
+        <span class="tp-dot"></span>
+        <span class="tp-name" title="${escapeHtml(t.display||t.name)}">${escapeHtml(t.display||t.name)}</span>
+        <button class="tp-add" data-pub="${escapeHtml(t.name)}">+ Add</button>
+      </div>`;
+    };
+    document.getElementById("targets-tier1-grid").innerHTML = t1.map(makeItem).join("");
+    document.getElementById("targets-tier2-grid").innerHTML = t2.map(makeItem).join("");
+    document.querySelectorAll(".tp-add").forEach(btn => {
+      btn.addEventListener("click", () => openAddModal(btn.dataset.pub));
+    });
+  }
+
+  {
+    const toggleBtn = document.getElementById("targets-toggle");
+    const detailEl  = document.getElementById("targets-detail");
+    if (toggleBtn) toggleBtn.addEventListener("click", () => {
+      const open = detailEl.style.display === "none";
+      detailEl.style.display = open ? "" : "none";
+      toggleBtn.textContent = open ? "Hide targets ▴" : "Show targets ▾";
+    });
+  }
+
+  {
+    const modal = document.getElementById("add-modal");
+    const pubSel = document.getElementById("modal-pub");
+    const tp = payload.targetPublications || [];
+    pubSel.innerHTML = tp.map(t => `<option value="${escapeHtml(t.name)}">${escapeHtml(t.display||t.name)}</option>`).join("");
+
+    function openAddModal(pubName) {
+      if (pubName) {
+        const idx = tp.findIndex(t => t.name === pubName);
+        if (idx >= 0) pubSel.selectedIndex = idx;
+      }
+      document.getElementById("modal-headline").value = "";
+      document.getElementById("modal-url").value = "";
+      document.getElementById("modal-date").value = new Date().toISOString().slice(0,10);
+      document.getElementById("modal-sentiment").value = "neutral";
+      document.getElementById("modal-notes").value = "";
+      modal.classList.add("open");
+      document.getElementById("modal-headline").focus();
+    }
+    window.openAddModal = openAddModal;
+
+    // Token settings toggle
+    const tokenToggle = document.getElementById("modal-token-toggle");
+    const tokenBody = document.getElementById("modal-token-body");
+    const tokenInput = document.getElementById("modal-gh-token");
+    const ghTokenKey = _sBase + ":gh-token";
+    tokenToggle.addEventListener("click", () => {
+      const open = tokenBody.style.display === "none";
+      tokenBody.style.display = open ? "" : "none";
+      tokenToggle.textContent = (open ? "▾ " : "⚙ ") + "GitHub commit settings";
+      if (open) {
+        tokenInput.value = localStorage.getItem(ghTokenKey) || "";
+        tokenInput.focus();
+      }
+    });
+    tokenInput.addEventListener("change", () => {
+      const v = tokenInput.value.trim();
+      if (v) localStorage.setItem(ghTokenKey, v); else localStorage.removeItem(ghTokenKey);
+    });
+
+    function showGhToast(msg, ok) {
+      const t = document.getElementById("gh-toast");
+      if (!t) return;
+      t.textContent = msg;
+      t.style.background = ok ? "#2e7d32" : "#b71c1c";
+      t.classList.add("show");
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove("show"), 4000);
+    }
+
+    async function _commitToGitHub(item, token) {
+      const owner = "hanrburns", repo = "coverage-trackers", filePath = "sensormatic/index.html";
+      const api = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + filePath;
+      const status = document.getElementById("modal-save-status");
+      try {
+        if (status) status.textContent = "Committing to GitHub…";
+        const r = await fetch(api, { headers: { Authorization: "token " + token, Accept: "application/vnd.github.v3+json" } });
+        if (!r.ok) throw new Error("Fetch failed: " + r.status);
+        const { sha, content: b64 } = await r.json();
+        const raw = decodeURIComponent(escape(atob(b64.replace(/\n/g, ""))));
+        const scriptRe = /(<script id="coverage-data"[^>]*>)([\s\S]*?)(<\/script>)/;
+        const sm = raw.match(scriptRe);
+        if (!sm) throw new Error("coverage-data block not found");
+        const data = JSON.parse(sm[2]);
+        data.earnedMedia = (data.earnedMedia || []).filter(e => e.url !== item.url);
+        data.earnedMedia.unshift({...item});
+        const newFile = raw.slice(0, sm.index) + sm[1] + "\n" + JSON.stringify(data) + "\n" + sm[3] + raw.slice(sm.index + sm[0].length);
+        const newB64 = btoa(unescape(encodeURIComponent(newFile)));
+        const pr = await fetch(api, {
+          method: "PUT",
+          headers: { Authorization: "token " + token, Accept: "application/vnd.github.v3+json", "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Add manual coverage: " + item.headline.slice(0, 72), content: newB64, sha })
+        });
+        if (!pr.ok) { const e = await pr.json().catch(()=>({})); throw new Error("Commit failed: " + pr.status + (e.message ? " — " + e.message : "")); }
+        if (status) status.textContent = "";
+        showGhToast("Saved to GitHub ✓", true);
+      } catch (e) {
+        if (status) status.textContent = "GitHub commit failed: " + e.message;
+        showGhToast("GitHub commit failed", false);
+        console.error("GitHub commit:", e);
+      }
+    }
+
+    document.getElementById("modal-cancel").addEventListener("click", () => modal.classList.remove("open"));
+    modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+
+    document.getElementById("modal-save").addEventListener("click", async () => {
+      const headline = document.getElementById("modal-headline").value.trim();
+      const url = document.getElementById("modal-url").value.trim();
+      if (!headline || !url) { alert("Headline and URL are required."); return; }
+      const pubName = pubSel.value;
+      const tp2 = (payload.targetPublications||[]).find(t=>t.name===pubName);
+      let domain = "";
+      try { domain = new URL(url).hostname.replace(/^www\./,""); } catch {}
+      const inferredDomain = (tp2?.domains||[])[0] || domain;
+      const dateVal = document.getElementById("modal-date").value;
+      const sentiment = document.getElementById("modal-sentiment").value;
+      const notes = document.getElementById("modal-notes").value.trim();
+      const now = new Date().toISOString();
+      const item = {
+        id: "manual-"+Date.now()+"-"+Math.random().toString(36).slice(2,5),
+        publishedAt: dateVal || null,
+        headline, url,
+        domain: domain || inferredDomain,
+        tier: tp2 ? (tp2.tier===1?"national":"trade") : "trade",
+        uvm: null, sentiment,
+        notes: notes || ("Manually added — " + pubName),
+        isNotable: false, viaRss: false, _manual: true,
+        firstSeen: now, syndications: [], _fc: "earned"
+      };
+      const ackKey2 = "coverage-tracker:" + (client||"").toLowerCase().replace(/\s+/g,"-") + ":ackAt";
+      const ackAt2 = parseInt(localStorage.getItem(ackKey2)||"0",10);
+      sections.earned.push({...item, _type:"primary", _parentId:null, _hasSyndications:false, _isNew:new Date(now).getTime()>ackAt2});
+      _rssItems.push(item);
+      try { localStorage.setItem(_sBase+":items", JSON.stringify(_rssItems.slice(-500))); } catch {}
+      modal.classList.remove("open");
+      render();
+      const ghToken = (tokenInput.value.trim()) || localStorage.getItem(ghTokenKey);
+      if (ghToken) _commitToGitHub(item, ghToken);
+    });
+  }
+
+  document.getElementById("scan-now")?.addEventListener("click", () => { if (_scanTimer) clearTimeout(_scanTimer); runScan(); });
+  setInterval(() => _updateScanSub(false), 60000);
+  _updateScanSub(false);
+  setTimeout(runScan, 3000);
+  // ── end auto-scan ──────────────────────────────────────────────────────────────────────
+
+  renderFilterChips();
+  render();
+})();
+</script>
+</body>
+</html>
