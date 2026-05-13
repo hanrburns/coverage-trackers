@@ -99,13 +99,15 @@ table.coverage tbody tr:hover .row-actions { opacity: 1; }
 .b-pickup { background: #f0f0f0; color: #666; }
 .b-tier-national { background: #d8e9ff; color: #0a3d80; }
 .b-tier-trade { background: #d4f1e8; color: #0a6647; }
-.b-tier-regional { background: #ffe8c2; color: #855300; }
-.b-tier-industry { background: #e0e7ff; color: #2a3b8f; }
+.b-tier-vertical { background: #e0e7ff; color: #2a3b8f; }
 .b-tier-blog { background: #ece3ff; color: #5a3c9a; }
-.b-tier-podcast { background: #fce4ec; color: #880e4f; }
-.b-tier-owned { background: #e9e1f5; color: #4a2d80; }
-.b-tier-competitor { background: #ffeee8; color: #b84a00; }
 .b-tier-other { background: #efefef; color: #555; }
+.b-fmt-article { background: #eef2ff; color: #3730a3; }
+.b-fmt-podcast { background: #fce4ec; color: #880e4f; }
+.b-fmt-video { background: #ffe0e0; color: #8b0000; }
+.b-fmt-newsletter { background: #fef3c7; color: #78350f; }
+.b-fmt-social { background: #e0f2fe; color: #075985; }
+.b-fmt-other { background: #efefef; color: #555; }
 .b-type-mention { background: #f0f0f0; color: #555; }
 .b-type-feature { background: #d8e9ff; color: #0a3d80; }
 .b-type-contributed { background: #fff4d4; color: #8a5a00; }
@@ -175,6 +177,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
     <span class="sync-pill" id="sync-pill" title="Live sync status"><span class="sync-dot"></span><span id="sync-text">Synced</span></span>
     <span class="lastupdate"><span class="dot"></span><span id="last-updated">—</span></span>
+    <button id="sync-now-btn" title="Run RSS + broad-web search now">Sync now</button>
     <button id="refresh-btn" title="Reload latest from server">Refresh</button>
     <button id="export-btn" title="View full JSON snapshot (backup)">Export</button>
     <button id="add-btn" class="primary">+ Add entry</button>
@@ -206,13 +209,30 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   </div>
   <div class="filter-row">
     <span class="filter-label">Tier</span>
-    <div class="chips" id="tier-filter"></div>
+    <div class="chips" id="tier-filter">
+      <span class="chip active" data-key="all">All</span>
+      <span class="chip" data-key="national">National</span>
+      <span class="chip" data-key="trade">Trade</span>
+      <span class="chip" data-key="vertical">Vertical</span>
+      <span class="chip" data-key="blog">Blog</span>
+      <span class="chip" data-key="other">Other</span>
+    </div>
     <span class="filter-label" style="margin-left:8px">Type</span>
     <div class="chips" id="type-filter">
       <span class="chip active" data-key="all">All</span>
       <span class="chip" data-key="mention">Mention</span>
       <span class="chip" data-key="feature">Feature</span>
       <span class="chip" data-key="contributed">Contributed</span>
+    </div>
+    <span class="filter-label" style="margin-left:8px">Format</span>
+    <div class="chips" id="format-filter">
+      <span class="chip active" data-key="all">All</span>
+      <span class="chip" data-key="article">Article</span>
+      <span class="chip" data-key="podcast">Podcast</span>
+      <span class="chip" data-key="video">Video</span>
+      <span class="chip" data-key="newsletter">Newsletter</span>
+      <span class="chip" data-key="social">Social</span>
+      <span class="chip" data-key="other">Other</span>
     </div>
   </div>
   <div class="filter-row">
@@ -237,8 +257,8 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
 </div>
 
 <div class="tabs">
-  <button class="tab" data-tab="owned">Owned <span class="ct" id="ct-owned">0</span></button>
   <button class="tab active" data-tab="earned">Earned <span class="ct" id="ct-earned">0</span></button>
+  <button class="tab" data-tab="owned">Owned <span class="ct" id="ct-owned">0</span></button>
   <button class="tab" data-tab="competitor">Competitors <span class="ct" id="ct-competitor">0</span></button>
   <div class="tabs-actions">
     <button id="mark-seen" class="ghost">Mark all seen</button>
@@ -255,12 +275,13 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
     <tr>
       <th data-sort="publishedAt" style="width:115px">Pub date <span class="sortarrow">▼</span></th>
       <th data-sort="headline">Headline</th>
-      <th data-sort="publication" style="width:170px">Publication</th>
-      <th data-sort="tier" style="width:110px">Tier</th>
-      <th data-sort="type" style="width:110px">Type</th>
-      <th data-sort="sentiment" style="width:110px">Sentiment</th>
-      <th data-sort="dateAdded" style="width:115px">Date added</th>
-      <th class="no-sort" style="width:160px">Actions</th>
+      <th data-sort="publication" style="width:160px">Publication</th>
+      <th data-sort="tier" style="width:95px">Tier</th>
+      <th data-sort="format" style="width:100px">Format</th>
+      <th data-sort="type" style="width:105px">Type</th>
+      <th data-sort="sentiment" style="width:100px">Sentiment</th>
+      <th data-sort="dateAdded" style="width:110px">Date added</th>
+      <th class="no-sort" style="width:155px">Actions</th>
     </tr>
   </thead>
   <tbody id="tbody"></tbody>
@@ -307,12 +328,18 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
           <select id="f-tier" name="tier">
             <option value="national">National</option>
             <option value="trade">Trade</option>
-            <option value="industry">Industry</option>
-            <option value="regional">Regional</option>
+            <option value="vertical">Vertical</option>
             <option value="blog">Blog</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label for="f-format">Format</label>
+          <select id="f-format" name="format">
+            <option value="article">Article</option>
             <option value="podcast">Podcast</option>
-            <option value="owned">Owned</option>
-            <option value="competitor">Competitor</option>
+            <option value="video">Video</option>
+            <option value="newsletter">Newsletter</option>
+            <option value="social">Social</option>
             <option value="other">Other</option>
           </select>
 
@@ -397,7 +424,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   "domain": "acmecloud.example",
   "persistence": {
     "type": "local",
-    "_comment": "Demo build — uses your browser's localStorage only. Edits will NOT sync to other visitors. For a real client tracker, set type to 'jsonbin' and provide binId + accessKey."
+    "_comment": "Demo build — uses your browser's localStorage only. Edits will NOT sync to other visitors. For a real client tracker, set type to 'jsonbin' and provide binId + accessKey, and optionally syncEndpoint for the Sync now button."
   },
   "feeds": [
     { "name": "TechCrunch", "rssUrl": "https://techcrunch.com/feed/", "category": "earned" },
@@ -417,7 +444,8 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "headline": "Introducing AcmeFlow 4.0: AI-Native Workflow Automation",
         "url": "https://acmecloud.example/blog/acmeflow-4-launch",
         "publication": "Acme Cloud Blog",
-        "tier": "owned",
+        "tier": "other",
+        "format": "article",
         "type": "feature",
         "sentiment": "positive",
         "notes": "Flagship launch post.",
@@ -431,7 +459,8 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "headline": "Case Study: How Globex cut ticket time by 62% with AcmeFlow",
         "url": "https://acmecloud.example/customers/globex-case-study",
         "publication": "Acme Cloud Customers",
-        "tier": "owned",
+        "tier": "other",
+        "format": "article",
         "type": "feature",
         "sentiment": "positive",
         "notes": "Featured customer case.",
@@ -445,10 +474,26 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "headline": "Engineering deep-dive: how we built our event router",
         "url": "https://acmecloud.example/engineering/event-router",
         "publication": "Acme Cloud Engineering",
-        "tier": "owned",
+        "tier": "other",
+        "format": "article",
         "type": "contributed",
         "sentiment": "neutral",
         "notes": "Authored by CTO Mira Chen.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "owned-004",
+        "publishedAt": "2026-04-02",
+        "dateAdded": "2026-04-02T15:00:00Z",
+        "headline": "The Acme Cloud Podcast — Ep 12: The future of workflow automation",
+        "url": "https://acmecloud.example/podcast/episode-12",
+        "publication": "The Acme Cloud Podcast",
+        "tier": "other",
+        "format": "podcast",
+        "type": "feature",
+        "sentiment": "positive",
+        "notes": "In-house podcast.",
         "viaRss": true,
         "syndications": []
       }
@@ -462,6 +507,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://techcrunch.example/2026/05/09/acme-cloud-acmeflow-4",
         "publication": "TechCrunch",
         "tier": "national",
+        "format": "article",
         "type": "feature",
         "sentiment": "positive",
         "notes": "Tier-1 launch coverage; quotes CEO.",
@@ -475,6 +521,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
             "url": "https://finance.yahoo.example/news/acme-cloud-unveils",
             "publication": "Yahoo Finance",
             "tier": "national",
+            "format": "article",
             "type": "mention",
             "sentiment": "positive",
             "notes": "Syndicated from TechCrunch.",
@@ -488,6 +535,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
             "url": "https://msn.example/business/acme-cloud-acmeflow",
             "publication": "MSN Business",
             "tier": "national",
+            "format": "article",
             "type": "mention",
             "sentiment": "neutral",
             "notes": "Republished from TechCrunch.",
@@ -503,6 +551,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://venturebeat.example/2026/05/06/b2b-saas-ai-agents",
         "publication": "VentureBeat",
         "tier": "trade",
+        "format": "article",
         "type": "mention",
         "sentiment": "positive",
         "notes": "Roundup; Acme Cloud listed as a leader.",
@@ -516,7 +565,8 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "headline": "Op-Ed: Why workflow software needs to grow up — by Mira Chen, CTO of Acme Cloud",
         "url": "https://saastr.example/op-ed-workflow-grow-up-mira-chen",
         "publication": "SaaStr",
-        "tier": "industry",
+        "tier": "vertical",
+        "format": "article",
         "type": "contributed",
         "sentiment": "neutral",
         "notes": "Byline placement.",
@@ -531,6 +581,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://theinformation.example/2026/04/22/acme-cloud-outage",
         "publication": "The Information",
         "tier": "trade",
+        "format": "article",
         "type": "feature",
         "sentiment": "negative",
         "notes": "Critical piece after April outage. PR posted an incident review in response.",
@@ -545,9 +596,10 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://insidesaas.example/tools-ops-team-2026",
         "publication": "Inside SaaS",
         "tier": "blog",
+        "format": "newsletter",
         "type": "mention",
         "sentiment": "positive",
-        "notes": "Brief listicle mention.",
+        "notes": "Brief listicle mention in weekly newsletter.",
         "viaRss": true,
         "syndications": []
       },
@@ -559,6 +611,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://forbes.example/2026/04/10/qa-mira-chen-acme-cloud",
         "publication": "Forbes",
         "tier": "national",
+        "format": "article",
         "type": "feature",
         "sentiment": "positive",
         "notes": "Executive Q&A; high-value placement.",
@@ -572,6 +625,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
             "url": "https://cio.example/news/qa-mira-chen-intelligent-workflows",
             "publication": "CIO.com",
             "tier": "trade",
+            "format": "article",
             "type": "mention",
             "sentiment": "positive",
             "notes": "Republished excerpt.",
@@ -586,10 +640,26 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "headline": "Tech podcast roundup: workflow automation",
         "url": "https://saasdailypod.example/episode/142",
         "publication": "SaaS Daily Pod",
-        "tier": "podcast",
+        "tier": "vertical",
+        "format": "podcast",
         "type": "mention",
         "sentiment": "neutral",
         "notes": "Brief mention at 18:42.",
+        "viaRss": false,
+        "syndications": []
+      },
+      {
+        "id": "earned-008",
+        "publishedAt": "2026-03-22",
+        "dateAdded": "2026-03-22T11:30:00Z",
+        "headline": "AcmeFlow demo + walkthrough video",
+        "url": "https://youtube.example/watch?v=acmeflow-demo",
+        "publication": "DevTools Weekly (YouTube)",
+        "tier": "blog",
+        "format": "video",
+        "type": "feature",
+        "sentiment": "positive",
+        "notes": "Independent reviewer; 92K views.",
         "viaRss": false,
         "syndications": []
       }
@@ -603,6 +673,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://techcrunch.example/2026/05/07/zentide-series-c",
         "publication": "TechCrunch",
         "tier": "national",
+        "format": "article",
         "type": "feature",
         "sentiment": "neutral",
         "notes": "Funding round announcement.",
@@ -616,6 +687,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
             "url": "https://reuters.example/technology/zentide-funding",
             "publication": "Reuters",
             "tier": "national",
+            "format": "article",
             "type": "mention",
             "sentiment": "neutral",
             "notes": "Wire pickup.",
@@ -631,6 +703,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://venturebeat.example/2026/05/01/zentide-agent-marketplace",
         "publication": "VentureBeat",
         "tier": "trade",
+        "format": "article",
         "type": "feature",
         "sentiment": "neutral",
         "notes": "Direct competitive product to AcmeFlow Agents.",
@@ -645,6 +718,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         "url": "https://theinformation.example/2026/04/25/zentide-pricing-pivot",
         "publication": "The Information",
         "tier": "trade",
+        "format": "article",
         "type": "feature",
         "sentiment": "negative",
         "notes": "Critical analysis of competitor's recent pricing change.",
@@ -848,13 +922,15 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   }
 
   // ----- filter state -----
-  const TIER_ORDER = ["national","trade","industry","regional","blog","podcast","owned","competitor","other"];
+  const TIER_ORDER = ["national","trade","vertical","blog","other"];
+  const FORMATS = ["article","podcast","video","newsletter","social","other"];
   const TYPES = ["mention","feature","contributed"];
   const SENTIMENTS = ["positive","neutral","negative"];
 
   const state = {
     tab: "earned",
     tier: "all",
+    format: "all",
     type: "all",
     sentiment: "all",
     nesting: "all",
@@ -866,18 +942,6 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
     expanded: new Set()
   };
 
-  // ----- filter chip rendering -----
-  function renderTierChips() {
-    const allEntries = [...flattenForTab("owned"), ...flattenForTab("earned"), ...flattenForTab("competitor")].map(f => f.item);
-    const set = new Set();
-    allEntries.forEach(r => set.add(r.tier || "other"));
-    const present = TIER_ORDER.filter(t => set.has(t));
-    const el = document.getElementById("tier-filter");
-    el.innerHTML = `<span class="chip ${state.tier==="all"?"active":""}" data-key="all">All</span>` +
-      present.map(t => `<span class="chip ${state.tier===t?"active":""}" data-key="${t}">${capitalize(t)}</span>`).join("");
-    el.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => { state.tier = c.dataset.key; render(); }));
-  }
-
   function wireChipGroup(containerId, stateKey) {
     document.querySelectorAll(`#${containerId} .chip`).forEach(el => el.addEventListener("click", () => {
       state[stateKey] = el.dataset.key;
@@ -885,7 +949,9 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
       render();
     }));
   }
+  wireChipGroup("tier-filter", "tier");
   wireChipGroup("type-filter", "type");
+  wireChipGroup("format-filter", "format");
   wireChipGroup("sent-filter", "sentiment");
   wireChipGroup("nest-filter", "nesting");
 
@@ -910,14 +976,13 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   document.getElementById("date-to").addEventListener("change",   e => { state.dateTo   = e.target.value || null; render(); });
   document.getElementById("search-input").addEventListener("input", e => { state.search = e.target.value.toLowerCase(); render(); });
   document.getElementById("reset-filters").addEventListener("click", () => {
-    state.tier="all"; state.type="all"; state.sentiment="all"; state.nesting="all"; state.search=""; state.dateFrom=null; state.dateTo=null;
+    state.tier="all"; state.format="all"; state.type="all"; state.sentiment="all"; state.nesting="all"; state.search=""; state.dateFrom=null; state.dateTo=null;
     document.getElementById("search-input").value = "";
     document.getElementById("date-from").value = "";
     document.getElementById("date-to").value = "";
     document.querySelectorAll(".chips").forEach(group => {
       group.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "all" || (group.id === "period-presets" && c.dataset.preset === "all")));
     });
-    renderTierChips();
     render();
   });
 
@@ -949,6 +1014,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   // ----- row matching/filtering -----
   function rowMatches(r) {
     if (state.tier !== "all" && (r.tier || "other") !== state.tier) return false;
+    if (state.format !== "all" && (r.format || "article") !== state.format) return false;
     if (state.type !== "all" && (r.type || "mention") !== state.type) return false;
     if (state.sentiment !== "all" && (r.sentiment || "neutral") !== state.sentiment) return false;
     if (state.dateFrom) { if (!r.publishedAt || r.publishedAt < state.dateFrom) return false; }
@@ -967,6 +1033,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
       if (k === "tier") { av = TIER_ORDER.indexOf(a.tier||"other"); bv = TIER_ORDER.indexOf(b.tier||"other"); }
       else if (k === "sentiment") { av = SENTIMENTS.indexOf(a.sentiment||"neutral"); bv = SENTIMENTS.indexOf(b.sentiment||"neutral"); }
       else if (k === "type") { av = TYPES.indexOf(a.type||"mention"); bv = TYPES.indexOf(b.type||"mention"); }
+      else if (k === "format") { av = FORMATS.indexOf(a.format||"article"); bv = FORMATS.indexOf(b.format||"article"); }
       else { av = (a[k]||"").toString().toLowerCase(); bv = (b[k]||"").toString().toLowerCase(); }
       if (av < bv) return -1*dir; if (av > bv) return 1*dir; return 0;
     });
@@ -1024,8 +1091,6 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
 
   // ----- render -----
   function render() {
-    renderTierChips();
-
     for (const tab of ["owned","earned","competitor"]) {
       const flat = flattenForTab(tab).map(f => f.item);
       const n = flat.filter(rowMatches).length;
@@ -1050,7 +1115,8 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
 
     tbody.innerHTML = rows.map(r => {
       const isPickup = r._type === "pickup";
-      const tier = r.tier || "other";
+      const tier = TIER_ORDER.includes(r.tier) ? r.tier : "other";
+      const format = FORMATS.includes(r.format) ? r.format : "article";
       const type = r.type || "mention";
       const sent = r.sentiment || "neutral";
       const expandBtn = (!isPickup && r._hasPickups && mode === "tree")
@@ -1072,6 +1138,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
           </td>
           <td>${escapeHtml(r.publication || "")}</td>
           <td><span class="badge b-tier-${escapeHtml(tier)}">${escapeHtml(capitalize(tier))}</span></td>
+          <td><span class="badge b-fmt-${escapeHtml(format)}">${escapeHtml(capitalize(format))}</span></td>
           <td><span class="badge b-type-${escapeHtml(type)}">${escapeHtml(capitalize(type))}</span></td>
           <td><span class="badge b-sent-${escapeHtml(sent)}">${escapeHtml(capitalize(sent))}</span></td>
           <td>${formatDate(r.dateAdded ? r.dateAdded.slice(0,10) : null)}</td>
@@ -1101,7 +1168,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
     let pickupCount = 0;
     rows.forEach(r => {
       const s = r.sentiment || "neutral"; if (sentCounts[s] !== undefined) sentCounts[s]++;
-      const t = r.tier || "other"; tierCounts[t] = (tierCounts[t] || 0) + 1;
+      const t = TIER_ORDER.includes(r.tier) ? r.tier : "other"; tierCounts[t] = (tierCounts[t] || 0) + 1;
       const ty = r.type || "mention"; if (typeCounts[ty] !== undefined) typeCounts[ty]++;
       if (r._type === "pickup") pickupCount++;
     });
@@ -1160,7 +1227,8 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
     document.getElementById("f-headline").value    = (item && item.headline) || "";
     document.getElementById("f-url").value         = (item && item.url) || "";
     document.getElementById("f-publication").value = (item && item.publication) || "";
-    document.getElementById("f-tier").value        = (item && item.tier) || (currentTab === "owned" ? "owned" : currentTab === "competitor" ? "competitor" : "trade");
+    document.getElementById("f-tier").value        = (item && TIER_ORDER.includes(item.tier)) ? item.tier : (currentTab === "owned" ? "other" : "trade");
+    document.getElementById("f-format").value      = (item && FORMATS.includes(item.format)) ? item.format : "article";
     document.getElementById("f-type").value        = (item && item.type) || "mention";
     document.getElementById("f-sentiment").value   = (item && item.sentiment) || "neutral";
     document.getElementById("f-notes").value       = (item && item.notes) || "";
@@ -1178,6 +1246,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
       url: document.getElementById("f-url").value.trim(),
       publication: document.getElementById("f-publication").value.trim(),
       tier: document.getElementById("f-tier").value,
+      format: document.getElementById("f-format").value,
       type: document.getElementById("f-type").value,
       sentiment: document.getElementById("f-sentiment").value,
       notes: document.getElementById("f-notes").value.trim()
@@ -1195,6 +1264,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         url: form.url,
         publication: form.publication,
         tier: form.tier,
+        format: form.format,
         type: form.type,
         sentiment: form.sentiment,
         notes: form.notes,
@@ -1222,6 +1292,7 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
         url: form.url,
         publication: form.publication,
         tier: form.tier,
+        format: form.format,
         type: form.type,
         sentiment: form.sentiment,
         notes: form.notes,
@@ -1365,6 +1436,64 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
       setSyncStatus("error", "Sync error");
     }
   });
+
+  // ----- "Sync now": ask the backend to crawl RSS + run a broad web search now -----
+  const syncBtn = document.getElementById("sync-now-btn");
+  syncBtn.addEventListener("click", async () => {
+    const endpoint = persist.syncEndpoint;
+    const origText = syncBtn.textContent;
+    syncBtn.disabled = true;
+    if (!endpoint) {
+      // Demo / unconfigured path: simulate so the UX is visible
+      setSyncStatus("syncing", "Scanning feeds…");
+      syncBtn.textContent = "Scanning feeds…";
+      await sleep(900);
+      syncBtn.textContent = "Running web search…";
+      setSyncStatus("syncing", "Running web search…");
+      await sleep(900);
+      syncBtn.textContent = "Merging hits…";
+      setSyncStatus("syncing", "Merging hits…");
+      await sleep(600);
+      setSyncStatus(isRemote ? "" : "local", isRemote ? "Synced" : "Local only");
+      syncBtn.textContent = "✓ No new hits";
+      setTimeout(() => { syncBtn.textContent = origText; syncBtn.disabled = false; }, 1800);
+      if (!endpoint) {
+        // also show a one-time hint
+        if (!syncBtn.dataset.hinted) {
+          syncBtn.dataset.hinted = "1";
+          syncBtn.title = "Demo only — set persistence.syncEndpoint to a backend URL to run real RSS + web search.";
+        }
+      }
+      return;
+    }
+    setSyncStatus("syncing", "Scanning…");
+    syncBtn.textContent = "Scanning…";
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client: config.client, terms: config.terms || [], feeds: config.feeds || [] })
+      });
+      if (!res.ok) throw new Error("sync endpoint " + res.status);
+      // After the backend writes to the bin, pull the fresh state
+      if (isRemote) {
+        const fresh = normalizeData(await remoteFetch());
+        if (fresh) { data = fresh; saveLocalCache(); }
+      }
+      setSyncStatus("", "Synced");
+      updateLastUpdated();
+      ensureExpanded();
+      render();
+      syncBtn.textContent = "✓ Sync complete";
+    } catch (e) {
+      console.error(e);
+      setSyncStatus("error", "Sync failed");
+      syncBtn.textContent = "✗ Sync failed";
+    } finally {
+      setTimeout(() => { syncBtn.textContent = origText; syncBtn.disabled = false; }, 2000);
+    }
+  });
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   // ----- modal close handlers -----
   document.querySelectorAll("[data-close]").forEach(el => el.addEventListener("click", closeModals));
