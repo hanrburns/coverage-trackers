@@ -389,24 +389,269 @@ textarea.export-text { width: 100%; min-height: 300px; font: 11px/1.4 ui-monospa
   </div>
 </div>
 
-<script id="coverage-data" type="application/json" data-client="__CLIENT__">
+<script id="coverage-data" type="application/json" data-client="Acme Cloud (Demo)">
 {
-  "client": "__CLIENT__",
-  "industry": "",
-  "terms": [],
-  "domain": "",
+  "client": "Acme Cloud (Demo)",
+  "industry": "B2B SaaS — workflow automation",
+  "terms": ["Acme Cloud", "AcmeFlow", "Mira Chen"],
+  "domain": "acmecloud.example",
   "persistence": {
     "type": "local",
-    "_comment_jsonbin": "To enable team-wide sync, set type='jsonbin' and provide binId + accessKey (a JSONbin access key with read+update permissions). The bin will hold the live entries; this embedded payload is just the seed.",
-    "binId": "",
-    "accessKey": ""
+    "_comment": "Demo build — uses your browser's localStorage only. Edits will NOT sync to other visitors. For a real client tracker, set type to 'jsonbin' and provide binId + accessKey."
   },
-  "feeds": [],
+  "feeds": [
+    { "name": "TechCrunch", "rssUrl": "https://techcrunch.com/feed/", "category": "earned" },
+    { "name": "VentureBeat", "rssUrl": "https://venturebeat.com/feed/", "category": "earned" },
+    { "name": "The Information", "rssUrl": null, "category": "earned" },
+    { "name": "SaaStr", "rssUrl": "https://www.saastr.com/feed/", "category": "earned" },
+    { "name": "Acme Cloud Blog", "rssUrl": "https://acmecloud.example/blog/feed.xml", "category": "owned" },
+    { "name": "Zentide Newsroom", "rssUrl": null, "category": "competitor" }
+  ],
   "seed": {
-    "lastUpdated": null,
-    "owned": [],
-    "earned": [],
-    "competitor": []
+    "lastUpdated": "2026-05-12T18:00:00Z",
+    "owned": [
+      {
+        "id": "owned-001",
+        "publishedAt": "2026-05-08",
+        "dateAdded": "2026-05-08T14:22:00Z",
+        "headline": "Introducing AcmeFlow 4.0: AI-Native Workflow Automation",
+        "url": "https://acmecloud.example/blog/acmeflow-4-launch",
+        "publication": "Acme Cloud Blog",
+        "tier": "owned",
+        "type": "feature",
+        "sentiment": "positive",
+        "notes": "Flagship launch post.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "owned-002",
+        "publishedAt": "2026-04-28",
+        "dateAdded": "2026-04-28T16:10:00Z",
+        "headline": "Case Study: How Globex cut ticket time by 62% with AcmeFlow",
+        "url": "https://acmecloud.example/customers/globex-case-study",
+        "publication": "Acme Cloud Customers",
+        "tier": "owned",
+        "type": "feature",
+        "sentiment": "positive",
+        "notes": "Featured customer case.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "owned-003",
+        "publishedAt": "2026-04-15",
+        "dateAdded": "2026-04-15T12:00:00Z",
+        "headline": "Engineering deep-dive: how we built our event router",
+        "url": "https://acmecloud.example/engineering/event-router",
+        "publication": "Acme Cloud Engineering",
+        "tier": "owned",
+        "type": "contributed",
+        "sentiment": "neutral",
+        "notes": "Authored by CTO Mira Chen.",
+        "viaRss": true,
+        "syndications": []
+      }
+    ],
+    "earned": [
+      {
+        "id": "earned-001",
+        "publishedAt": "2026-05-09",
+        "dateAdded": "2026-05-09T10:05:00Z",
+        "headline": "Acme Cloud unveils AcmeFlow 4.0 with native AI agents",
+        "url": "https://techcrunch.example/2026/05/09/acme-cloud-acmeflow-4",
+        "publication": "TechCrunch",
+        "tier": "national",
+        "type": "feature",
+        "sentiment": "positive",
+        "notes": "Tier-1 launch coverage; quotes CEO.",
+        "viaRss": true,
+        "syndications": [
+          {
+            "id": "earned-001-syn-yahoo",
+            "publishedAt": "2026-05-09",
+            "dateAdded": "2026-05-09T11:20:00Z",
+            "headline": "Acme Cloud unveils AcmeFlow 4.0 with native AI agents",
+            "url": "https://finance.yahoo.example/news/acme-cloud-unveils",
+            "publication": "Yahoo Finance",
+            "tier": "national",
+            "type": "mention",
+            "sentiment": "positive",
+            "notes": "Syndicated from TechCrunch.",
+            "viaRss": true
+          },
+          {
+            "id": "earned-001-syn-msn",
+            "publishedAt": "2026-05-09",
+            "dateAdded": "2026-05-09T13:45:00Z",
+            "headline": "Acme Cloud unveils AcmeFlow 4.0",
+            "url": "https://msn.example/business/acme-cloud-acmeflow",
+            "publication": "MSN Business",
+            "tier": "national",
+            "type": "mention",
+            "sentiment": "neutral",
+            "notes": "Republished from TechCrunch.",
+            "viaRss": true
+          }
+        ]
+      },
+      {
+        "id": "earned-002",
+        "publishedAt": "2026-05-06",
+        "dateAdded": "2026-05-06T15:30:00Z",
+        "headline": "The B2B SaaS companies winning on AI agents in 2026",
+        "url": "https://venturebeat.example/2026/05/06/b2b-saas-ai-agents",
+        "publication": "VentureBeat",
+        "tier": "trade",
+        "type": "mention",
+        "sentiment": "positive",
+        "notes": "Roundup; Acme Cloud listed as a leader.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "earned-003",
+        "publishedAt": "2026-05-02",
+        "dateAdded": "2026-05-02T09:14:00Z",
+        "headline": "Op-Ed: Why workflow software needs to grow up — by Mira Chen, CTO of Acme Cloud",
+        "url": "https://saastr.example/op-ed-workflow-grow-up-mira-chen",
+        "publication": "SaaStr",
+        "tier": "industry",
+        "type": "contributed",
+        "sentiment": "neutral",
+        "notes": "Byline placement.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "earned-004",
+        "publishedAt": "2026-04-22",
+        "dateAdded": "2026-04-22T18:00:00Z",
+        "headline": "Acme Cloud outage frustrates customers, raises reliability questions",
+        "url": "https://theinformation.example/2026/04/22/acme-cloud-outage",
+        "publication": "The Information",
+        "tier": "trade",
+        "type": "feature",
+        "sentiment": "negative",
+        "notes": "Critical piece after April outage. PR posted an incident review in response.",
+        "viaRss": false,
+        "syndications": []
+      },
+      {
+        "id": "earned-005",
+        "publishedAt": "2026-04-19",
+        "dateAdded": "2026-04-19T08:45:00Z",
+        "headline": "5 tools every ops team should evaluate in 2026",
+        "url": "https://insidesaas.example/tools-ops-team-2026",
+        "publication": "Inside SaaS",
+        "tier": "blog",
+        "type": "mention",
+        "sentiment": "positive",
+        "notes": "Brief listicle mention.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "earned-006",
+        "publishedAt": "2026-04-10",
+        "dateAdded": "2026-04-10T14:00:00Z",
+        "headline": "Q&A with Mira Chen on the future of intelligent workflows",
+        "url": "https://forbes.example/2026/04/10/qa-mira-chen-acme-cloud",
+        "publication": "Forbes",
+        "tier": "national",
+        "type": "feature",
+        "sentiment": "positive",
+        "notes": "Executive Q&A; high-value placement.",
+        "viaRss": true,
+        "syndications": [
+          {
+            "id": "earned-006-syn-cio",
+            "publishedAt": "2026-04-12",
+            "dateAdded": "2026-04-12T10:30:00Z",
+            "headline": "Q&A: Acme Cloud's Mira Chen on intelligent workflows",
+            "url": "https://cio.example/news/qa-mira-chen-intelligent-workflows",
+            "publication": "CIO.com",
+            "tier": "trade",
+            "type": "mention",
+            "sentiment": "positive",
+            "notes": "Republished excerpt.",
+            "viaRss": true
+          }
+        ]
+      },
+      {
+        "id": "earned-007",
+        "publishedAt": "2026-03-30",
+        "dateAdded": "2026-03-30T22:10:00Z",
+        "headline": "Tech podcast roundup: workflow automation",
+        "url": "https://saasdailypod.example/episode/142",
+        "publication": "SaaS Daily Pod",
+        "tier": "podcast",
+        "type": "mention",
+        "sentiment": "neutral",
+        "notes": "Brief mention at 18:42.",
+        "viaRss": false,
+        "syndications": []
+      }
+    ],
+    "competitor": [
+      {
+        "id": "comp-001",
+        "publishedAt": "2026-05-07",
+        "dateAdded": "2026-05-07T11:00:00Z",
+        "headline": "Zentide raises $80M Series C to expand AI ops platform",
+        "url": "https://techcrunch.example/2026/05/07/zentide-series-c",
+        "publication": "TechCrunch",
+        "tier": "national",
+        "type": "feature",
+        "sentiment": "neutral",
+        "notes": "Funding round announcement.",
+        "viaRss": true,
+        "syndications": [
+          {
+            "id": "comp-001-syn-reuters",
+            "publishedAt": "2026-05-07",
+            "dateAdded": "2026-05-07T12:30:00Z",
+            "headline": "Zentide secures $80 million in latest funding round",
+            "url": "https://reuters.example/technology/zentide-funding",
+            "publication": "Reuters",
+            "tier": "national",
+            "type": "mention",
+            "sentiment": "neutral",
+            "notes": "Wire pickup.",
+            "viaRss": true
+          }
+        ]
+      },
+      {
+        "id": "comp-002",
+        "publishedAt": "2026-05-01",
+        "dateAdded": "2026-05-01T09:00:00Z",
+        "headline": "Zentide unveils new agent marketplace at customer summit",
+        "url": "https://venturebeat.example/2026/05/01/zentide-agent-marketplace",
+        "publication": "VentureBeat",
+        "tier": "trade",
+        "type": "feature",
+        "sentiment": "neutral",
+        "notes": "Direct competitive product to AcmeFlow Agents.",
+        "viaRss": true,
+        "syndications": []
+      },
+      {
+        "id": "comp-003",
+        "publishedAt": "2026-04-25",
+        "dateAdded": "2026-04-25T17:00:00Z",
+        "headline": "Why Zentide's pricing pivot may backfire",
+        "url": "https://theinformation.example/2026/04/25/zentide-pricing-pivot",
+        "publication": "The Information",
+        "tier": "trade",
+        "type": "feature",
+        "sentiment": "negative",
+        "notes": "Critical analysis of competitor's recent pricing change.",
+        "viaRss": false,
+        "syndications": []
+      }
+    ]
   }
 }
 </script>
