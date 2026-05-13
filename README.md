@@ -10,6 +10,7 @@ Each client lives in its own subfolder; GitHub Pages serves them at
 | Pluralsight | https://hanrburns.github.io/coverage-trackers/pluralsight/ |
 | Planview | https://hanrburns.github.io/coverage-trackers/planview/ |
 | Lattice Semiconductor | https://hanrburns.github.io/coverage-trackers/lattice-semi/ |
+| Demo (Acme Cloud — fake data) | https://hanrburns.github.io/coverage-trackers/demo/ |
 
 The HTML files here are written by a Claude scheduled task that runs on a
 weekday cadence (9am / 1pm / 5pm local). The task pulls fresh hits from
